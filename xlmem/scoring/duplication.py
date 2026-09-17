@@ -51,17 +51,29 @@ def compute_false_merge_rate(
     dump_texts = [m.text for m in dumped_memories]
 
     for base_fact, dist_fact in distractor_pairs:
-        base_aliases = list(base_fact.surface.values())
-        dist_aliases = list(dist_fact.surface.values())
-
-        # A false merge occurs if ANY single memory text contains both distinct values
         collapsed = False
-        for text in dump_texts:
-            has_base = strict_match(base_fact.value, text, aliases=base_aliases)
-            has_dist = strict_match(dist_fact.value, text, aliases=dist_aliases)
-            if has_base and has_dist:
-                collapsed = True
-                break
+
+        # Case 1: Value-shift near miss (different values, e.g. peanuts vs walnuts)
+        if base_fact.value != dist_fact.value:
+            for text in dump_texts:
+                has_base = strict_match(base_fact.value, text, aliases=list(base_fact.surface.values()))
+                has_dist = strict_match(dist_fact.value, text, aliases=list(dist_fact.surface.values()))
+                if has_base and has_dist:
+                    collapsed = True
+                    break
+
+        # Case 2: Entity-shift near miss (same value, different entities, e.g. user vs user_sister)
+        else:
+            base_ent = base_fact.entity.replace("user_", "")
+            dist_ent = dist_fact.entity.replace("user_", "")
+            for text in dump_texts:
+                has_val = strict_match(base_fact.value, text, aliases=list(base_fact.surface.values()))
+                if has_val:
+                    has_base_ent = strict_match(base_ent, text)
+                    has_dist_ent = strict_match(dist_ent, text)
+                    if has_base_ent and has_dist_ent:
+                        collapsed = True
+                        break
 
         if collapsed:
             false_merges += 1

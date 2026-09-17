@@ -60,7 +60,7 @@ warn_redundant_casts = true
 warn_unused_ignores = true
 
 [tool.pytest.ini_options]
-minversion = "8.0"
+minversion = "7.0"
 testpaths = ["tests"]
 markers = [
     "gpu: marks tests as requiring GPU / live local model servers (deselect with -m 'not gpu')",

@@ -11,8 +11,9 @@ logger = logging.getLogger(__name__)
 
 
 def normalize_text(text: str) -> str:
-    """Normalize text by lowercasing, stripping punctuation, and NFC Unicode normalization."""
+    """Normalize text by lowercasing, converting underscores to spaces, stripping punctuation, and NFC Unicode normalization."""
     text = unicodedata.normalize("NFC", text.lower())
+    text = text.replace("_", " ")
     # Remove punctuation except whitespace
     text = re.sub(r"[^\w\s]", " ", text)
     return " ".join(text.split())
@@ -32,15 +33,22 @@ def strict_match(target_value: str, candidate_text: str, aliases: Sequence[str] 
     norm_candidate = normalize_text(candidate_text)
     targets = [target_value] + list(aliases)
 
-    for target in targets:
-        norm_target = normalize_text(target)
+    expanded_targets: list[str] = []
+    for t in targets:
+        norm_target = normalize_text(t)
         if not norm_target:
             continue
-        # Use regex word boundary where applicable, or substring
-        pattern = r"\b" + re.escape(norm_target) + r"\b"
+        expanded_targets.append(norm_target)
+        if norm_target.endswith("s") and len(norm_target) > 3:
+            expanded_targets.append(norm_target[:-1])
+        elif len(norm_target) > 2:
+            expanded_targets.append(norm_target + "s")
+
+    for target in expanded_targets:
+        pattern = r"\b" + re.escape(target) + r"\b"
         if re.search(pattern, norm_candidate):
             return True
-        if norm_target in norm_candidate:
+        if target in norm_candidate:
             return True
 
     return False
