@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xlmem"
+version = "0.1.0"
+description = "XLMem: Research Measurement Harness for Cross-Lingual Agent Memory"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "Sree Thanu Bhuvanesh Ganesa Kumar", email = "25mai0019@vit.ac.in" }
+]
+dependencies = [
+    "pydantic>=2.6.0",
+    "pyyaml>=6.0.1",
+    "requests>=2.31.0",
+    "pandas>=2.2.0",
+    "matplotlib>=3.8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.3.0",
+    "mypy>=1.8.0",
+    "types-PyYAML>=6.0.12.12",
+    "types-requests>=2.31.0.6",
+]
+gpu = [
+    "torch>=2.2.0",
+    "transformers>=4.38.0",
+    "sentence-transformers>=2.5.0",
+    "mem0ai>=0.1.20",
+    "chromadb>=0.4.24",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["xlmem*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = []
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+markers = [
+    "gpu: marks tests as requiring GPU / live local model servers (deselect with -m 'not gpu')",
+]
