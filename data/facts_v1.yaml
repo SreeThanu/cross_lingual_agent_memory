@@ -1,0 +1,345 @@
+version: "1.0"
+facts:
+  - id: "f_001"
+    domain: "health"
+    entity: "user"
+    relation: "allergic_to"
+    value: "peanuts"
+    distractor_of: null
+    surface:
+      hi: "मुझे मूंगफली से गंभीर एलर्जी है।"
+      en: "I have a severe allergy to peanuts."
+      hi-en: "Mujhe peanuts se severe allergy hai."
+    probe_questions:
+      hi: "मुझे किस खाने की चीज़ से एलर्जी है?"
+      en: "What food am I allergic to?"
+      hi-en: "Mujhe kis food se allergy hai?"
+    update:
+      updated_value: "cashews"
+      surface:
+        hi: "एक सुधार है: मुझे मूंगफली से नहीं, बल्कि काजू से एलर्जी है।"
+        en: "Correction: I am not allergic to peanuts, but to cashews."
+        hi-en: "Ek update hai: mujhe peanuts se nahi, cashews se allergy hai."
+      probe_questions:
+        hi: "मुझे अब किस चीज़ से एलर्जी है?"
+        en: "What am I allergic to now?"
+
+  - id: "f_001_dist"
+    domain: "health"
+    entity: "user_sister"
+    relation: "allergic_to"
+    value: "peanuts"
+    distractor_of: "f_001"
+    surface:
+      hi: "मेरी बहन को मूंगफली से एलर्जी है।"
+      en: "My sister has an allergy to peanuts."
+      hi-en: "Meri sister ko peanuts se allergy hai."
+    probe_questions:
+      hi: "मेरी बहन को किस चीज़ से एलर्जी है?"
+      en: "What is my sister allergic to?"
+      hi-en: "Meri sister ko kis cheez se allergy hai?"
+    update: null
+
+  - id: "f_002"
+    domain: "travel"
+    entity: "user"
+    relation: "lives_in"
+    value: "pune"
+    distractor_of: null
+    surface:
+      hi: "मैं वर्तमान में पुणे में रहता हूँ।"
+      en: "I currently live in Pune."
+      hi-en: "Main abhi Pune me rehta hoon."
+    probe_questions:
+      hi: "मैं किस शहर में रहता हूँ?"
+      en: "Which city do I live in?"
+      hi-en: "Main kis city me rehta hoon?"
+    update:
+      updated_value: "mumbai"
+      surface:
+        hi: "मैं पुणे से मुंबई शिफ्ट हो गया हूँ।"
+        en: "I have relocated from Pune to Mumbai."
+        hi-en: "Main Pune se Mumbai shift ho gaya hoon."
+      probe_questions:
+        hi: "मैं अब कहाँ रहता हूँ?"
+        en: "Where do I live now?"
+
+  - id: "f_002_dist"
+    domain: "travel"
+    entity: "user_brother"
+    relation: "lives_in"
+    value: "pune"
+    distractor_of: "f_002"
+    surface:
+      hi: "मेरा भाई पुणे में रहता है।"
+      en: "My brother lives in Pune."
+      hi-en: "Mera brother Pune me rehta hai."
+    probe_questions:
+      hi: "मेरा भाई कहाँ रहता है?"
+      en: "Where does my brother live?"
+      hi-en: "Mera brother kahan rehta hai?"
+    update: null
+
+  - id: "f_003"
+    domain: "work"
+    entity: "user"
+    relation: "works_at"
+    value: "infosys"
+    distractor_of: null
+    surface:
+      hi: "मैं इंफोसिस में सॉफ्टवेयर इंजीनियर के रूप में काम करता हूँ।"
+      en: "I work at Infosys as a software engineer."
+      hi-en: "Main Infosys me software engineer hoon."
+    probe_questions:
+      hi: "मेरी कंपनी का नाम क्या है?"
+      en: "What is the name of my employer?"
+      hi-en: "Meri company ka naam kya hai?"
+    update:
+      updated_value: "tcs"
+      surface:
+        hi: "मैंने इंफोसिस छोड़ दिया है और अब टीसीएस में काम करता हूँ।"
+        en: "I left Infosys and now work at TCS."
+        hi-en: "Maine Infosys chhod di aur ab TCS me kaam karta hoon."
+      probe_questions:
+        hi: "मैं अब किस कंपनी में काम करता हूँ?"
+        en: "Which company do I work for now?"
+
+  - id: "f_003_dist"
+    domain: "work"
+    entity: "user_spouse"
+    relation: "works_at"
+    value: "infosys"
+    distractor_of: "f_003"
+    surface:
+      hi: "मेरी पत्नी भी इंफोसिस में काम करती है।"
+      en: "My wife also works at Infosys."
+      hi-en: "Meri wife bhi Infosys me kaam karti hai."
+    probe_questions:
+      hi: "मेरी पत्नी कहाँ काम करती है?"
+      en: "Where does my wife work?"
+      hi-en: "Meri wife kahan kaam karti hai?"
+    update: null
+
+  - id: "f_004"
+    domain: "languages"
+    entity: "user"
+    relation: "speaks_language"
+    value: "marathi"
+    distractor_of: null
+    surface:
+      hi: "मैं घर पर धाराप्रवाह मराठी बोलता हूँ।"
+      en: "I speak fluent Marathi at home."
+      hi-en: "Main ghar pe fluent Marathi bolta hoon."
+    probe_questions:
+      hi: "मैं घर पर कौन सी भाषा बोलता हूँ?"
+      en: "What language do I speak at home?"
+      hi-en: "Main ghar par kaun si language bolta hoon?"
+    update: null
+
+  - id: "f_005"
+    domain: "family"
+    entity: "user"
+    relation: "owns_pet"
+    value: "golden_retriever"
+    distractor_of: null
+    surface:
+      hi: "मेरे पास मैक्स नाम का एक गोल्डन रिट्रीवर कुत्ता है।"
+      en: "I have a golden retriever dog named Max."
+      hi-en: "Mere paas Max naam ka golden retriever dog hai."
+    probe_questions:
+      hi: "मेरे पास कौन सी नस्ल का कुत्ता है?"
+      en: "What breed of dog do I have?"
+      hi-en: "Mere dog ki breed kya hai?"
+    update: null
+
+  - id: "f_006"
+    domain: "dining"
+    entity: "user"
+    relation: "favorite_beverage"
+    value: "filter_coffee"
+    distractor_of: null
+    surface:
+      hi: "मेरी सुबह की पसंदीदा ड्रिंक फ़िल्टर कॉफ़ी है।"
+      en: "My favorite morning beverage is filter coffee."
+      hi-en: "Meri favorite morning beverage filter coffee hai."
+    probe_questions:
+      hi: "मेरी पसंदीदा पेय क्या है?"
+      en: "What is my favorite beverage?"
+      hi-en: "Mera favorite beverage kya hai?"
+    update: null
+
+  - id: "f_007"
+    domain: "finance"
+    entity: "user"
+    relation: "primary_bank"
+    value: "hdfc"
+    distractor_of: null
+    surface:
+      hi: "मेरा मुख्य वेतन खाता एचडीएफसी बैंक में है।"
+      en: "My primary salary account is with HDFC Bank."
+      hi-en: "Mera main salary account HDFC Bank me hai."
+    probe_questions:
+      hi: "मेरा सैलरी अकाउंट किस बैंक में है?"
+      en: "Which bank holds my salary account?"
+      hi-en: "Mera salary account kis bank me hai?"
+    update: null
+
+  - id: "f_008"
+    domain: "tech"
+    entity: "user"
+    relation: "primary_os"
+    value: "linux"
+    distractor_of: null
+    surface:
+      hi: "मैं अपने लैपटॉप पर लिनक्स ऑपरेटिंग सिस्टम का उपयोग करता हूँ।"
+      en: "I use Linux operating system on my laptop."
+      hi-en: "Main apne laptop par Linux OS use karta hoon."
+    probe_questions:
+      hi: "मेरे लैपटॉप पर कौन सा ओएस है?"
+      en: "What operating system is on my laptop?"
+      hi-en: "Mere laptop par kaun sa OS hai?"
+    update: null
+
+  - id: "f_009"
+    domain: "hobbies"
+    entity: "user"
+    relation: "plays_instrument"
+    value: "guitar"
+    distractor_of: null
+    surface:
+      hi: "मैं सप्ताहांत में गिटार बजाता हूँ।"
+      en: "I play the guitar on weekends."
+      hi-en: "Main weekends par guitar play karta hoon."
+    probe_questions:
+      hi: "मैं कौन सा वाद्य यंत्र बजाता हूँ?"
+      en: "What musical instrument do I play?"
+      hi-en: "Main kaun sa instrument bajata hoon?"
+    update: null
+
+  - id: "f_010"
+    domain: "travel"
+    entity: "user"
+    relation: "planned_trip"
+    value: "manali"
+    distractor_of: null
+    surface:
+      hi: "मेरी अगली महीने मनाली जाने की योजना है।"
+      en: "I have a planned trip to Manali next month."
+      hi-en: "Meri next month Manali jaane ki planning hai."
+    probe_questions:
+      hi: "मेरी अगली यात्रा कहाँ की है?"
+      en: "Where is my planned trip next month?"
+      hi-en: "Meri next trip kahan ki hai?"
+    update: null
+
+  - id: "f_011"
+    domain: "health"
+    entity: "user"
+    relation: "blood_group"
+    value: "o_positive"
+    distractor_of: null
+    surface:
+      hi: "मेरा ब्लड ग्रुप ओ पॉजिटिव है।"
+      en: "My blood group is O positive."
+      hi-en: "Mera blood group O positive hai."
+    probe_questions:
+      hi: "मेरा ब्लड ग्रुप क्या है?"
+      en: "What is my blood group?"
+      hi-en: "Mera blood group kya hai?"
+    update: null
+
+  - id: "f_012"
+    domain: "dining"
+    entity: "user"
+    relation: "dietary_preference"
+    value: "vegetarian"
+    distractor_of: null
+    surface:
+      hi: "मैं पूर्णतः शाकाहारी भोजन करता हूँ।"
+      en: "I follow a strictly vegetarian diet."
+      hi-en: "Main purely vegetarian khana khata hoon."
+    probe_questions:
+      hi: "मेरी खान-पान की क्या प्राथमिकता है?"
+      en: "What is my dietary preference?"
+      hi-en: "Meri dietary preference kya hai?"
+    update: null
+
+  - id: "f_013"
+    domain: "work"
+    entity: "user"
+    relation: "primary_programming_language"
+    value: "python"
+    distractor_of: null
+    surface:
+      hi: "मेरी प्राथमिक प्रोग्रामिंग भाषा पायथन है।"
+      en: "My primary programming language is Python."
+      hi-en: "Meri primary programming language Python hai."
+    probe_questions:
+      hi: "मेरी मुख्य प्रोग्रामिंग भाषा कौन सी है?"
+      en: "What is my primary programming language?"
+      hi-en: "Meri main programming language kya hai?"
+    update: null
+
+  - id: "f_014"
+    domain: "travel"
+    entity: "user"
+    relation: "hometown"
+    value: "jaipur"
+    distractor_of: null
+    surface:
+      hi: "मेरा गृहनगर जयपुर है।"
+      en: "My hometown is Jaipur."
+      hi-en: "Mera hometown Jaipur hai."
+    probe_questions:
+      hi: "मेरा गृहनगर कौन सा है?"
+      en: "What is my hometown?"
+      hi-en: "Mera hometown kaun sa hai?"
+    update: null
+
+  - id: "f_015"
+    domain: "family"
+    entity: "user"
+    relation: "mother_occupation"
+    value: "teacher"
+    distractor_of: null
+    surface:
+      hi: "मेरी माँ एक स्कूल शिक्षिका हैं।"
+      en: "My mother is a school teacher."
+      hi-en: "Meri mother ek school teacher hain."
+    probe_questions:
+      hi: "मेरी माँ क्या काम करती हैं?"
+      en: "What does my mother do?"
+      hi-en: "Meri mother ka profession kya hai?"
+    update: null
+
+  - id: "f_016"
+    domain: "finance"
+    entity: "user"
+    relation: "credit_card_network"
+    value: "visa"
+    distractor_of: null
+    surface:
+      hi: "मेरा प्राथमिक क्रेडिट कार्ड वीज़ा नेटवर्क पर है।"
+      en: "My primary credit card is on the Visa network."
+      hi-en: "Mera primary credit card Visa network par hai."
+    probe_questions:
+      hi: "मेरा क्रेडिट कार्ड किस नेटवर्क का है?"
+      en: "What is my credit card network?"
+      hi-en: "Mera credit card kaun sa network use karta hai?"
+    update: null
+
+  - id: "f_017"
+    domain: "tech"
+    entity: "user"
+    relation: "primary_phone"
+    value: "pixel"
+    distractor_of: null
+    surface:
+      hi: "मैं गूगल पिक्सेल स्मार्टफोन का उपयोग करता हूँ।"
+      en: "I use a Google Pixel smartphone."
+      hi-en: "Main Google Pixel smartphone use karta hoon."
+    probe_questions:
+      hi: "मेरे पास कौन सा स्मार्टफोन है?"
+      en: "What smartphone do I use?"
+      hi-en: "Mere paas kaun sa smartphone hai?"
+    update: null

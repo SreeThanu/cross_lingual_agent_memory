@@ -12,7 +12,7 @@ from xlmem.adapters.base import MemoryAdapter
 from xlmem.benchmark.facts import Turn
 
 
-@pytest.fixture(params=["mock"])
+@pytest.fixture(params=["mock", "mem0"])
 def adapter(request: pytest.FixtureRequest) -> MemoryAdapter:
     """Fixture providing instantiated adapters to be tested."""
     return get_adapter(request.param)

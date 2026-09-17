@@ -1,0 +1,21 @@
+experiment: phase0_pilot_mem0
+framework: mem0
+model:
+  name: qwen2.5:7b-instruct
+  quantization: q4_K_M
+  temperature: 0.0
+  backend: ollama
+  base_url: http://localhost:11434
+embedder: BAAI/bge-m3
+languages:
+  store: hi
+  probe: en
+benchmark:
+  fact_bank: data/facts_v1.yaml
+  n_facts: 20
+  filler_sessions: 1
+  distractor_ratio: 0.3
+mitigation: none
+seeds:
+  - 11
+output_dir: runs/phase0_pilot_mem0
