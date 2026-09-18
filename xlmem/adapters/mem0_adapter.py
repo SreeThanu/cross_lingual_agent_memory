@@ -53,6 +53,7 @@ class Mem0Adapter(MemoryAdapter):
                     "config": {
                         "path": "/tmp/qdrant_xlmem",
                         "on_disk": False,
+			"embedding_model_dims": 1024,
                     },
                 },
                 "llm": {
@@ -66,7 +67,7 @@ class Mem0Adapter(MemoryAdapter):
                 "embedder": {
                     "provider": "ollama",
                     "config": {
-                        "model": self.llm_model,
+                        "model": self.embedder_model,
                         "ollama_base_url": self.ollama_base_url,
                     },
                 },
@@ -135,8 +136,8 @@ class Mem0Adapter(MemoryAdapter):
             try:
                 res = self._mem0_instance.search(
                     query=query,
-                    filters={"user_id": user_id},
-                    top_k=k,
+                    user_id=user_id,
+                    limit=k,
                 )
                 mems: list[Memory] = []
                 # res is a list of dicts or dict with 'results'
@@ -174,7 +175,10 @@ class Mem0Adapter(MemoryAdapter):
         # If live instance available, query with a very high top_k to avoid truncation
         if self._mem0_instance is not None:
             try:
-                raw_items = self._mem0_instance.get_all(filters={"user_id": user_id}, top_k=100000)
+                raw_items = self._mem0_instance.get_all(
+                    user_id=user_id,
+                    limit=100000,
+                )
                 items = raw_items.get("results", []) if isinstance(raw_items, dict) else raw_items
                 if items:
                     mems: list[Memory] = []
