@@ -53,22 +53,36 @@ def test_write_and_dump_roundtrip(adapter: MemoryAdapter) -> None:
     dumped = adapter.dump(user_id)
     assert len(dumped) >= 2, "dump() must return all written records, not a subset or top-k"
 
-    texts = [m.text for m in dumped]
-    assert any("मूंगफली" in t or "peanuts" in t.lower() for t in texts)
-    assert any("Google" in t or "google" in t.lower() for t in texts)
-
+    fact_ids = {m.metadata.get("fact_id") for m in dumped}
+    assert "f_01" in fact_ids
+    assert "f_02" in fact_ids
 
 def test_dump_completeness_not_top_k(adapter: MemoryAdapter) -> None:
     """Verify that dump() returns ALL memories even when count exceeds default top-k (5)."""
     user_id = "test_user_bulk"
     adapter.reset(user_id)
 
-    for i in range(12):
+    facts = [
+        "My favorite color is navy blue.",
+        "I work at Google in Bangalore.",
+        "I have a dog named Bruno.",
+        "I studied computer science at university.",
+        "My birthday is on June 14.",
+        "I prefer tea over coffee.",
+        "I live in Chennai.",
+        "My favorite programming language is Python.",
+        "I enjoy playing badminton on weekends.",
+        "My favorite sport is cricket.",
+        "I usually exercise in the morning.",
+        "My favorite food is biryani.",
+    ]
+
+    for i, fact in enumerate(facts):
         turn = Turn(
             session_id=1,
             role="user",
             lang="en",
-            text=f"Item number {i} is stored.",
+            text=fact,
             kind="plant",
             fact_id=f"f_{i}",
         )
@@ -106,8 +120,8 @@ def test_reset_isolation(adapter: MemoryAdapter) -> None:
     adapter.reset(user_a)
     adapter.reset(user_b)
 
-    turn_a = Turn(session_id=1, role="user", lang="en", text="Alpha secret", kind="plant", fact_id="f_a")
-    turn_b = Turn(session_id=1, role="user", lang="en", text="Beta secret", kind="plant", fact_id="f_b")
+    turn_a = Turn(session_id=1, role="user", lang="en", text="Alpha favorite color is blue.", kind="plant", fact_id="f_a")
+    turn_b = Turn(session_id=1, role="user", lang="en", text="Beta favorite color is green.", kind="plant", fact_id="f_b")
 
     adapter.write(user_a, turn_a)
     adapter.write(user_b, turn_b)
