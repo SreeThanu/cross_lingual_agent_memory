@@ -31,7 +31,7 @@ class Mem0Adapter(MemoryAdapter):
         llm_model: str = "qwen2.5:7b-instruct",
         embedder_model: str = "BAAI/bge-m3",
         ollama_base_url: str = "http://localhost:11434",
-        offline_fallback: bool = True,
+        offline_fallback: bool = False,
     ) -> None:
         self.llm_model = llm_model
         self.embedder_model = embedder_model
@@ -41,6 +41,59 @@ class Mem0Adapter(MemoryAdapter):
         self._local_fallback_stores: dict[str, list[Memory]] = {}
 
         self._init_mem0(config)
+
+    def _install_mem0_llm_compatibility(self) -> None:
+        """Normalize malformed structured output from local Ollama LLMs.
+
+        Mem0 0.1.26 expects the fact extractor to return:
+            {"facts": ["fact 1", "fact 2"]}
+
+        Some local models may instead return:
+            {"facts": [["fact 1"], ["fact 2"]]}
+
+        Normalize only this schema mismatch at the adapter boundary.
+        """
+        if self._mem0_instance is None:
+            return
+
+        original_generate_response = self._mem0_instance.llm.generate_response
+
+        def compatible_generate_response(*args: Any, **kwargs: Any) -> str:
+            response = original_generate_response(*args, **kwargs)
+
+            try:
+                import json
+
+                parsed = json.loads(response)
+
+                facts = parsed.get("facts")
+                if isinstance(facts, list):
+                    normalized_facts = []
+                    changed = False
+
+                    for fact in facts:
+                        if isinstance(fact, list):
+                            normalized_facts.extend(
+                                item for item in fact if isinstance(item, str)
+                            )
+                            changed = True
+                        else:
+                            normalized_facts.append(fact)
+
+                    if changed:
+                        parsed["facts"] = normalized_facts
+                        response = json.dumps(parsed, ensure_ascii=False)
+
+                        logger.warning(
+                            "Normalized nested Mem0 facts from local LLM output."
+                        )
+
+            except (json.JSONDecodeError, TypeError, AttributeError):
+                pass
+
+            return response
+
+        self._mem0_instance.llm.generate_response = compatible_generate_response
 
     def _init_mem0(self, custom_config: dict[str, Any] | None) -> None:
         try:
@@ -53,6 +106,7 @@ class Mem0Adapter(MemoryAdapter):
                     "config": {
                         "path": "/tmp/qdrant_xlmem",
                         "on_disk": False,
+                        "embedding_model_dims": 1024,
                     },
                 },
                 "llm": {
@@ -66,45 +120,68 @@ class Mem0Adapter(MemoryAdapter):
                 "embedder": {
                     "provider": "ollama",
                     "config": {
-                        "model": self.llm_model,
+                        "model": (
+                            "bge-m3:latest"
+                            if self.embedder_model == "BAAI/bge-m3"
+                            else self.embedder_model
+                        ),
                         "ollama_base_url": self.ollama_base_url,
                     },
                 },
             }
             conf = custom_config or default_config
             self._mem0_instance = Mem0Memory.from_config(conf)
+            self._install_mem0_llm_compatibility()
             logger.info("Initialized Mem0 adapter with local backend.")
         except Exception as e:
-            logger.warning(
-                "Could not initialize Mem0 live instance (%s). Operating in offline fallback mode: %s",
-                type(e).__name__,
-                e,
-            )
             self._mem0_instance = None
+            if self.offline_fallback:
+                logger.warning(
+                    "Could not initialize Mem0 live instance (%s). Operating in offline fallback mode: %s",
+                    type(e).__name__,
+                    e,
+                )
+            else:
+                logger.error(
+                    "Could not initialize Mem0 live instance (%s): %s",
+                    type(e).__name__,
+                    e,
+                )
 
     def reset(self, user_id: str) -> None:
         """Wipe all memories for the target user."""
-        self._local_fallback_stores[user_id] = []
+        if self.offline_fallback:
+            self._local_fallback_stores[user_id] = []
+
         if self._mem0_instance is not None:
             try:
                 self._mem0_instance.delete_all(user_id=user_id)
             except Exception as e:
-                logger.warning("Mem0 delete_all failed for user %s: %s", user_id, e)
+                if self.offline_fallback:
+                    logger.warning("Mem0 delete_all failed for user %s: %s", user_id, e)
+                else:
+                    raise RuntimeError(
+                        f"Mem0 delete_all failed for user {user_id}"
+                    ) from e
+        elif not self.offline_fallback:
+            raise RuntimeError("Mem0 live instance is unavailable")
 
     def write(self, user_id: str, turn: Turn) -> WriteResult:
         """Ingest a turn into Mem0."""
-        # Always maintain in local fallback store for guaranteed dump inspectability
-        if user_id not in self._local_fallback_stores:
-            self._local_fallback_stores[user_id] = []
+        if self.offline_fallback:
+            if user_id not in self._local_fallback_stores:
+                self._local_fallback_stores[user_id] = []
 
-        mem_id = f"m0_{len(self._local_fallback_stores[user_id]) + 1}"
-        m_record = Memory(
-            raw_id=mem_id,
-            text=turn.text,
-            lang_detected=turn.lang,
-            metadata={"fact_id": turn.fact_id, "kind": turn.kind, "session_id": turn.session_id},
-        )
-        self._local_fallback_stores[user_id].append(m_record)
+            mem_id = f"m0_{len(self._local_fallback_stores[user_id]) + 1}"
+            m_record = Memory(
+                raw_id=mem_id,
+                text=turn.text,
+                lang_detected=turn.lang,
+                metadata={"fact_id": turn.fact_id, "kind": turn.kind, "session_id": turn.session_id},
+            )
+            self._local_fallback_stores[user_id].append(m_record)
+        else:
+            mem_id = None
 
         if self._mem0_instance is not None:
             try:
@@ -117,10 +194,23 @@ class Mem0Adapter(MemoryAdapter):
                 )
                 return WriteResult(success=True, memory_id=str(res), metadata={"response": res})
             except Exception as e:
-                logger.warning("Live Mem0 write failed, preserved in fallback store: %s", e)
-                return WriteResult(success=True, memory_id=mem_id, metadata={"fallback": True})
+                if self.offline_fallback:
+                    logger.warning("Live Mem0 write failed, preserved in fallback store: %s", e)
+                    return WriteResult(success=True, memory_id=mem_id, metadata={"fallback": True})
+                return WriteResult(
+                    success=False,
+                    memory_id=None,
+                    metadata={"error": str(e)},
+                )
 
-        return WriteResult(success=True, memory_id=mem_id)
+        if self.offline_fallback:
+            return WriteResult(success=True, memory_id=mem_id)
+
+        return WriteResult(
+            success=False,
+            memory_id=None,
+            metadata={"error": "Mem0 live instance is unavailable"},
+        )
 
     def consolidate(self, user_id: str) -> ConsolidationResult:
         """Mem0 reconciles/consolidates memories at write time.
@@ -135,8 +225,8 @@ class Mem0Adapter(MemoryAdapter):
             try:
                 res = self._mem0_instance.search(
                     query=query,
-                    filters={"user_id": user_id},
-                    top_k=k,
+                    user_id=user_id,
+                    limit=k,
                 )
                 mems: list[Memory] = []
                 # res is a list of dicts or dict with 'results'
@@ -153,7 +243,12 @@ class Mem0Adapter(MemoryAdapter):
                 if mems:
                     return mems
             except Exception as e:
+                if not self.offline_fallback:
+                    raise RuntimeError("Mem0 search failed") from e
                 logger.warning("Live Mem0 search failed, using fallback store: %s", e)
+
+        if not self.offline_fallback:
+            raise RuntimeError("Mem0 live instance is unavailable")
 
         # Fallback lexical/keyword search
         store = self._local_fallback_stores.get(user_id, [])
@@ -174,21 +269,28 @@ class Mem0Adapter(MemoryAdapter):
         # If live instance available, query with a very high top_k to avoid truncation
         if self._mem0_instance is not None:
             try:
-                raw_items = self._mem0_instance.get_all(filters={"user_id": user_id}, top_k=100000)
+                raw_items = self._mem0_instance.get_all(
+                    user_id=user_id,
+                    limit=100000,
+                )
                 items = raw_items.get("results", []) if isinstance(raw_items, dict) else raw_items
-                if items:
-                    mems: list[Memory] = []
-                    for item in items:
-                        mems.append(
-                            Memory(
-                                raw_id=str(item.get("id", "")),
-                                text=str(item.get("memory", item.get("text", ""))),
-                                lang_detected="",
-                                metadata=item.get("metadata", {}),
-                            )
+                mems: list[Memory] = []
+                for item in items:
+                    mems.append(
+                        Memory(
+                            raw_id=str(item.get("id", "")),
+                            text=str(item.get("memory", item.get("text", ""))),
+                            lang_detected="",
+                            metadata=item.get("metadata", {}),
                         )
-                    return mems
+                    )
+                return mems
             except Exception as e:
+                if not self.offline_fallback:
+                    raise RuntimeError("Mem0 get_all failed") from e
                 logger.warning("Live Mem0 get_all failed, returning fallback store: %s", e)
+
+        if not self.offline_fallback:
+            raise RuntimeError("Mem0 live instance is unavailable")
 
         return list(self._local_fallback_stores.get(user_id, []))

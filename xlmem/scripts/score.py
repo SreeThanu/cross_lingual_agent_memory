@@ -36,8 +36,12 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, float]
         with open(store_final_file, "r", encoding="utf-8") as f:
             final_memories = [Memory.from_dict(m) for m in json.load(f)]
 
-    # Load probe results from run_log.jsonl
+    # Load probe results from run_log.jsonl. probe_result is the pre-correction
+    # (Session K) probe; reprobe_result is the post-correction (Session K+2)
+    # re-probe -- these are DISTINCT phases and must not be conflated (see
+    # BENCHMARK_SPEC.md Section 5). Staleness Rate is defined over the re-probe.
     probe_results: list[ProbeResult] = []
+    reprobe_results: list[ProbeResult] = []
     with open(run_log_file, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -46,6 +50,8 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, float]
             record = json.loads(line)
             if record.get("record_type") == "probe_result":
                 probe_results.append(ProbeResult.from_dict(record["data"]))
+            elif record.get("record_type") == "reprobe_result":
+                reprobe_results.append(ProbeResult.from_dict(record["data"]))
 
     # 1. WRITE FIDELITY (CHECKED FIRST!)
     wf, written_fact_ids = compute_write_fidelity(planted_facts=facts, dumped_memories=plant_memories)
@@ -65,9 +71,18 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, float]
     distractor_pairs = [(f, d) for f in facts for d in facts if d.distractor_of == f.id]
     fmr = compute_false_merge_rate(distractor_pairs=distractor_pairs, dumped_memories=final_memories or plant_memories)
 
-    # 4. UPDATE (Staleness Rate)
+    # 4. UPDATE (Staleness Rate) -- must use the post-correction reprobe_result
+    # records, never probe_result (which predates the correction turn).
     corrected_facts = [f for f in facts if f.update_data is not None]
-    sr = compute_staleness_rate(corrected_facts=corrected_facts, reprobe_results=probe_results)
+    if corrected_facts and not reprobe_results:
+        logger.warning(
+            "%s: %d corrected fact(s) but no reprobe_result records in run_log.jsonl -- "
+            "this log predates the re-probe phase fix and Staleness Rate cannot be "
+            "trusted. Re-run the experiment to get a real re-probe.",
+            seed_dir.name,
+            len(corrected_facts),
+        )
+    sr = compute_staleness_rate(corrected_facts=corrected_facts, reprobe_results=reprobe_results)
 
     scores = {
         "write_fidelity": wf,

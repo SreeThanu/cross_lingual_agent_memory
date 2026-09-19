@@ -12,7 +12,7 @@ from xlmem.adapters.base import MemoryAdapter
 from xlmem.benchmark.facts import Turn
 
 
-@pytest.fixture(params=["mock", "mem0"])
+@pytest.fixture(params=["mock", "mem0", "letta"])
 def adapter(request: pytest.FixtureRequest) -> MemoryAdapter:
     """Fixture providing instantiated adapters to be tested."""
     return get_adapter(request.param)
@@ -53,30 +53,99 @@ def test_write_and_dump_roundtrip(adapter: MemoryAdapter) -> None:
     dumped = adapter.dump(user_id)
     assert len(dumped) >= 2, "dump() must return all written records, not a subset or top-k"
 
-    texts = [m.text for m in dumped]
-    assert any("मूंगफली" in t or "peanuts" in t.lower() for t in texts)
-    assert any("Google" in t or "google" in t.lower() for t in texts)
-
+    fact_ids = {m.metadata.get("fact_id") for m in dumped}
+    assert "f_01" in fact_ids
+    assert "f_02" in fact_ids
 
 def test_dump_completeness_not_top_k(adapter: MemoryAdapter) -> None:
-    """Verify that dump() returns ALL memories even when count exceeds default top-k (5)."""
+    """Verify that dump() returns the full underlying store, not top-k."""
     user_id = "test_user_bulk"
-    adapter.reset(user_id)
 
-    for i in range(12):
-        turn = Turn(
-            session_id=1,
-            role="user",
-            lang="en",
-            text=f"Item number {i} is stored.",
-            kind="plant",
-            fact_id=f"f_{i}",
-        )
-        adapter.write(user_id, turn)
+    # The contract being tested here is dump(), not the framework's
+    # LLM-driven decision about how many memories to create from writes.
+    #
+    # MockAdapter already has a deterministic full-store implementation.
+    # For Mem0Adapter, replace only the underlying get_all call with a
+    # controlled raw store so this test isolates the adapter contract.
+    if adapter.name == "mem0":
+        class FakeMem0:
+            def get_all(self, user_id: str, limit: int):
+                assert user_id == "test_user_bulk"
+                assert limit > 5
+                return [
+                    {
+                        "id": f"raw_{i}",
+                        "memory": f"memory {i}",
+                        "metadata": {
+                            "fact_id": f"f_{i}",
+                            "kind": "plant",
+                            "lang": "en",
+                        },
+                    }
+                    for i in range(12)
+                ]
+
+        adapter._mem0_instance = FakeMem0()  # type: ignore[attr-defined]
+
+    elif adapter.name == "letta":
+        # Same isolation rationale as the Mem0 branch above: this contract test is
+        # about dump()'s pagination, not about Letta's own LLM-driven decision of
+        # where a written turn ends up (core vs. archival). Replace the underlying
+        # client with a controlled fake archival store of exactly 12 passages and no
+        # core memory content, so this test is deterministic and independent of the
+        # live LLM.
+        class FakePassage:
+            def __init__(self, id_: str, text_: str) -> None:
+                self.id = id_
+                self.text = text_
+
+        class FakeBlocksHolder:
+            blocks: list[object] = []
+
+        class FakePassagesClient:
+            def list(self, agent_id: str, limit: int | None = None, after: str | None = None, search: str | None = None):
+                assert agent_id == "fake_agent_letta_bulk"
+                all_passages = [FakePassage(f"raw_{i}", f"memory {i}") for i in range(12)]
+                if after is not None:
+                    idx = next((i for i, p in enumerate(all_passages) if p.id == after), len(all_passages) - 1)
+                    all_passages = all_passages[idx + 1 :]
+                if limit is not None:
+                    all_passages = all_passages[:limit]
+                return all_passages
+
+        class FakeCoreMemoryClient:
+            def retrieve(self, agent_id: str):
+                return FakeBlocksHolder()
+
+        class FakeAgentsClient:
+            passages = FakePassagesClient()
+            core_memory = FakeCoreMemoryClient()
+
+        class FakeLettaClient:
+            agents = FakeAgentsClient()
+
+        adapter._client = FakeLettaClient()  # type: ignore[attr-defined]
+        adapter._agent_ids[user_id] = "fake_agent_letta_bulk"  # type: ignore[attr-defined]
+
+    else:
+        adapter.reset(user_id)
+        for i in range(12):
+            turn = Turn(
+                session_id=1,
+                role="user",
+                lang="en",
+                text=f"memory {i}",
+                kind="plant",
+                fact_id=f"f_{i}",
+            )
+            result = adapter.write(user_id, turn)
+            assert result.success is True
 
     dumped = adapter.dump(user_id)
-    assert len(dumped) == 12, f"dump() returned {len(dumped)} entries instead of all 12"
 
+    assert len(dumped) == 12, (
+        f"dump() returned {len(dumped)} entries instead of all 12"
+    )
 
 def test_retrieve_roundtrip(adapter: MemoryAdapter) -> None:
     """Verify that stored memory can be retrieved via query."""
@@ -106,8 +175,8 @@ def test_reset_isolation(adapter: MemoryAdapter) -> None:
     adapter.reset(user_a)
     adapter.reset(user_b)
 
-    turn_a = Turn(session_id=1, role="user", lang="en", text="Alpha secret", kind="plant", fact_id="f_a")
-    turn_b = Turn(session_id=1, role="user", lang="en", text="Beta secret", kind="plant", fact_id="f_b")
+    turn_a = Turn(session_id=1, role="user", lang="en", text="Alpha favorite color is blue.", kind="plant", fact_id="f_a")
+    turn_b = Turn(session_id=1, role="user", lang="en", text="Beta favorite color is green.", kind="plant", fact_id="f_b")
 
     adapter.write(user_a, turn_a)
     adapter.write(user_b, turn_b)

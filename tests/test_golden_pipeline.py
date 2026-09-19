@@ -5,6 +5,7 @@ Produces known, deterministic metric values without GPU or network access.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 import pytest
 from xlmem.adapters.mock_adapter import MockAdapter
@@ -145,3 +146,63 @@ def test_golden_mini_benchmark_end_to_end(tmp_path: Path) -> None:
     assert "recall_at_1_strict" in scores
     assert "duplication_rate" in scores
     assert "false_merge_rate" in scores
+
+
+def test_reprobe_runs_after_correction(tmp_path: Path) -> None:
+    """RE-PROBE (Session K+2) must read the POST-correction store.
+
+    Regression test for the bug where the runner fed the Session-K probe_result
+    (taken BEFORE the correction turn was ever issued) into Staleness Rate as if
+    it were a re-probe -- which trivially scores every correction as stale,
+    regardless of whether the framework actually applied it. g_01 is the only
+    GOLDEN_FACTS entry with update_data (peanuts -> cashews), so this asserts
+    directly on what each phase's retrieval actually saw in the store.
+    """
+    out_dir = tmp_path / "reprobe_run"
+    cfg = ExperimentConfig(
+        experiment="reprobe_test",
+        framework="mock",
+        model=ModelConfig(name="qwen2.5:7b-instruct", backend="ollama"),
+        languages=LanguageConfig(store="en", probe="en"),
+        benchmark=BenchmarkConfig(fact_bank="dummy", n_facts=10, filler_sessions=1),
+        seeds=[11],
+        output_dir=str(out_dir),
+    )
+    llm_client = LLMClient(mock_mode=True)
+    runner = ExperimentRunner(config=cfg, llm_client=llm_client)
+    seed_dir = runner.run_single_seed(facts=GOLDEN_FACTS, seed=11)
+
+    probe_records = []
+    reprobe_records = []
+    with open(seed_dir / "run_log.jsonl", encoding="utf-8") as f:
+        for line in f:
+            rec = json.loads(line)
+            if rec["record_type"] == "probe_result":
+                probe_records.append(rec["data"])
+            elif rec["record_type"] == "reprobe_result":
+                reprobe_records.append(rec["data"])
+
+    # Exactly one fact (g_01) has update_data -> exactly one re-probe, and it
+    # must be logged as its own record type, not folded into probe_result.
+    assert len(reprobe_records) == 1
+    assert reprobe_records[0]["fact_id"] == "g_01"
+
+    # Pre-correction probe for g_01 must NOT have seen the corrected value --
+    # the correction had not happened yet when this probe ran.
+    pre_correction = next(r for r in probe_records if r["fact_id"] == "g_01")
+    pre_text = " ".join(m["text"] for m in pre_correction["retrieved"]).lower()
+    assert "cashews" not in pre_text
+
+    # The re-probe, running strictly after the correction turn, must see it.
+    post_text = " ".join(m["text"] for m in reprobe_records[0]["retrieved"]).lower()
+    assert "cashews" in post_text
+
+    # Scoring must read reprobe_result (not probe_result) for staleness, and
+    # must not error now that a real post-correction reprobe is available.
+    # NOTE: this does not assert a specific staleness_rate value -- in mock_mode
+    # the LLM response is a fixed truncated echo of the prompt, not a real
+    # answer, so compute_staleness_rate's own judgment of that text is out of
+    # scope here (it has its own unit tests). What this test verifies is that
+    # the re-probe phase runs after correction and its results reach the scorer.
+    scores = score_single_seed_dir(seed_dir, facts=GOLDEN_FACTS)
+    assert 0.0 <= scores["staleness_rate"] <= 1.0
