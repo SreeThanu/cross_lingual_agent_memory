@@ -78,6 +78,21 @@ class ExperimentRunner:
         probe_turns = [t for t in turns if t.kind == "probe"]
         correction_turns = [t for t in turns if t.kind == "correction"]
 
+        # build_session_script emits two batches of kind == "probe" turns: the
+        # Session-K probe (before any correction) and the Session-K+2 re-probe
+        # (after correction, over the update-specific probe question). Both share
+        # kind == "probe", so they must be split by session_id relative to the
+        # correction session -- not treated as one undifferentiated batch -- or the
+        # re-probe turns get answered before the correction they are meant to test
+        # ever happens, which is the bug this split fixes.
+        correction_session_id = correction_turns[0].session_id if correction_turns else None
+        if correction_session_id is not None:
+            pre_correction_probe_turns = [t for t in probe_turns if t.session_id < correction_session_id]
+            reprobe_turns = [t for t in probe_turns if t.session_id > correction_session_id]
+        else:
+            pre_correction_probe_turns = probe_turns
+            reprobe_turns = []
+
         # 2. Phase 1: Plant
         logger.info("Seed %d: Ingesting %d plant turns", seed, len(plant_turns))
         plant_records = session_runner.run_session(plant_turns)
@@ -92,12 +107,12 @@ class ExperimentRunner:
         filler_records = session_runner.run_session(filler_turns)
         session_runner.consolidate()
 
-        # 4. Phase 3: Probing
-        logger.info("Seed %d: Probing memory (%d queries)", seed, len(probe_turns))
+        # 4. Phase 3: Probing (pre-correction only; see reprobe_turns split above)
+        logger.info("Seed %d: Probing memory (%d queries)", seed, len(pre_correction_probe_turns))
         probe_results: list[ProbeResult] = []
         facts_by_id = {f.id: f for f in facts}
 
-        for p_turn in probe_turns:
+        for p_turn in pre_correction_probe_turns:
             fact = facts_by_id.get(p_turn.fact_id or "")
             if not fact:
                 continue
@@ -116,12 +131,32 @@ class ExperimentRunner:
         correction_records = session_runner.run_session(correction_turns)
         session_runner.consolidate()
 
-        # 6. Final Snapshot
+        # 6. Phase 5: Re-Probe (Session K+2 -- must run strictly after corrections,
+        # so Staleness Rate scores the actual post-correction store, not a probe
+        # taken before the correction was ever issued).
+        logger.info("Seed %d: Re-probing corrected facts (%d queries)", seed, len(reprobe_turns))
+        reprobe_results: list[ProbeResult] = []
+        for p_turn in reprobe_turns:
+            fact = facts_by_id.get(p_turn.fact_id or "")
+            if not fact:
+                continue
+            res = execute_probe(
+                adapter=adapter,
+                llm_client=self.llm_client,
+                user_id=user_id,
+                fact=fact,
+                store_lang=self.config.languages.store,
+                probe_lang=self.config.languages.probe,
+                query_text=p_turn.text,
+            )
+            reprobe_results.append(res)
+
+        # 7. Final Snapshot (Snapshot B, taken after re-probe per BENCHMARK_SPEC.md Session K+2)
         store_final = session_runner.snapshot()
         with open(seed_dir / "store_final.json", "w", encoding="utf-8") as f:
             json.dump([m.to_dict() for m in store_final], f, ensure_ascii=False, indent=2)
 
-        # 7. Write immutable JSONL run log
+        # 8. Write immutable JSONL run log
         run_log_path = seed_dir / "run_log.jsonl"
         with open(run_log_path, "w", encoding="utf-8") as f:
             meta = {
@@ -149,6 +184,15 @@ class ExperimentRunner:
                 f.write(
                     json.dumps(
                         {"record_type": "probe_result", "data": pr.to_dict()},
+                        ensure_ascii=False,
+                    )
+                    + "\n"
+                )
+
+            for rpr in reprobe_results:
+                f.write(
+                    json.dumps(
+                        {"record_type": "reprobe_result", "data": rpr.to_dict()},
                         ensure_ascii=False,
                     )
                     + "\n"

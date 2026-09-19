@@ -20,15 +20,26 @@ def execute_probe(
     probe_lang: str,
     k: int = 5,
     system_prompt: str | None = None,
+    query_text: str | None = None,
 ) -> ProbeResult:
     """Issue a single memory retrieval probe and generate a raw model response.
 
     The runner NEVER judges hit/miss. It retrieves memory context and records
     the raw generated output. Scoring happens offline in xlmem/scoring/.
+
+    Args:
+        query_text: Pre-computed probe question to use verbatim, overriding the
+            fact.probe_questions[probe_lang] lookup below. Used for the re-probe
+            phase (Session K+2), where the session generator has already resolved
+            the fact's UPDATE-specific probe question (falling back to the base
+            question when the update has none) -- that text must be used as-is
+            rather than re-derived here, or a re-probe would silently ask the
+            original pre-correction question instead of "...now?"/"...currently?".
     """
     # 1. Retrieve top-k memories
-    q_text = ""
-    if fact.probe_questions and probe_lang in fact.probe_questions:
+    if query_text is not None:
+        q_text = query_text
+    elif fact.probe_questions and probe_lang in fact.probe_questions:
         q_text = fact.probe_questions[probe_lang]
     else:
         if probe_lang == "hi":

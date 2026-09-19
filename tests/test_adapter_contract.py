@@ -12,7 +12,7 @@ from xlmem.adapters.base import MemoryAdapter
 from xlmem.benchmark.facts import Turn
 
 
-@pytest.fixture(params=["mock", "mem0"])
+@pytest.fixture(params=["mock", "mem0", "letta"])
 def adapter(request: pytest.FixtureRequest) -> MemoryAdapter:
     """Fixture providing instantiated adapters to be tested."""
     return get_adapter(request.param)
@@ -86,6 +86,46 @@ def test_dump_completeness_not_top_k(adapter: MemoryAdapter) -> None:
                 ]
 
         adapter._mem0_instance = FakeMem0()  # type: ignore[attr-defined]
+
+    elif adapter.name == "letta":
+        # Same isolation rationale as the Mem0 branch above: this contract test is
+        # about dump()'s pagination, not about Letta's own LLM-driven decision of
+        # where a written turn ends up (core vs. archival). Replace the underlying
+        # client with a controlled fake archival store of exactly 12 passages and no
+        # core memory content, so this test is deterministic and independent of the
+        # live LLM.
+        class FakePassage:
+            def __init__(self, id_: str, text_: str) -> None:
+                self.id = id_
+                self.text = text_
+
+        class FakeBlocksHolder:
+            blocks: list[object] = []
+
+        class FakePassagesClient:
+            def list(self, agent_id: str, limit: int | None = None, after: str | None = None, search: str | None = None):
+                assert agent_id == "fake_agent_letta_bulk"
+                all_passages = [FakePassage(f"raw_{i}", f"memory {i}") for i in range(12)]
+                if after is not None:
+                    idx = next((i for i, p in enumerate(all_passages) if p.id == after), len(all_passages) - 1)
+                    all_passages = all_passages[idx + 1 :]
+                if limit is not None:
+                    all_passages = all_passages[:limit]
+                return all_passages
+
+        class FakeCoreMemoryClient:
+            def retrieve(self, agent_id: str):
+                return FakeBlocksHolder()
+
+        class FakeAgentsClient:
+            passages = FakePassagesClient()
+            core_memory = FakeCoreMemoryClient()
+
+        class FakeLettaClient:
+            agents = FakeAgentsClient()
+
+        adapter._client = FakeLettaClient()  # type: ignore[attr-defined]
+        adapter._agent_ids[user_id] = "fake_agent_letta_bulk"  # type: ignore[attr-defined]
 
     else:
         adapter.reset(user_id)
