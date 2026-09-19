@@ -58,39 +58,54 @@ def test_write_and_dump_roundtrip(adapter: MemoryAdapter) -> None:
     assert "f_02" in fact_ids
 
 def test_dump_completeness_not_top_k(adapter: MemoryAdapter) -> None:
-    """Verify that dump() returns ALL memories even when count exceeds default top-k (5)."""
+    """Verify that dump() returns the full underlying store, not top-k."""
     user_id = "test_user_bulk"
-    adapter.reset(user_id)
 
-    facts = [
-        "My favorite color is navy blue.",
-        "I work at Google in Bangalore.",
-        "I have a dog named Bruno.",
-        "I studied computer science at university.",
-        "My birthday is on June 14.",
-        "I prefer tea over coffee.",
-        "I live in Chennai.",
-        "My favorite programming language is Python.",
-        "I enjoy playing badminton on weekends.",
-        "My favorite sport is cricket.",
-        "I usually exercise in the morning.",
-        "My favorite food is biryani.",
-    ]
+    # The contract being tested here is dump(), not the framework's
+    # LLM-driven decision about how many memories to create from writes.
+    #
+    # MockAdapter already has a deterministic full-store implementation.
+    # For Mem0Adapter, replace only the underlying get_all call with a
+    # controlled raw store so this test isolates the adapter contract.
+    if adapter.name == "mem0":
+        class FakeMem0:
+            def get_all(self, user_id: str, limit: int):
+                assert user_id == "test_user_bulk"
+                assert limit > 5
+                return [
+                    {
+                        "id": f"raw_{i}",
+                        "memory": f"memory {i}",
+                        "metadata": {
+                            "fact_id": f"f_{i}",
+                            "kind": "plant",
+                            "lang": "en",
+                        },
+                    }
+                    for i in range(12)
+                ]
 
-    for i, fact in enumerate(facts):
-        turn = Turn(
-            session_id=1,
-            role="user",
-            lang="en",
-            text=fact,
-            kind="plant",
-            fact_id=f"f_{i}",
-        )
-        adapter.write(user_id, turn)
+        adapter._mem0_instance = FakeMem0()  # type: ignore[attr-defined]
+
+    else:
+        adapter.reset(user_id)
+        for i in range(12):
+            turn = Turn(
+                session_id=1,
+                role="user",
+                lang="en",
+                text=f"memory {i}",
+                kind="plant",
+                fact_id=f"f_{i}",
+            )
+            result = adapter.write(user_id, turn)
+            assert result.success is True
 
     dumped = adapter.dump(user_id)
-    assert len(dumped) == 12, f"dump() returned {len(dumped)} entries instead of all 12"
 
+    assert len(dumped) == 12, (
+        f"dump() returned {len(dumped)} entries instead of all 12"
+    )
 
 def test_retrieve_roundtrip(adapter: MemoryAdapter) -> None:
     """Verify that stored memory can be retrieved via query."""

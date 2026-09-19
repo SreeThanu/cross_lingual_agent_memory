@@ -46,3 +46,9 @@ Duplication Rate (DR) and False Merge Rate (FMR) require inspecting the entire m
 ### 2.3 Singular/Plural & Entity-Shift Matching in Metrics
 - **Observation:** Strict matching on canonical values (e.g. `peanuts`) failed on valid morphological variants (e.g. `"User has peanut allergy"`). In addition, for entity-shift distractors sharing the same value (e.g. `(user, allergic_to, peanuts)` vs `(user_sister, allergic_to, peanuts)`), naive value matching falsely flagged non-merged memories as merged.
 - **Handling:** `normalize_text` and `strict_match` in [`xlmem/scoring/judge.py`](xlmem/scoring/judge.py) were enhanced to handle noun number variations and underscore-to-space normalization. In [`xlmem/scoring/duplication.py`](xlmem/scoring/duplication.py), `compute_false_merge_rate` handles value-shift and entity-shift pairs separately.
+
+### 2.4 Mem0 Update Staleness Observed in Phase 0
+- **Observation:** In the Phase 0 Mem0 pilot, fact `f_001` was corrected from a serious moong-dal allergy to a cashew allergy. The adapter reported `update_success: true`, but the subsequent English reprobe still retrieved the superseded memory `"Has a serious allergy to moong dal"` and the model responded `"You are allergic to moong dal."`
+- **Metric Impact:** The resulting Staleness Rate (SR) was `1.00` for the single corrected fact, consistent with the metric definition: the post-correction response returned the obsolete value.
+- **Interpretation:** This is recorded as an observed UPDATE failure in the Phase 0 pilot, not as a scoring or harness failure. The result is limited to this single-seed, 20-fact Hindi→English pilot and should not be generalized to Mem0 without further experiments.
+- **Follow-up:** Investigate Mem0's native update/reconciliation behavior and quantify update staleness across the full multi-seed benchmark. Do not alter the scorer to suppress this observation.
