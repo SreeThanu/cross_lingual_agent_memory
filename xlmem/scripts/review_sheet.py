@@ -36,10 +36,19 @@ VERDICT = ["Verdict (OK / Fix)", "Suggested fix", "Comment"]
 # Items the author was unsure about. Everything else still needs a check.
 NOTES: dict[tuple[str, str], str] = {
     ("payment_method", "statement"): "Natural? Alternative: 'पेमेंट करने का मेरा पसंदीदा तरीका'.",
-    ("commute_mode", "statement"): "Hinglish 'commute ka mode' may sound stiff.",
-    ("dream_country", "statement"): "Is 'मेरा सपनों का देश' natural for 'my dream country'?",
+    ("commute_mode", "statement"): "Hinglish 'commute ka mode' may sound stiff. Batch 2 values: "
+     "Hinglish uses 'auto' and 'cycle' (shortened).",
+    ("dream_country", "statement"): "Is 'मेरा सपनों का देश' natural for 'my dream country'? "
+     "Batch 2 value: Egypt is मिस्र in Hindi but 'Egypt' in Hinglish.",
     ("shift_start", "statement"): "Time format: 'सुबह 9 बजे' vs '9 बजे सुबह'.",
     ("alma_mater", "statement"): "Past tense (था/tha) used throughout this relation.",
+    # Batch 2
+    ("favorite_cuisine", "statement"): "खाना means 'food': natural for 'cuisine'? Hinglish "
+     "'cuisine' taken as f.",
+    ("department", "statement"): "Loanword डिपार्टमेंट used; would विभाग be more natural?",
+    ("main_investment", "probe"): "Is 'किसमें है?' natural for 'what is ... invested in?'",
+    ("favorite_instrument", "statement"): "वाद्ययंत्र vs साज़: which is more natural?",
+    ("home_city", "statement"): "New values: is मैसूर (vs मैसूरु) the right Hindi form?",
 }
 
 EXISTING_DATA_ISSUES = [
@@ -70,6 +79,8 @@ INSTRUCTIONS = [
     "write; the Hinglish form is what they would type in Latin script.",
     "People: the possessive forms for each person. Hindi and Hinglish agree with the "
     "gender of the following noun (masculine / feminine / plural-honorific-oblique).",
+    "Hand-written facts: facts written before the templates (data/facts_v1.yaml, the "
+    "health batch). Check each sentence directly.",
     "Existing data: problems found in the facts written before the templates.",
     "",
     "In each row, set Verdict to OK or Fix. For Fix, write the corrected text in "
@@ -204,6 +215,29 @@ def _example(facts: list[dict[str, Any]], relation: str, pattern: str) -> str:
     return "\n".join([f["id"], *lines])
 
 
+# Facts not generated from templates; reviewers check their sentences one by one.
+HAND_WRITTEN = ("data/facts_v1.yaml", "data/candidates/health_batch_01.yaml")
+
+
+def _hand_written_rows(root: Path) -> list[list[str]]:
+    rows = [["ID", "File", "Fact", "Sentence", "English", "Hindi", "Hinglish", *VERDICT]]
+    for rel in HAND_WRITTEN:
+        with open(root / rel, encoding="utf-8") as f:
+            facts = (yaml.safe_load(f) or {}).get("facts", [])
+        for fact in facts:
+            update = fact.get("update") or {}
+            blocks = [("Statement", fact.get("surface") or {}),
+                      ("Question", fact.get("probe_questions") or {}),
+                      ("Correction", update.get("surface") or {}),
+                      ("Question after correction", update.get("probe_questions") or {})]
+            for label, block in blocks:
+                if block:
+                    rows.append([f"H{len(rows):03d}", Path(rel).name, str(fact["id"]), label,
+                                 block.get("en", ""), block.get("hi", ""),
+                                 block.get("hi-en", "(not used)")])
+    return rows
+
+
 def build_sheets(templates_dir: Path, entities_path: Path) -> list[Sheet]:
     """Rows for each review tab, built from the domain templates and entity lexicon."""
     with open(entities_path, encoding="utf-8") as f:
@@ -265,6 +299,8 @@ def build_sheets(templates_dir: Path, entities_path: Path) -> list[Sheet]:
         ("Patterns", patterns, [7, 9, 20, 18, 9, 9, 34, 34, 34, 44, 30, 11, 30, 30], 12),
         ("Values", values, [7, 9, 20, 20, 22, 22, 22, 22, 11, 30, 30], 9),
         ("People", people, [7, 14, 26, 40, 40, 11, 30, 30], 6),
+        ("Hand-written facts", _hand_written_rows(templates_dir.parent.parent),
+         [7, 18, 11, 18, 40, 40, 40, 11, 30, 30], 8),
         ("Existing data", existing, [7, 20, 26, 70, 11, 30, 30], 5),
     ]
 

@@ -20,6 +20,8 @@ def test_workbook_covers_every_relation_value_and_person(tmp_path: Path) -> None
     assert len(patterns) - 1 == 4 * len(relations)  # statement, probe, correction, re-probe
     assert len(people) - 1 == 13
     assert all(row[-1] for row in values[1:])  # every value says which facts use it
+    hand = sheets["Hand-written facts"]
+    assert {row[2] for row in hand[1:]} >= {"f_001", "f_017", "f_101"}  # facts_v1 + health
     first_person = people[1]
     assert first_person[3] == "मेरा / मेरी / मेरे"
 
@@ -30,7 +32,8 @@ def test_written_xlsx_is_well_formed_with_verdict_dropdown(tmp_path: Path) -> No
     with zipfile.ZipFile(out) as z:
         workbook = z.read("xl/workbook.xml").decode()
         assert re.findall(r'<sheet name="([^"]+)"', workbook) == [
-            "How to review", "Patterns", "Values", "People", "Existing data"
+            "How to review", "Patterns", "Values", "People", "Hand-written facts",
+            "Existing data",
         ]
         patterns = z.read("xl/worksheets/sheet2.xml").decode()
         assert '<formula1>"OK,Fix"</formula1>' in patterns
