@@ -37,6 +37,12 @@ Duplication Rate (DR) and False Merge Rate (FMR) require inspecting the entire m
     - Letta, en then hi: the Hindi write was reported FAILED, yet "I have a peanut allergy." was stored.
     - A-MEM stored everything verbatim.
     So the write success flag is unreliable in both directions. WF must keep reading `dump()`.
+  - **Smoke run (2026-10-18), `runs/smoke_letta_hi2en_20261018-160029`, 28 s, hi→en, 5 facts, seed 11.** Completes end to end. Everything went into one core `human` block:
+    - 3 Hindi facts translated correctly to English (Pune, Infosys, biryani).
+    - The peanut fact was stored in Chinese as mung beans; its write was flagged FAILED although stored. The probe answer: "You are allergic to绿豆 (mung beans)."
+    - The pet-dog fact was lost; its write was flagged FAILED and nothing was stored.
+    - Scored with the smoke facts: WF 0.6 (correct: 3 right, 1 corrupted, 1 lost), R@1 1.0, SR 0.0 (no corrections in the smoke set, so not measured).
+    - **Recall is not meaningful for Letta core memory:** `retrieve()` returns the whole core block (1 record) for every query, so every written core fact counts as retrieved. See ARCHITECTURE §16.
   - **Hindi stored as Chinese, with the wrong value.** Every successful Hindi write of "मुझे मूंगफली से एलर्जी है।" (peanut allergy) was stored as "用户对绿豆过敏。" (Chinese: "the user is allergic to *mung beans*"), 3/3 identical. That is a third language, and the same peanut→mung-bean error Mem0 made in the Sep pilot ("moong dal"). Two frameworks making the same error points to the **backbone** (Qwen2.5-7B) mistranslating मूंगफली, so the Llama backbone runs should test it.
 
 ### 1.3 A-MEM (Active Memory - Xu et al., 2025)
