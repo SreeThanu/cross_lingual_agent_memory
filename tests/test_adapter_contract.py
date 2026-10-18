@@ -39,8 +39,8 @@ def test_supports_dump_is_true(adapter: MemoryAdapter) -> None:
 
 
 def test_write_and_dump_roundtrip(live_adapter: MemoryAdapter) -> None:
-    adapter = live_adapter
     """Verify that turns written are returned by dump()."""
+    adapter = live_adapter
     user_id = "test_user_dump"
     adapter.reset(user_id)
 
@@ -164,8 +164,8 @@ def test_dump_completeness_not_top_k(adapter: MemoryAdapter) -> None:
     )
 
 def test_retrieve_roundtrip(live_adapter: MemoryAdapter) -> None:
-    adapter = live_adapter
     """Verify that stored memory can be retrieved via query."""
+    adapter = live_adapter
     user_id = "test_user_retrieve"
     adapter.reset(user_id)
 
@@ -185,8 +185,8 @@ def test_retrieve_roundtrip(live_adapter: MemoryAdapter) -> None:
 
 
 def test_reset_isolation(live_adapter: MemoryAdapter) -> None:
-    adapter = live_adapter
     """Verify reset() wipes target user memory without affecting another user."""
+    adapter = live_adapter
     user_a = "user_alpha"
     user_b = "user_beta"
 
@@ -209,8 +209,8 @@ def test_reset_isolation(live_adapter: MemoryAdapter) -> None:
 
 
 def test_update_operation(live_adapter: MemoryAdapter) -> None:
-    adapter = live_adapter
     """Verify update ingestion via MemoryAdapter."""
+    adapter = live_adapter
     user_id = "test_user_update"
     adapter.reset(user_id)
 
