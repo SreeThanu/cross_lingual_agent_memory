@@ -45,6 +45,16 @@ class ExperimentRunner:
         if len(facts) > self.config.benchmark.n_facts:
             facts = facts[: self.config.benchmark.n_facts]
 
+        # Refuse before any GPU work starts: a collision on the last seed must not
+        # surface only after the earlier seeds have already run.
+        existing = [self._seed_dir(s) for s in self.config.seeds if self._seed_dir(s).exists()]
+        if existing:
+            raise FileExistsError(
+                "Refusing to overwrite existing run dir(s): "
+                + ", ".join(str(p) for p in existing)
+                + ". Run logs are immutable; use a new experiment name / output_dir."
+            )
+
         run_dirs: list[Path] = []
         for seed in self.config.seeds:
             logger.info("Starting experiment %s with seed %d", self.config.experiment, seed)
@@ -53,10 +63,23 @@ class ExperimentRunner:
 
         return run_dirs
 
+    def _seed_dir(self, seed: int) -> Path:
+        return self.output_base / f"seed_{seed}"
+
     def run_single_seed(self, facts: list[Fact], seed: int) -> Path:
-        """Execute experiment for a single seed and write immutable run artifacts."""
-        seed_dir = self.output_base / f"seed_{seed}"
-        seed_dir.mkdir(parents=True, exist_ok=True)
+        """Execute experiment for a single seed and write immutable run artifacts.
+
+        Raises FileExistsError if the seed dir already exists: one run = one dir,
+        and logs are never rewritten (AGENTS.md Hard Rule 4).
+        """
+        seed_dir = self._seed_dir(seed)
+        try:
+            seed_dir.mkdir(parents=True, exist_ok=False)
+        except FileExistsError as e:
+            raise FileExistsError(
+                f"Refusing to overwrite existing run dir {seed_dir}. Run logs are "
+                "immutable; use a new experiment name / output_dir."
+            ) from e
 
         user_id = f"user_{self.config.experiment}_{seed}"
         adapter: MemoryAdapter = get_adapter(self.config.framework)
@@ -99,7 +122,7 @@ class ExperimentRunner:
         session_runner.consolidate()
         store_after_plant = session_runner.snapshot()
 
-        with open(seed_dir / "store_after_plant.json", "w", encoding="utf-8") as f:
+        with open(seed_dir / "store_after_plant.json", "x", encoding="utf-8") as f:
             json.dump([m.to_dict() for m in store_after_plant], f, ensure_ascii=False, indent=2)
 
         # 3. Phase 2: Filler / Distractors
@@ -153,12 +176,12 @@ class ExperimentRunner:
 
         # 7. Final Snapshot (Snapshot B, taken after re-probe per BENCHMARK_SPEC.md Session K+2)
         store_final = session_runner.snapshot()
-        with open(seed_dir / "store_final.json", "w", encoding="utf-8") as f:
+        with open(seed_dir / "store_final.json", "x", encoding="utf-8") as f:
             json.dump([m.to_dict() for m in store_final], f, ensure_ascii=False, indent=2)
 
         # 8. Write immutable JSONL run log
         run_log_path = seed_dir / "run_log.jsonl"
-        with open(run_log_path, "w", encoding="utf-8") as f:
+        with open(run_log_path, "x", encoding="utf-8") as f:
             meta = {
                 "record_type": "metadata",
                 "timestamp": time.time(),
