@@ -1,0 +1,196 @@
+# Domain template: Food & Dining (BENCHMARK_SPEC.md Section 3, item 2).
+#
+# Rendered by `python -m xlmem.scripts.render_facts` into data/candidates/. Rendering
+# is deterministic string substitution: no model calls.
+#
+# Placeholders: {poss} / {Poss} = entity possessive (lower / sentence-initial),
+# agreeing with the relation's head-noun gender per language; {v} = value;
+# {old} / {new} = superseded / corrected value.
+#
+# `gender` is per language because borrowed English nouns can take a different
+# gender in Hinglish than the Hindi noun does (पकवान is m, "dish" is f).
+#
+# English value forms are Indian English where that is what speakers use
+# (brinjal, not eggplant).
+#
+# NEEDS BILINGUAL REVIEW (BENCHMARK_SPEC.md Section 7.4): each relation's
+# templates and the value lexicon.
+domain: dining
+
+relations:
+  favorite_dish:
+    gender: {hi: m, hi-en: f}
+    statement:
+      en: "{Poss} favorite dish is {v}."
+      hi: "{poss} पसंदीदा पकवान {v} है।"
+      hi-en: "{Poss} favorite dish {v} hai."
+    probe:
+      en: "What is {poss} favorite dish?"
+      hi: "{poss} पसंदीदा पकवान कौन सा है?"
+      hi-en: "{Poss} favorite dish kaun si hai?"
+    correction:
+      en: "A correction: {poss} favorite dish is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा पकवान {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite dish {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} favorite dish now?"
+      hi: "अब {poss} पसंदीदा पकवान कौन सा है?"
+    values:
+      paneer_tikka: {en: "paneer tikka", hi: "पनीर टिक्का", hi-en: "paneer tikka"}
+      rajma_chawal: {en: "rajma chawal", hi: "राजमा चावल", hi-en: "rajma chawal"}
+      chole_bhature: {en: "chole bhature", hi: "छोले भटूरे", hi-en: "chole bhature"}
+      masala_dosa: {en: "masala dosa", hi: "मसाला डोसा", hi-en: "masala dosa"}
+      pav_bhaji: {en: "pav bhaji", hi: "पाव भाजी", hi-en: "pav bhaji"}
+
+  favorite_sweet:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} favorite sweet is {v}."
+      hi: "{poss} पसंदीदा मिठाई {v} है।"
+      hi-en: "{Poss} favorite sweet {v} hai."
+    probe:
+      en: "What is {poss} favorite sweet?"
+      hi: "{poss} पसंदीदा मिठाई कौन सी है?"
+      hi-en: "{Poss} favorite sweet kaun si hai?"
+    correction:
+      en: "A correction: {poss} favorite sweet is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा मिठाई {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite sweet {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} favorite sweet now?"
+      hi: "अब {poss} पसंदीदा मिठाई कौन सी है?"
+    values:
+      jalebi: {en: "jalebi", hi: "जलेबी", hi-en: "jalebi"}
+      rasmalai: {en: "rasmalai", hi: "रसमलाई", hi-en: "rasmalai"}
+      gulab_jamun: {en: "gulab jamun", hi: "गुलाब जामुन", hi-en: "gulab jamun"}
+      kaju_katli: {en: "kaju katli", hi: "काजू कतली", hi-en: "kaju katli"}
+      rasgulla: {en: "rasgulla", hi: "रसगुल्ला", hi-en: "rasgulla"}
+
+  disliked_vegetable:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} least favorite vegetable is {v}."
+      hi: "{poss} सबसे नापसंद सब्ज़ी {v} है।"
+      hi-en: "{Poss} sabse naapasand vegetable {v} hai."
+    probe:
+      en: "What is {poss} least favorite vegetable?"
+      hi: "{poss} सबसे नापसंद सब्ज़ी कौन सी है?"
+      hi-en: "{Poss} sabse naapasand vegetable kaun si hai?"
+    correction:
+      en: "A correction: {poss} least favorite vegetable is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} सबसे नापसंद सब्ज़ी {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} sabse naapasand vegetable {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} least favorite vegetable now?"
+      hi: "अब {poss} सबसे नापसंद सब्ज़ी कौन सी है?"
+    values:
+      bitter_gourd: {en: "bitter gourd", hi: "करेला", hi-en: "karela"}
+      okra: {en: "okra", hi: "भिंडी", hi-en: "bhindi"}
+      bottle_gourd: {en: "bottle gourd", hi: "लौकी", hi-en: "lauki"}
+      brinjal: {en: "brinjal", hi: "बैंगन", hi-en: "baingan"}
+
+  favorite_fruit:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} favorite fruit is {v}."
+      hi: "{poss} पसंदीदा फल {v} है।"
+      hi-en: "{Poss} favorite fruit {v} hai."
+    probe:
+      en: "What is {poss} favorite fruit?"
+      hi: "{poss} पसंदीदा फल कौन सा है?"
+      hi-en: "{Poss} favorite fruit kaun sa hai?"
+    correction:
+      en: "A correction: {poss} favorite fruit is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा फल {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite fruit {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} favorite fruit now?"
+      hi: "अब {poss} पसंदीदा फल कौन सा है?"
+    values:
+      mango: {en: "mango", hi: "आम", hi-en: "mango"}
+      lychee: {en: "lychee", hi: "लीची", hi-en: "lychee"}
+      guava: {en: "guava", hi: "अमरूद", hi-en: "guava"}
+      papaya: {en: "papaya", hi: "पपीता", hi-en: "papaya"}
+      pomegranate: {en: "pomegranate", hi: "अनार", hi-en: "pomegranate"}
+
+  favorite_evening_snack:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} favorite evening snack is {v}."
+      hi: "{poss} शाम का पसंदीदा नाश्ता {v} है।"
+      hi-en: "{Poss} favorite evening snack {v} hai."
+    probe:
+      en: "What is {poss} favorite evening snack?"
+      hi: "{poss} शाम का पसंदीदा नाश्ता क्या है?"
+      hi-en: "{Poss} favorite evening snack kya hai?"
+    correction:
+      en: "A correction: {poss} favorite evening snack is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} शाम का पसंदीदा नाश्ता {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite evening snack {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} favorite evening snack now?"
+      hi: "अब {poss} शाम का पसंदीदा नाश्ता क्या है?"
+    values:
+      samosa: {en: "samosa", hi: "समोसा", hi-en: "samosa"}
+      poha: {en: "poha", hi: "पोहा", hi-en: "poha"}
+      dhokla: {en: "dhokla", hi: "ढोकला", hi-en: "dhokla"}
+      bhelpuri: {en: "bhelpuri", hi: "भेलपुरी", hi-en: "bhelpuri"}
+
+  favorite_restaurant:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} favorite restaurant is {v}."
+      hi: "{poss} पसंदीदा रेस्टोरेंट {v} है।"
+      hi-en: "{Poss} favorite restaurant {v} hai."
+    probe:
+      en: "Which is {poss} favorite restaurant?"
+      hi: "{poss} पसंदीदा रेस्टोरेंट कौन सा है?"
+      hi-en: "{Poss} favorite restaurant kaun sa hai?"
+    correction:
+      en: "A correction: {poss} favorite restaurant is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा रेस्टोरेंट {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite restaurant {old} nahi, {new} hai."
+    reprobe:
+      en: "Which is {poss} favorite restaurant now?"
+      hi: "अब {poss} पसंदीदा रेस्टोरेंट कौन सा है?"
+    values:
+      saravana_bhavan: {en: "Saravana Bhavan", hi: "सरवणा भवन", hi-en: "Saravana Bhavan"}
+      sagar_ratna: {en: "Sagar Ratna", hi: "सागर रत्ना", hi-en: "Sagar Ratna"}
+      moti_mahal: {en: "Moti Mahal", hi: "मोती महल", hi-en: "Moti Mahal"}
+      bikanervala: {en: "Bikanervala", hi: "बीकानेरवाला", hi-en: "Bikanervala"}
+
+# The fact plan. Every (entity, relation) pair is unique. A distractor is an
+# entity-shift of its base fact (same relation + value, an entity with no base
+# fact for that relation). Value-shift distractors are not used here: every
+# relation is single-valued, so a second value for the same entity would be a
+# contradiction, not a near miss.
+facts:
+  - {id: f_201, relation: favorite_dish, entity: user, value: paneer_tikka, update: rajma_chawal}
+  - {id: f_201_dist, distractor_of: f_201, entity: user_brother}
+  - {id: f_202, relation: favorite_dish, entity: user_mother, value: masala_dosa}
+  - {id: f_203, relation: favorite_dish, entity: user_son, value: pav_bhaji, update: chole_bhature}
+
+  - {id: f_204, relation: favorite_sweet, entity: user, value: jalebi, update: rasmalai}
+  - {id: f_204_dist, distractor_of: f_204, entity: user_sister}
+  - {id: f_205, relation: favorite_sweet, entity: user_father, value: gulab_jamun}
+  - {id: f_206, relation: favorite_sweet, entity: user_daughter, value: kaju_katli, update: rasgulla}
+
+  - {id: f_207, relation: disliked_vegetable, entity: user, value: bitter_gourd, update: okra}
+  - {id: f_207_dist, distractor_of: f_207, entity: user_son}
+  - {id: f_208, relation: disliked_vegetable, entity: user_wife, value: bottle_gourd}
+  - {id: f_209, relation: disliked_vegetable, entity: user_father, value: brinjal}
+
+  - {id: f_210, relation: favorite_fruit, entity: user, value: mango, update: lychee}
+  - {id: f_210_dist, distractor_of: f_210, entity: user_mother}
+  - {id: f_211, relation: favorite_fruit, entity: user_sister, value: guava}
+  - {id: f_212, relation: favorite_fruit, entity: user_friend, value: papaya, update: pomegranate}
+
+  - {id: f_213, relation: favorite_evening_snack, entity: user, value: samosa, update: poha}
+  - {id: f_213_dist, distractor_of: f_213, entity: user_father}
+  - {id: f_214, relation: favorite_evening_snack, entity: user_brother, value: dhokla}
+  - {id: f_215, relation: favorite_evening_snack, entity: user_daughter, value: bhelpuri}
+
+  - {id: f_216, relation: favorite_restaurant, entity: user, value: saravana_bhavan, update: sagar_ratna}
+  - {id: f_216_dist, distractor_of: f_216, entity: user_brother}
+  - {id: f_217, relation: favorite_restaurant, entity: user_friend, value: moti_mahal}
+  - {id: f_218, relation: favorite_restaurant, entity: user_wife, value: bikanervala}
