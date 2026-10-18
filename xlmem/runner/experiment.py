@@ -8,9 +8,14 @@ Hard Rules:
 
 from __future__ import annotations
 
+import hashlib
+import importlib.metadata
+import importlib.util
 import json
 import logging
 from pathlib import Path
+import platform
+import subprocess
 import time
 from typing import Any
 from xlmem.adapters import get_adapter
@@ -41,6 +46,67 @@ def adapter_settings(config: ExperimentConfig) -> dict[str, Any]:
         "embedder_model": config.embedder,
         "ollama_base_url": config.model.base_url,
         "temperature": config.model.temperature,
+    }
+
+
+# Packages whose versions can change what a run measures (AGENTS.md rule 10).
+PROVENANCE_PACKAGES = (
+    "mem0ai", "letta-client", "agentic-memory", "chromadb", "qdrant-client",
+    "sentence-transformers", "transformers", "torch", "ollama", "litellm", "pydantic",
+)
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _git(*args: str, cwd: Path = REPO_ROOT) -> str | None:
+    try:
+        out = subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True,
+                             timeout=30, check=True)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return out.stdout.strip()
+
+
+def _sha256(path: Path) -> str | None:
+    try:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+    except OSError:
+        return None
+
+
+def _vendored_git_sha(module: str) -> str | None:
+    """Commit of a framework installed editable from a git checkout (A-MEM: 0.0.1 forever)."""
+    try:
+        spec = importlib.util.find_spec(module)
+    except (ImportError, ValueError):
+        return None
+    if spec is None or spec.origin is None:
+        return None
+    return _git("rev-parse", "HEAD", cwd=Path(spec.origin).resolve().parent)
+
+
+def run_provenance(config: ExperimentConfig) -> dict[str, Any]:
+    """What produced a run: code version, inputs and package versions (AGENTS.md §12).
+
+    Recorded in every run log so a number can be traced back to the exact code and
+    inputs without relying on an external manifest.
+    """
+    status = _git("status", "--porcelain", "--", "xlmem", "configs", "data")
+    packages: dict[str, str | None] = {}
+    for name in PROVENANCE_PACKAGES:
+        try:
+            packages[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            packages[name] = None
+    return {
+        "git_sha": _git("rev-parse", "HEAD"),
+        "git_dirty": None if status is None else bool(status),
+        "config_sha256": hashlib.sha256(
+            config.model_dump_json().encode("utf-8")
+        ).hexdigest(),
+        "fact_bank_sha256": _sha256(Path(config.benchmark.fact_bank)),
+        "python": platform.python_version(),
+        "packages": packages,
+        "vendored_git_sha": {"agentic_memory": _vendored_git_sha("agentic_memory")},
     }
 
 
@@ -211,6 +277,7 @@ class ExperimentRunner:
                 "probe_lang": self.config.languages.probe,
                 "n_facts": len(facts),
                 "adapter_settings": adapter_settings(self.config),
+                "provenance": run_provenance(self.config),
             }
             f.write(json.dumps(meta, ensure_ascii=False) + "\n")
 

@@ -87,3 +87,28 @@ def test_non_ollama_backend_is_rejected_for_real_frameworks(tmp_path: Path) -> N
     cfg = _config(tmp_path, backend="vllm").model_copy(update={"framework": "mem0"})
     with pytest.raises(ValueError, match="Ollama only"):
         experiment.adapter_settings(cfg)
+
+
+def test_run_log_records_provenance(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """AGENTS.md §12: every run records git SHA, input hashes and package versions."""
+    monkeypatch.setattr(experiment, "get_adapter", lambda name, **kw: MockAdapter(**kw))
+    cfg = _config(tmp_path)
+    runner = experiment.ExperimentRunner(config=cfg, llm_client=LLMClient(mock_mode=True))
+    seed_dir = runner.run_single_seed(facts=[FACT], seed=11)
+    with open(seed_dir / "run_log.jsonl", encoding="utf-8") as f:
+        prov = json.loads(f.readline())["provenance"]
+
+    assert prov["git_sha"] == experiment._git("rev-parse", "HEAD")
+    assert len(prov["git_sha"]) == 40
+    assert isinstance(prov["git_dirty"], bool)
+    assert prov["config_sha256"] == experiment.hashlib.sha256(
+        cfg.model_dump_json().encode("utf-8")).hexdigest()
+    assert prov["fact_bank_sha256"] is None  # "dummy" is not a file
+    assert set(prov["packages"]) == set(experiment.PROVENANCE_PACKAGES)
+    assert prov["packages"]["pydantic"]
+
+
+def test_config_hash_changes_with_the_config(tmp_path: Path) -> None:
+    a = experiment.run_provenance(_config(tmp_path))
+    b = experiment.run_provenance(_config(tmp_path, temperature=0.7))
+    assert a["config_sha256"] != b["config_sha256"]
