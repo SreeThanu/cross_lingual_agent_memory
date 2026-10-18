@@ -6,13 +6,15 @@ pass this identical conformance suite unchanged.
 
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 import pytest
 from xlmem.adapters import get_adapter
 from xlmem.adapters.base import MemoryAdapter
 from xlmem.benchmark.facts import Turn
 
 
-@pytest.fixture(params=["mock", "mem0", "letta"])
+@pytest.fixture(params=["mock", "mem0", "letta", "amem"])
 def adapter(request: pytest.FixtureRequest) -> MemoryAdapter:
     """Fixture providing instantiated adapters to be tested."""
     return get_adapter(request.param)
@@ -26,6 +28,7 @@ def adapter(request: pytest.FixtureRequest) -> MemoryAdapter:
         "mock",
         pytest.param("mem0", marks=pytest.mark.gpu),
         pytest.param("letta", marks=pytest.mark.gpu),
+        pytest.param("amem", marks=pytest.mark.gpu),
     ]
 )
 def live_adapter(request: pytest.FixtureRequest) -> MemoryAdapter:
@@ -142,6 +145,20 @@ def test_dump_completeness_not_top_k(adapter: MemoryAdapter) -> None:
 
         adapter._client = FakeLettaClient()  # type: ignore[attr-defined]
         adapter._agent_ids[user_id] = "fake_agent_letta_bulk"  # type: ignore[attr-defined]
+
+    elif adapter.name == "amem":
+        # Same isolation rationale: replace A-MEM's note store and index with a
+        # controlled 12-note store, so this tests dump() alone, not A-MEM's LLM.
+        notes = {
+            f"raw_{i}": SimpleNamespace(
+                content=f"memory {i}", keywords=[], tags=[], context="", links=[]
+            )
+            for i in range(12)
+        }
+        collection = SimpleNamespace(count=lambda: len(notes))
+        adapter._systems[user_id] = SimpleNamespace(  # type: ignore[attr-defined]
+            memories=notes, retriever=SimpleNamespace(collection=collection)
+        )
 
     else:
         adapter.reset(user_id)
