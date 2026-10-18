@@ -42,7 +42,14 @@ def test_supports_dump_is_true(adapter: MemoryAdapter) -> None:
 
 
 def test_write_and_dump_roundtrip(live_adapter: MemoryAdapter) -> None:
-    """Verify that turns written are returned by dump()."""
+    """Verify that turns written are returned by dump().
+
+    English only, on purpose: this suite checks the adapter, not how a framework
+    handles language. Letta + Qwen rejects the second turn when a conversation
+    mixes Hindi and English (OPEN_ISSUES §1.2), which is a measured write
+    failure, not an adapter fault. Mixed-language behaviour is covered by
+    tests/test_mixed_language_probe.py.
+    """
     adapter = live_adapter
     user_id = "test_user_dump"
     adapter.reset(user_id)
@@ -50,8 +57,8 @@ def test_write_and_dump_roundtrip(live_adapter: MemoryAdapter) -> None:
     turn1 = Turn(
         session_id=1,
         role="user",
-        lang="hi",
-        text="मुझे मूंगफली से एलर्जी है।",
+        lang="en",
+        text="I have a severe allergy to peanuts.",
         kind="plant",
         fact_id="f_01",
     )
@@ -69,12 +76,14 @@ def test_write_and_dump_roundtrip(live_adapter: MemoryAdapter) -> None:
     assert res1.success is True
     assert res2.success is True
 
+    # Check content, not record count or fact_id tags: frameworks decide their own
+    # storage layout (Letta writes both facts into one core-memory block), and the
+    # scorer matches on stored text, never on dump metadata. Completeness against
+    # top-k truncation is test_dump_completeness_not_top_k's job.
     dumped = adapter.dump(user_id)
-    assert len(dumped) >= 2, "dump() must return all written records, not a subset or top-k"
-
-    fact_ids = {m.metadata.get("fact_id") for m in dumped}
-    assert "f_01" in fact_ids
-    assert "f_02" in fact_ids
+    stored = " ".join(m.text.lower() for m in dumped)
+    assert "peanut" in stored, "first written fact missing from dump()"
+    assert "google" in stored, "second written fact missing from dump()"
 
 def test_dump_completeness_not_top_k(adapter: MemoryAdapter) -> None:
     """Verify that dump() returns the full underlying store, not top-k."""

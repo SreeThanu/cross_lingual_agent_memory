@@ -31,6 +31,12 @@ Duplication Rate (DR) and False Merge Rate (FMR) require inspecting the entire m
   - **Temperature was 0.7.** That's Letta's default for new agents; the adapter never set it. Fixed: the adapter sets the harness temperature on every agent and reads the agent back. It raises unless the server runs the requested handles, temperature and Ollama endpoint. It also refuses `letta/letta-free`, a Letta-hosted model the server offers alongside Ollama.
   - **Contract tests: 5/6 pass.** `test_write_and_dump_roundtrip` fails 3/3. It writes a Hindi turn then an English turn to one agent, and the second write fails with Letta's 502 "No tool calls found in response, model must make a tool call".
   - **Probe of that failure (2 trials each, fresh agent):** en→en both writes succeed 2/2. hi→en: the 2nd (English) write fails 2/2. en→hi: the 2nd (Hindi) write fails 1/2. A single Hindi turn alone succeeds 3/3. So **Letta+Qwen's tool calling breaks when a conversation mixes languages**, and the turn is lost. This is a real cross-lingual WRITE failure (scored by WF via `dump()`), not a harness fault. Do not retry it away.
+  - **Contract suite made English-only (2026-10-18).** The round-trip test now checks that each written fact's content is in `dump()` instead of one record per write with a `fact_id` tag: Letta stores several facts in one core block, and the scorer only matches text. With that, **all 24 contract tests pass live for mock, Mem0, Letta and A-MEM.** Mixed-language behaviour moved to `tests/test_mixed_language_probe.py` (gpu), which requires only soft failure and a dumpable store.
+  - **Probe run (2026-10-18), single trial each:**
+    - Mem0, en then hi: both writes reported ok, but the store held only "Have an allergy to moong dal"; the English Google fact was gone.
+    - Letta, en then hi: the Hindi write was reported FAILED, yet "I have a peanut allergy." was stored.
+    - A-MEM stored everything verbatim.
+    So the write success flag is unreliable in both directions. WF must keep reading `dump()`.
   - **Hindi stored as Chinese, with the wrong value.** Every successful Hindi write of "मुझे मूंगफली से एलर्जी है।" (peanut allergy) was stored as "用户对绿豆过敏。" (Chinese: "the user is allergic to *mung beans*"), 3/3 identical. That is a third language, and the same peanut→mung-bean error Mem0 made in the Sep pilot ("moong dal"). Two frameworks making the same error points to the **backbone** (Qwen2.5-7B) mistranslating मूंगफली, so the Llama backbone runs should test it.
 
 ### 1.3 A-MEM (Active Memory - Xu et al., 2025)
