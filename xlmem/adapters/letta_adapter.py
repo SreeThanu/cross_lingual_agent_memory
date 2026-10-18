@@ -55,10 +55,10 @@ class LettaAdapter(MemoryAdapter):
         self.base_url = base_url
         self.llm_model = llm_model
         self.embedder_model = embedder_model
-        # The Letta server reaches Ollama itself and owns the agent's sampling
-        # settings, so these two are kept for the run log only. Whether the server
-        # matches them must be checked against the live server (OPEN_ISSUES §1.2).
-        self.ollama_base_url = ollama_base_url
+        # The Letta server reaches Ollama itself (its OLLAMA_BASE_URL), so the
+        # adapter cannot set the URL; _create_agent verifies the server uses it.
+        # Temperature is set on each agent (Letta's default is 0.7).
+        self.ollama_base_url = ollama_base_url.rstrip("/")
         self.temperature = temperature
         # Same embedder mapping as Mem0Adapter: the config's HF id -> Ollama tag.
         ollama_embedder = "bge-m3:latest" if embedder_model == "BAAI/bge-m3" else embedder_model
@@ -103,6 +103,10 @@ class LettaAdapter(MemoryAdapter):
         Write Fidelity (AGENTS.md Rule 11 / test_reset_isolation contract: dump() must
         be empty right after reset(), before any write()).
         """
+        for handle in (self.llm_handle, self.embedding_handle):
+            # Letta also offers "letta/letta-free", a model hosted by Letta: never use it.
+            if not handle.startswith("ollama/"):
+                raise RuntimeError(f"Refusing non-local Letta model handle {handle!r}.")
         agent = self._client.agents.create(
             name=f"xlmem_{user_id}",
             memory_blocks=[
@@ -112,7 +116,28 @@ class LettaAdapter(MemoryAdapter):
             model=self.llm_handle,
             embedding=self.embedding_handle,
         )
+        llm_config = agent.llm_config.model_copy(update={"temperature": self.temperature})
+        self._client.agents.modify(agent_id=agent.id, llm_config=llm_config)
+        self._verify_agent_config(str(agent.id))
         return str(agent.id)
+
+    def _verify_agent_config(self, agent_id: str) -> None:
+        """Read the agent back: the server must run the requested local models."""
+        agent = self._client.agents.retrieve(agent_id=agent_id)
+        llm, emb = agent.llm_config, agent.embedding_config
+        problems = []
+        if llm.handle != self.llm_handle:
+            problems.append(f"LLM {llm.handle!r} != {self.llm_handle!r}")
+        if emb.handle != self.embedding_handle:
+            problems.append(f"embedder {emb.handle!r} != {self.embedding_handle!r}")
+        if llm.temperature != self.temperature:
+            problems.append(f"temperature {llm.temperature} != {self.temperature}")
+        for name, endpoint in (("LLM", llm.model_endpoint), ("embedder", emb.embedding_endpoint)):
+            if not str(endpoint or "").startswith(self.ollama_base_url):
+                problems.append(f"{name} endpoint {endpoint!r} is not {self.ollama_base_url}")
+        if problems:
+            self._client.agents.delete(agent_id=agent_id)
+            raise RuntimeError("Letta agent config mismatch: " + "; ".join(problems))
 
     def reset(self, user_id: str) -> None:
         """Wipe all memory for the target user by deleting and recreating its agent."""
