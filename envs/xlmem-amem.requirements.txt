@@ -1,7 +1,8 @@
 # xlmem-amem: separate environment for the A-MEM framework (agiresearch/A-mem).
 #
 # Separate from `xlmem`, which pins chromadb 0.4.24 (environment.lock.yml); this env
-# has chromadb 1.5.9. Whether A-MEM also runs on 0.4.24 (one shared env) is untested.
+# has chromadb 1.5.9. Tested 2026-10-18: A-MEM also runs in `xlmem` itself (its 3 runtime
+# deps are pinned in environment.lock.yml), so this env is a fallback, not required.
 #
 # Rebuild (Linux or macOS):
 #   git clone https://github.com/agiresearch/A-mem.git ~/Sree_thanu/vendor/A-mem

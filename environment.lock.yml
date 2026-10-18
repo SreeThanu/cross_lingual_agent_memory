@@ -20,6 +20,13 @@ dependencies:
       - sentence-transformers==2.5.1
       - chromadb==0.4.24
       - mem0ai==0.1.26
+      # A-MEM (agiresearch/A-mem @ ceffb86, installed separately:
+      #   pip install --no-deps -e ~/Sree_thanu/vendor/A-mem). Its runtime deps
+      # below were verified on 2026-10-18 to install with every other pin here
+      # unchanged; see envs/xlmem-amem.requirements.txt for the rebuild steps.
+      - rank_bm25==0.2.2
+      - nltk==3.10.3
+      - litellm==1.80.0
       - pytest==8.0.2
       - pytest-cov==4.1.0
       - ruff==0.3.0
