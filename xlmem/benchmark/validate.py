@@ -229,6 +229,69 @@ def validate_fact_bank(path: str | Path) -> ValidationReport:
     return report
 
 
+def check_cross_bank_collisions(paths: list[str | Path]) -> list[ValidationIssue]:
+    """Check fact banks that will be merged (e.g. facts_v1.yaml + candidate batches).
+
+    Per-file validation cannot see these. All facts in a run are planted for one
+    user, so two files that state the same fact would make the benchmark itself
+    produce "duplicates" (inflating DR):
+      - the same fact id in two files                  -> error
+      - the same (entity, relation, value) twice       -> error
+      - the same (entity, relation) with other values  -> warning (a contradiction
+        unless the relation is genuinely multi-valued, e.g. allergies)
+      - the same (entity, value) under another relation -> warning (often one fact
+        under two relation names, e.g. dietary_preference vs dietary_restriction)
+    """
+    issues: list[ValidationIssue] = []
+    seen_ids: dict[str, str] = {}
+    seen_triples: dict[tuple[str, str, str], str] = {}
+    seen_slots: dict[tuple[str, str], tuple[str, str]] = {}
+    seen_entity_values: dict[tuple[str, str], tuple[str, str]] = {}
+
+    for path in paths:
+        with open(path, "r", encoding="utf-8") as f:
+            payload = yaml.safe_load(f) or {}
+        for item in payload.get("facts", []):
+            fid = str(item.get("id", ""))
+            where = f"{fid} ({Path(path).name})"
+            if fid in seen_ids and seen_ids[fid] != str(path):
+                issues.append(ValidationIssue(fid, "error", f"id also used in {seen_ids[fid]}"))
+            seen_ids.setdefault(fid, str(path))
+
+            entity, relation = str(item.get("entity")), str(item.get("relation"))
+            value = str(item.get("value"))
+            triple, slot = (entity, relation, value), (entity, relation)
+            if triple in seen_triples:
+                issues.append(
+                    ValidationIssue(fid, "error", f"same fact {triple} as {seen_triples[triple]}")
+                )
+            elif slot in seen_slots:
+                other_value, other_where = seen_slots[slot]
+                issues.append(
+                    ValidationIssue(
+                        fid,
+                        "warning",
+                        f"{slot} = {value!r} but {other_where} has {other_value!r}",
+                    )
+                )
+            ev = (entity, value)
+            if triple not in seen_triples and ev in seen_entity_values:
+                other_relation, other_where = seen_entity_values[ev]
+                if other_relation != relation:
+                    issues.append(
+                        ValidationIssue(
+                            fid,
+                            "warning",
+                            f"{ev} under {relation!r}; {other_where} has it under "
+                            f"{other_relation!r} (same fact, two relation names?)",
+                        )
+                    )
+            seen_triples.setdefault(triple, where)
+            seen_slots.setdefault(slot, (value, where))
+            seen_entity_values.setdefault(ev, (relation, where))
+    return issues
+
+
 def format_report(report: ValidationReport) -> str:
     """Render a ValidationReport as human-readable text for CLI output."""
     base_fact_count = report.total_facts - report.total_distractors
