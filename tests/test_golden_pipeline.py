@@ -247,3 +247,40 @@ def test_run_all_seeds_refuses_before_running_any_seed(tmp_path: Path) -> None:
         runner.run_all_seeds()
 
     assert not (out_dir / "seed_11").exists()
+
+
+def test_missing_reprobe_scores_staleness_as_invalid(tmp_path: Path) -> None:
+    """A log with corrected facts but no reprobe_result records must not yield a numeric SR."""
+    cfg = _mock_config(tmp_path / "run", seeds=[11])
+    runner = ExperimentRunner(config=cfg, llm_client=LLMClient(mock_mode=True))
+    seed_dir = runner.run_single_seed(facts=GOLDEN_FACTS, seed=11)
+
+    # Simulate a pre-fix log by dropping the re-probe records (in a copy).
+    old_dir = tmp_path / "prefix_log" / "seed_11"
+    old_dir.mkdir(parents=True)
+    for name in ("store_after_plant.json", "store_final.json"):
+        (old_dir / name).write_bytes((seed_dir / name).read_bytes())
+    lines = (seed_dir / "run_log.jsonl").read_text(encoding="utf-8").splitlines()
+    kept = [ln for ln in lines if json.loads(ln)["record_type"] != "reprobe_result"]
+    assert len(kept) < len(lines)
+    (old_dir / "run_log.jsonl").write_text("\n".join(kept) + "\n", encoding="utf-8")
+
+    scores = score_single_seed_dir(old_dir, facts=GOLDEN_FACTS)
+    assert scores["staleness_rate"] is None
+    assert "staleness_rate" in scores["invalid_metrics"]
+
+
+def test_aggregate_excludes_invalid_metric_values() -> None:
+    from xlmem.analysis.aggregate import aggregate_seed_metrics
+
+    seeds = [
+        {"write_fidelity": 1.0, "staleness_rate": 0.5},
+        {"write_fidelity": 0.5, "staleness_rate": None, "invalid_metrics": {"staleness_rate": "x"}},
+        {"write_fidelity": 0.0, "staleness_rate": 0.0},
+    ]
+    agg = aggregate_seed_metrics(seeds)
+    assert agg["write_fidelity"]["mean"] == pytest.approx(0.5)
+    assert agg["write_fidelity"]["n_seeds"] == 3
+    assert agg["staleness_rate"]["mean"] == pytest.approx(0.25)
+    assert agg["staleness_rate"]["n_seeds"] == 2
+    assert "invalid_metrics" not in agg

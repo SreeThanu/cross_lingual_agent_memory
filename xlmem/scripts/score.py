@@ -7,6 +7,7 @@ import json
 import logging
 from pathlib import Path
 import sys
+from typing import Any
 from xlmem.benchmark.facts import Fact, Memory, ProbeResult
 from xlmem.scoring.duplication import compute_duplication_rate, compute_false_merge_rate
 from xlmem.scoring.retrieval import compute_recall_at_k, compute_write_fidelity
@@ -16,7 +17,7 @@ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("score")
 
 
-def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, float]:
+def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, Any]:
     """Compute all metrics for a single seed directory from logs and snapshots."""
     store_plant_file = seed_dir / "store_after_plant.json"
     store_final_file = seed_dir / "store_final.json"
@@ -74,17 +75,25 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, float]
     # 4. UPDATE (Staleness Rate) -- must use the post-correction reprobe_result
     # records, never probe_result (which predates the correction turn).
     corrected_facts = [f for f in facts if f.update_data is not None]
+    invalid_metrics: dict[str, str] = {}
+    sr: float | None
     if corrected_facts and not reprobe_results:
-        logger.warning(
-            "%s: %d corrected fact(s) but no reprobe_result records in run_log.jsonl -- "
-            "this log predates the re-probe phase fix and Staleness Rate cannot be "
-            "trusted. Re-run the experiment to get a real re-probe.",
-            seed_dir.name,
-            len(corrected_facts),
+        # No re-probe was recorded, so SR is undefined -- report it as null rather
+        # than a number (compute_staleness_rate would return 0.0, i.e. "every update
+        # worked", for a phase that never ran).
+        reason = (
+            "no reprobe_result records in run_log.jsonl; log predates the re-probe "
+            "phase fix. Re-run the experiment to measure SR."
         )
-    sr = compute_staleness_rate(corrected_facts=corrected_facts, reprobe_results=reprobe_results)
+        logger.warning("%s: staleness_rate INVALID -- %s", seed_dir.name, reason)
+        invalid_metrics["staleness_rate"] = reason
+        sr = None
+    else:
+        sr = compute_staleness_rate(
+            corrected_facts=corrected_facts, reprobe_results=reprobe_results
+        )
 
-    scores = {
+    scores: dict[str, Any] = {
         "write_fidelity": wf,
         "recall_at_1_strict": recall_1_strict,
         "recall_at_3_strict": recall_3_strict,
@@ -96,6 +105,8 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, float]
         "false_merge_rate": fmr,
         "staleness_rate": sr,
     }
+    if invalid_metrics:
+        scores["invalid_metrics"] = invalid_metrics
 
     # Save scores to seed_dir/scores.json without modifying run_log.jsonl
     scores_path = seed_dir / "scores.json"
