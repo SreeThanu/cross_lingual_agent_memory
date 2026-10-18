@@ -3,20 +3,25 @@
 from __future__ import annotations
 
 import logging
-import re
 import unicodedata
 from typing import Sequence
 
 logger = logging.getLogger(__name__)
 
 
+_NUKTA = "\u093c"
+
+
 def normalize_text(text: str) -> str:
-    """Normalize text by lowercasing, converting underscores to spaces, stripping punctuation, and NFC Unicode normalization."""
-    text = unicodedata.normalize("NFC", text.lower())
-    text = text.replace("_", " ")
-    # Remove punctuation except whitespace
-    text = re.sub(r"[^\w\s]", " ", text)
-    return " ".join(text.split())
+    """Lowercase, NFC-normalize, fold the Devanagari nukta, and replace punctuation with spaces.
+
+    Combining marks (Unicode category M: Devanagari vowel signs, virama, anusvara)
+    are kept. Python's \\w does not match them, so a \\w-based filter turns
+    "पुणे" into "प ण". The nukta is dropped so फ़िल्टर and फिल्टर compare equal.
+    """
+    text = unicodedata.normalize("NFC", text.lower()).replace(_NUKTA, "")
+    kept = (ch if ch.isspace() or unicodedata.category(ch)[0] in "LNM" else " " for ch in text)
+    return " ".join("".join(kept).split())
 
 
 def strict_match(target_value: str, candidate_text: str, aliases: Sequence[str] = ()) -> bool:
@@ -44,14 +49,11 @@ def strict_match(target_value: str, candidate_text: str, aliases: Sequence[str] 
         elif len(norm_target) > 2:
             expanded_targets.append(norm_target + "s")
 
-    for target in expanded_targets:
-        pattern = r"\b" + re.escape(target) + r"\b"
-        if re.search(pattern, norm_candidate):
-            return True
-        if target in norm_candidate:
-            return True
-
-    return False
+    # Whole-token match on the normalized, single-space-joined text. (\\b fails
+    # around Devanagari combining marks, and a bare substring test matches
+    # "visa" inside "advisable".)
+    padded_candidate = f" {norm_candidate} "
+    return any(f" {target} " in padded_candidate for target in expanded_targets)
 
 
 class NLIJudge:
@@ -113,6 +115,8 @@ class NLIJudge:
             overlap = len(p_words.intersection(h_words)) / len(h_words)
             return overlap >= 0.50
 
-        res = self._pipeline(premise, candidate_labels=[hypothesis])
+        # "{}" passes the fact sentence through verbatim; the pipeline default
+        # ("This example is {}.") would wrap it into an ungrammatical hypothesis.
+        res = self._pipeline(premise, candidate_labels=[hypothesis], hypothesis_template="{}")
         scores = res.get("scores", [0.0])
         return bool(scores[0] >= self.threshold)

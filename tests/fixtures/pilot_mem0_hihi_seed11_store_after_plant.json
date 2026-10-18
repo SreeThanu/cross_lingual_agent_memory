@@ -1,0 +1,182 @@
+[
+  {
+    "raw_id": "19f26533-327f-4b32-9d77-a64603aa77d2",
+    "text": "मेरे पास मैक्स नाम का एक गोल्डन रिट्रवर कुत्ता है",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_005",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "1b5e77de-53d5-436c-93de-171147aedb8f",
+    "text": "मेरी प्राथमिक प्रोग्रामिंग भाषा पायथन है",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_013",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "1fe85dda-f8b7-483c-8b67-565eab0e48b0",
+    "text": "गृहनगर जयपुर है",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_014",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "33813d45-e305-4aa5-ade6-5a22c900d4d6",
+    "text": "वर्तमान में पुणे में रहता हूँ",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_002",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "43e41694-67f1-4fa8-834d-2132f626aa5e",
+    "text": "पूर्णतः शाकाहारी भोजन करता हूँ",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_012",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "45c1d7d7-6e62-413b-85e4-427bfc66a741",
+    "text": "Use Linux operating system on my laptop",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_008",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "58491091-538d-406e-8043-69089118bd10",
+    "text": "Is a Software engineer in Infosys",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_003",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "7302a3ac-f5fe-437d-be94-72de88774685",
+    "text": "पसंदीदा सुबह की ड्रिंक फ़िल्टर कॉफ़ी है",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_006",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "73106cb9-c127-4d10-8fbc-24622c88e5e6",
+    "text": "अगले महीने मनाली जाने की योजना है",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_010",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "8bc12895-aebf-4930-a163-f5cbc9abb8f0",
+    "text": "Use Google Pixel smartphone",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_017",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "8e75811d-dbda-4914-824c-12e5bf53ad99",
+    "text": "घर पर धाराप्रवाह मराठी बोलता हूँ",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_004",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "b1063f87-25db-423e-bdd5-c02d55598121",
+    "text": "सप्ताहांत में गिटार बजाता हूँ",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_009",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "c642eab0-b4e8-4ca5-88b8-579110640ed4",
+    "text": "मेरी माँ एक स्कूल शिक्षिका हैं",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_015",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "dd002aad-83fd-474b-9e69-422621dab6bc",
+    "text": "ब्लड ग्रुप ओ पॉजिटिव है",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_011",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "e021d617-5054-4596-ba65-f9d0b2201da9",
+    "text": "Name is not provided",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_003",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "e20fd298-8bc0-4b64-8abe-ea6920cbd409",
+    "text": "प्राथमिक क्रेडिट कार्ड वीज़ा नेटवर्क पर है",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_016",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "e553bf8f-dad2-420b-b436-301322ed0f17",
+    "text": "मुख्य वेतन खाता एचडीएफसी बैंक में है",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_007",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  },
+  {
+    "raw_id": "e9a70f3c-89a3-4a3d-ab04-60ec6630fd1b",
+    "text": "Has a serious allergy to moong dal",
+    "lang_detected": "",
+    "metadata": {
+      "fact_id": "f_001",
+      "kind": "plant",
+      "lang": "hi"
+    }
+  }
+]

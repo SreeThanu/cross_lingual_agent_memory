@@ -10,15 +10,25 @@ import sys
 from typing import Any
 from xlmem.benchmark.facts import Fact, Memory, ProbeResult
 from xlmem.scoring.duplication import compute_duplication_rate, compute_false_merge_rate
-from xlmem.scoring.retrieval import compute_recall_at_k, compute_write_fidelity
+from xlmem.scoring.retrieval import (
+    Entailer,
+    compute_recall_at_k,
+    compute_write_fidelity,
+    compute_write_fidelity_lenient,
+)
 from xlmem.scoring.staleness import compute_staleness_rate
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("score")
 
 
-def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, Any]:
-    """Compute all metrics for a single seed directory from logs and snapshots."""
+def score_single_seed_dir(
+    seed_dir: Path, facts: list[Fact], judge: Entailer | None = None
+) -> dict[str, Any]:
+    """Compute all metrics for a single seed directory from logs and snapshots.
+
+    With a judge, also reports lenient (NLI) Write Fidelity next to strict WF.
+    """
     store_plant_file = seed_dir / "store_after_plant.json"
     store_final_file = seed_dir / "store_final.json"
     run_log_file = seed_dir / "run_log.jsonl"
@@ -43,6 +53,7 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, Any]:
     # BENCHMARK_SPEC.md Section 5). Staleness Rate is defined over the re-probe.
     probe_results: list[ProbeResult] = []
     reprobe_results: list[ProbeResult] = []
+    planted_ids: set[str] = set()
     with open(run_log_file, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
@@ -53,9 +64,20 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, Any]:
                 probe_results.append(ProbeResult.from_dict(record["data"]))
             elif record.get("record_type") == "reprobe_result":
                 reprobe_results.append(ProbeResult.from_dict(record["data"]))
+            elif record.get("record_type") == "turn_trace":
+                trace = record.get("data", {})
+                if trace.get("kind") == "plant" and trace.get("fact_id"):
+                    planted_ids.add(trace["fact_id"])
+
+    # WF is defined over facts that had a plant turn before the store_after_plant
+    # snapshot. Distractors arrive later as filler and must not be in the
+    # denominator (they would "pass" by sharing their base fact's value).
+    planted_facts = [f for f in facts if f.id in planted_ids] if planted_ids else list(facts)
 
     # 1. WRITE FIDELITY (CHECKED FIRST!)
-    wf, written_fact_ids = compute_write_fidelity(planted_facts=facts, dumped_memories=plant_memories)
+    wf, written_fact_ids = compute_write_fidelity(
+        planted_facts=planted_facts, dumped_memories=plant_memories
+    )
     written_set = set(written_fact_ids)
 
     # 2. RETRIEVAL RECALL (Evaluated on written facts to prevent conflation)
@@ -105,6 +127,10 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, Any]:
         "false_merge_rate": fmr,
         "staleness_rate": sr,
     }
+    if judge is not None:
+        scores["write_fidelity_lenient"], _ = compute_write_fidelity_lenient(
+            planted_facts=planted_facts, dumped_memories=plant_memories, judge=judge
+        )
     if invalid_metrics:
         scores["invalid_metrics"] = invalid_metrics
 
@@ -121,6 +147,11 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Re-score XLMem run logs offline without GPU.")
     parser.add_argument("--run", required=True, help="Path to experiment run directory (e.g. runs/mem0_qwen_hi2en).")
     parser.add_argument("--facts", default="data/facts_v1.yaml", help="Path to fact bank YAML.")
+    parser.add_argument(
+        "--nli",
+        action="store_true",
+        help="Also report lenient Write Fidelity using the multilingual NLI judge.",
+    )
     args = parser.parse_args()
 
     run_path = Path(args.run)
@@ -143,8 +174,19 @@ def main() -> int:
     if not seed_dirs:
         seed_dirs = [run_path]
 
+    judge = None
+    if args.nli:
+        from xlmem.scoring.judge import NLIJudge
+
+        judge = NLIJudge()
+        if judge.mock_mode:
+            # NLIJudge falls back to a token-overlap heuristic when the model fails
+            # to load; never report that as NLI-based lenient WF.
+            logger.error("NLI model unavailable; refusing to score lenient WF with the heuristic.")
+            return 1
+
     for s_dir in seed_dirs:
-        score_single_seed_dir(s_dir, facts=facts)
+        score_single_seed_dir(s_dir, facts=facts, judge=judge)
 
     return 0
 

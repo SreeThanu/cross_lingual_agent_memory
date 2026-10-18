@@ -25,6 +25,9 @@ class Fact:
     distractor_of: str | None = None
     probe_questions: dict[str, str] = field(default_factory=dict)
     update_data: dict[str, Any] | None = None
+    # Surface forms of `value` per script/language (e.g. {"hi": ["पुणे"]}), taken
+    # from the authored surface sentences. Used by strict matching only.
+    value_aliases: dict[str, list[str]] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         """Serialize Fact to a dictionary."""
@@ -44,6 +47,7 @@ class Fact:
             distractor_of=data.get("distractor_of"),
             probe_questions=dict(data.get("probe_questions", {})),
             update_data=update_info,
+            value_aliases={k: list(v) for k, v in (data.get("value_aliases") or {}).items()},
         )
 
 

@@ -5,6 +5,8 @@ facts:
     entity: "user"
     relation: "allergic_to"
     value: "peanuts"
+    value_aliases:
+      hi: ["मूंगफली"]
     distractor_of: null
     surface:
       hi: "मुझे मूंगफली से गंभीर एलर्जी है।"
@@ -29,6 +31,8 @@ facts:
     entity: "user_sister"
     relation: "allergic_to"
     value: "peanuts"
+    value_aliases:
+      hi: ["मूंगफली"]
     distractor_of: "f_001"
     surface:
       hi: "मेरी बहन को मूंगफली से एलर्जी है।"
@@ -45,6 +49,8 @@ facts:
     entity: "user"
     relation: "lives_in"
     value: "pune"
+    value_aliases:
+      hi: ["पुणे"]
     distractor_of: null
     surface:
       hi: "मैं वर्तमान में पुणे में रहता हूँ।"
@@ -69,6 +75,8 @@ facts:
     entity: "user_brother"
     relation: "lives_in"
     value: "pune"
+    value_aliases:
+      hi: ["पुणे"]
     distractor_of: "f_002"
     surface:
       hi: "मेरा भाई पुणे में रहता है।"
@@ -85,6 +93,8 @@ facts:
     entity: "user"
     relation: "works_at"
     value: "infosys"
+    value_aliases:
+      hi: ["इंफोसिस"]
     distractor_of: null
     surface:
       hi: "मैं इंफोसिस में सॉफ्टवेयर इंजीनियर के रूप में काम करता हूँ।"
@@ -109,6 +119,8 @@ facts:
     entity: "user_spouse"
     relation: "works_at"
     value: "infosys"
+    value_aliases:
+      hi: ["इंफोसिस"]
     distractor_of: "f_003"
     surface:
       hi: "मेरी पत्नी भी इंफोसिस में काम करती है।"
@@ -125,6 +137,8 @@ facts:
     entity: "user"
     relation: "speaks_language"
     value: "marathi"
+    value_aliases:
+      hi: ["मराठी"]
     distractor_of: null
     surface:
       hi: "मैं घर पर धाराप्रवाह मराठी बोलता हूँ।"
@@ -141,6 +155,8 @@ facts:
     entity: "user"
     relation: "owns_pet"
     value: "golden_retriever"
+    value_aliases:
+      hi: ["गोल्डन रिट्रीवर"]
     distractor_of: null
     surface:
       hi: "मेरे पास मैक्स नाम का एक गोल्डन रिट्रीवर कुत्ता है।"
@@ -157,6 +173,8 @@ facts:
     entity: "user"
     relation: "favorite_beverage"
     value: "filter_coffee"
+    value_aliases:
+      hi: ["फ़िल्टर कॉफ़ी"]
     distractor_of: null
     surface:
       hi: "मेरी सुबह की पसंदीदा ड्रिंक फ़िल्टर कॉफ़ी है।"
@@ -173,6 +191,8 @@ facts:
     entity: "user"
     relation: "primary_bank"
     value: "hdfc"
+    value_aliases:
+      hi: ["एचडीएफसी"]
     distractor_of: null
     surface:
       hi: "मेरा मुख्य वेतन खाता एचडीएफसी बैंक में है।"
@@ -189,6 +209,8 @@ facts:
     entity: "user"
     relation: "primary_os"
     value: "linux"
+    value_aliases:
+      hi: ["लिनक्स"]
     distractor_of: null
     surface:
       hi: "मैं अपने लैपटॉप पर लिनक्स ऑपरेटिंग सिस्टम का उपयोग करता हूँ।"
@@ -205,6 +227,8 @@ facts:
     entity: "user"
     relation: "plays_instrument"
     value: "guitar"
+    value_aliases:
+      hi: ["गिटार"]
     distractor_of: null
     surface:
       hi: "मैं सप्ताहांत में गिटार बजाता हूँ।"
@@ -221,6 +245,8 @@ facts:
     entity: "user"
     relation: "planned_trip"
     value: "manali"
+    value_aliases:
+      hi: ["मनाली"]
     distractor_of: null
     surface:
       hi: "मेरी अगली महीने मनाली जाने की योजना है।"
@@ -237,6 +263,8 @@ facts:
     entity: "user"
     relation: "blood_group"
     value: "o_positive"
+    value_aliases:
+      hi: ["ओ पॉजिटिव"]
     distractor_of: null
     surface:
       hi: "मेरा ब्लड ग्रुप ओ पॉजिटिव है।"
@@ -253,6 +281,8 @@ facts:
     entity: "user"
     relation: "dietary_preference"
     value: "vegetarian"
+    value_aliases:
+      hi: ["शाकाहारी"]
     distractor_of: null
     surface:
       hi: "मैं पूर्णतः शाकाहारी भोजन करता हूँ।"
@@ -269,6 +299,8 @@ facts:
     entity: "user"
     relation: "primary_programming_language"
     value: "python"
+    value_aliases:
+      hi: ["पायथन"]
     distractor_of: null
     surface:
       hi: "मेरी प्राथमिक प्रोग्रामिंग भाषा पायथन है।"
@@ -285,6 +317,8 @@ facts:
     entity: "user"
     relation: "hometown"
     value: "jaipur"
+    value_aliases:
+      hi: ["जयपुर"]
     distractor_of: null
     surface:
       hi: "मेरा गृहनगर जयपुर है।"
@@ -301,6 +335,8 @@ facts:
     entity: "user"
     relation: "mother_occupation"
     value: "teacher"
+    value_aliases:
+      hi: ["शिक्षिका"]
     distractor_of: null
     surface:
       hi: "मेरी माँ एक स्कूल शिक्षिका हैं।"
@@ -317,6 +353,8 @@ facts:
     entity: "user"
     relation: "credit_card_network"
     value: "visa"
+    value_aliases:
+      hi: ["वीज़ा"]
     distractor_of: null
     surface:
       hi: "मेरा प्राथमिक क्रेडिट कार्ड वीज़ा नेटवर्क पर है।"
@@ -333,6 +371,8 @@ facts:
     entity: "user"
     relation: "primary_phone"
     value: "pixel"
+    value_aliases:
+      hi: ["पिक्सेल"]
     distractor_of: null
     surface:
       hi: "मैं गूगल पिक्सेल स्मार्टफोन का उपयोग करता हूँ।"

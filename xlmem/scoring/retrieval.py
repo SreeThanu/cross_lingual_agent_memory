@@ -2,9 +2,22 @@
 
 from __future__ import annotations
 
-from typing import Sequence
+from typing import Protocol, Sequence
 from xlmem.benchmark.facts import Fact, Memory, ProbeResult
 from xlmem.scoring.judge import strict_match
+
+
+class Entailer(Protocol):
+    def is_entailed(self, premise: str, hypothesis: str) -> bool: ...
+
+
+def fact_aliases(fact: Fact) -> list[str]:
+    """Strings besides fact.value that count as a strict match: the authored surface
+    sentences plus the per-language value aliases."""
+    aliases = list(fact.surface.values())
+    for forms in fact.value_aliases.values():
+        aliases.extend(forms)
+    return aliases
 
 
 def compute_write_fidelity(
@@ -28,7 +41,7 @@ def compute_write_fidelity(
     for fact in planted_facts:
         # Check if fact's canonical value appears in any memory
         found = False
-        aliases = list(fact.surface.values())
+        aliases = fact_aliases(fact)
         for text in dump_texts:
             if strict_match(fact.value, text, aliases=aliases):
                 found = True
@@ -38,6 +51,36 @@ def compute_write_fidelity(
 
     score = len(written_fact_ids) / len(planted_facts)
     return score, written_fact_ids
+
+
+def compute_write_fidelity_lenient(
+    planted_facts: Sequence[Fact],
+    dumped_memories: Sequence[Memory],
+    judge: Entailer,
+) -> tuple[float, list[str]]:
+    """Lenient Write Fidelity: a fact counts as written if it strictly matches, or if
+    some memory entails one of the fact's authored surface sentences (NLI).
+
+    Catches paraphrases and spelling variants strict matching misses. Reported
+    alongside strict WF, never instead of it (PRD R8).
+    """
+    if not planted_facts:
+        return 0.0, []
+
+    _, strict_ids = compute_write_fidelity(planted_facts, dumped_memories)
+    written = set(strict_ids)
+    for fact in planted_facts:
+        if fact.id in written:
+            continue
+        if any(
+            judge.is_entailed(premise=m.text, hypothesis=sentence)
+            for m in dumped_memories
+            for sentence in fact.surface.values()
+        ):
+            written.add(fact.id)
+
+    written_ids = [f.id for f in planted_facts if f.id in written]
+    return len(written_ids) / len(planted_facts), written_ids
 
 
 def compute_recall_at_k(
@@ -78,7 +121,7 @@ def compute_recall_at_k(
 
         # Check top-k retrieved memories
         top_k = probe.retrieved[:k]
-        aliases = list(fact.surface.values())
+        aliases = fact_aliases(fact)
         hit = False
 
         for mem in top_k:
