@@ -94,6 +94,13 @@ class AMEMAdapter(MemoryAdapter):
 
     def _shared_backend(self) -> tuple[Any, Any]:
         if self._client is None:
+            # Import order matters in the xlmem env: `import chromadb` loads
+            # onnxruntime, whose native module resolves the old system libstdc++.
+            # Python's sqlite3 (needed by chromadb) links conda's ICU, which needs
+            # the newer conda libstdc++, so a bare `import chromadb` fails with
+            # "CXXABI_1.3.15 not found". Loading sqlite3 first pins the right one.
+            import sqlite3  # noqa: F401
+
             import chromadb
             from chromadb.config import Settings
             from chromadb.utils.embedding_functions import (

@@ -105,3 +105,26 @@ def test_out_of_sync_index_raises_instead_of_returning_misses(
         adapter.retrieve("u", "Where do I live?", lang="en")
     with pytest.raises(RuntimeError, match="out of sync"):
         adapter.dump("u")
+
+
+def test_shared_backend_imports_chromadb_in_a_fresh_interpreter() -> None:
+    """Regression: a bare `import chromadb` fails in the xlmem env (libstdc++ load order).
+
+    Runs in a subprocess because in this test process sqlite3 or torch is already
+    loaded, which hides the bug.
+    """
+    import subprocess
+    import sys
+
+    code = (
+        "import sys; from xlmem.adapters.amem_adapter import AMEMAdapter;"
+        "a = AMEMAdapter(embedder_model='all-MiniLM-L6-v2'); a._shared_backend();"
+        "assert 'torch' in sys.modules or 'sqlite3' in sys.modules; print('ok')"
+    )
+    env = {"HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1", "ANONYMIZED_TELEMETRY": "False"}
+    result = subprocess.run(
+        [sys.executable, "-c", code], capture_output=True, text=True, timeout=300,
+        env={**__import__("os").environ, **env},
+    )
+    assert result.returncode == 0, result.stderr[-2000:]
+    assert result.stdout.strip().endswith("ok")
