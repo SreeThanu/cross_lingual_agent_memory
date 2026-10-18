@@ -26,14 +26,14 @@ If yes → **STOP and flag it explicitly instead of proceeding.** Silent semanti
 
 Update this as the project moves — it tells the engineering agent what matters right now.
 
-**Phase:** P0 — Setup & pilot (Weeks 1–3)
+**Phase:** P1 — Benchmark construction (P0 gate met 2026-10-18 on the write path; P2 adapters done ahead of schedule). Details: `docs/STATUS_2026-10-18.md`.
 
 **Immediate Priorities:**
-1. Verify `huggingface.co` reachable from the lab network *(blocking risk R1)*.
-2. Verify each framework exposes a full store dump *(blocking risk R5)*.
-3. One framework, 20 facts, end-to-end — is any cross-lingual effect visible?
+1. Guide decisions D1 (Hindi matching), D6 (SR denominator) and D7 (DR counts distractors). Every Hindi WF/recall number and every DR/SR number waits on them; re-score all runs afterwards.
+2. Bilingual review of the fact templates (`docs/review/fact_templates_review.xlsx`, branch `benchmark/templates`), then merge the reviewed batches and render second batches toward ~200–250 facts with ≥30% updates.
+3. Don't start the main matrix (P3) until D1 lands and the scaled fact bank is merged. Pull `llama3.2:3b-instruct` first; it separates backbone from framework effects.
 
-**Gate:** If the pilot shows no measurable effect at all, pivot emphasis to consolidation/duplication (RQ2) before scaling up.
+**Gate (done):** the pilot met EXPERIMENT_PLAN §4 only through the Write Fidelity gap (hand audit). Retrieval of what was written was near-lossless (LTG < 0.05). Whether to shift emphasis to write/consolidation and cross-language update is an open guide question.
 
 ---
 
