@@ -4,8 +4,8 @@ Checks:
 - Python >= 3.11
 - PyTorch + CUDA available
 - VRAM >= 14 GB free
-- Ollama reachable at localhost:11434
-- Sentence-transformers / embedder loads
+- Ollama reachable at localhost:11434, with the experiment models pulled
+- BGE-M3 (sentence-transformers, used by A-MEM) loads and embeds Hindi and English
 - HuggingFace reachability
 """
 
@@ -17,6 +17,12 @@ import requests
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("check_env")
+
+# Ollama tags the pilot and main configs use; the harness never pulls (mem0_adapter).
+REQUIRED_OLLAMA_MODELS = ("qwen2.5:7b-instruct", "bge-m3:latest")
+# Second backbone of the main matrix (PRD §8); not needed until P3.
+LATER_OLLAMA_MODELS = ("llama3.2:3b-instruct",)
+EMBEDDER = "BAAI/bge-m3"
 
 
 def check_python_version() -> bool:
@@ -38,15 +44,20 @@ def check_cuda_and_vram() -> bool:
 
         device_count = torch.cuda.device_count()
         device_name = torch.cuda.get_device_name(0)
-        total_vram_gb = torch.cuda.get_device_properties(0).total_memory / (1024**3)
-        reserved_vram_gb = torch.cuda.memory_reserved(0) / (1024**3)
-        free_vram_gb = total_vram_gb - reserved_vram_gb
+        # Device-wide figures: memory held by other processes (the Ollama server and
+        # its loaded models) counts. torch.cuda.memory_reserved sees only this process.
+        free_b, total_b = torch.cuda.mem_get_info(0)
+        total_vram_gb = total_b / (1024**3)
+        free_vram_gb = free_b / (1024**3)
 
         logger.info("GPU device 0: %s (%d devices)", device_name, device_count)
         logger.info("Total VRAM: %.2f GB | Free: %.2f GB", total_vram_gb, free_vram_gb)
 
         if free_vram_gb < 14.0:
-            logger.warning("Free VRAM (%.2f GB) is below the 14 GB threshold.", free_vram_gb)
+            logger.warning(
+                "Free VRAM (%.2f GB) is below the 14 GB threshold (models already loaded by "
+                "Ollama count against it; see nvidia-smi).", free_vram_gb
+            )
             return False
         return True
     except ImportError:
@@ -54,31 +65,54 @@ def check_cuda_and_vram() -> bool:
         return False
 
 
+def missing_models(installed: list[str], required: tuple[str, ...]) -> list[str]:
+    """Required Ollama tags absent from an /api/tags listing (a bare name means :latest)."""
+    have = set(installed) | {n.removesuffix(":latest") for n in installed}
+    return [m for m in required if m not in have]
+
+
 def check_ollama_reachable(base_url: str = "http://localhost:11434") -> bool:
     try:
         res = requests.get(f"{base_url}/api/tags", timeout=5)
-        if res.status_code == 200:
-            models = [m.get("name") for m in res.json().get("models", [])]
-            logger.info("Ollama reachable at %s. Installed models: %s", base_url, models)
-            return True
-        logger.warning("Ollama responded with status code %d", res.status_code)
-        return False
     except requests.RequestException as e:
         logger.warning("Ollama NOT reachable at %s: %s", base_url, e)
         return False
-
-
-def check_embedder_loads() -> bool:
-    try:
-        from xlmem.llm.embedder import Embedder
-
-        embedder = Embedder(mock_mode=True)
-        res = embedder.embed(["Hello world", "नमस्ते दुनिया"])
-        logger.info("Embedder test shape: %s -> OK", res.shape)
-        return True
-    except Exception as e:
-        logger.error("Embedder failed to load: %s", e)
+    if res.status_code != 200:
+        logger.warning("Ollama responded with status code %d", res.status_code)
         return False
+    models = [m.get("name") or m.get("model") for m in res.json().get("models", [])]
+    logger.info("Ollama reachable at %s. Installed models: %s", base_url, models)
+    missing = missing_models(models, REQUIRED_OLLAMA_MODELS)
+    if missing:
+        logger.error("Required Ollama models not pulled: %s (run: ollama pull <tag>)", missing)
+    later = missing_models(models, LATER_OLLAMA_MODELS)
+    if later:
+        logger.warning("Not pulled yet, needed from P3 (main matrix): %s", later)
+    return not missing
+
+
+def check_embedder_loads(model_name: str = EMBEDDER) -> bool:
+    """Load the real BGE-M3 and check a Hindi/English paraphrase pair embeds close together."""
+    try:
+        import sqlite3  # noqa: F401  # load order: see xlmem/adapters/amem_adapter.py
+
+        from sentence_transformers import SentenceTransformer
+
+        model = SentenceTransformer(model_name)
+        en, hi, other = model.encode(
+            ["I am allergic to peanuts.", "मुझे मूंगफली से एलर्जी है।", "My hometown is Jaipur."],
+            normalize_embeddings=True,
+        )
+    except Exception as e:  # report any load failure; this is a diagnostic script
+        logger.error("Embedder %s failed to load: %s", model_name, e)
+        return False
+    same, diff = float(en @ hi), float(en @ other)
+    ok = same > diff
+    logger.info(
+        "Embedder %s: dim %d, cos(en, hi paraphrase) %.2f vs cos(en, unrelated) %.2f -> %s",
+        model_name, len(en), same, diff, "OK" if ok else "FAIL",
+    )
+    return ok
 
 
 def check_huggingface_reachable() -> bool:
@@ -96,10 +130,10 @@ def main() -> int:
     logger.info("=== Running XLMem Environment Verification ===")
     results = [
         check_python_version(),
-        check_embedder_loads(),
+        check_cuda_and_vram(),  # before the embedder check puts BGE-M3 on the GPU
         check_huggingface_reachable(),
         check_ollama_reachable(),
-        check_cuda_and_vram(),
+        check_embedder_loads(),
     ]
     all_ok = all(results)
     if all_ok:
