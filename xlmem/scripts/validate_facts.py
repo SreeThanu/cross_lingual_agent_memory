@@ -8,6 +8,7 @@ import sys
 
 from xlmem.benchmark.validate import (
     check_cross_bank_collisions,
+    check_value_overlap,
     format_report,
     validate_fact_bank,
 )
@@ -38,6 +39,7 @@ def main() -> int:
 
     if args.others:
         collisions = check_cross_bank_collisions([args.facts, *args.others])
+        collisions += check_value_overlap([args.facts, *args.others])
         errors = [i for i in collisions if i.severity == "error"]
         print(f"\nCross-bank check over {1 + len(args.others)} files: "
               f"{len(errors)} error(s), {len(collisions) - len(errors)} warning(s)")

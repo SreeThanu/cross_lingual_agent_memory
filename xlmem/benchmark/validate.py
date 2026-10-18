@@ -15,6 +15,7 @@ or, worse, silently treated as a Write/Retrieval failure by the scorer.
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -289,6 +290,59 @@ def check_cross_bank_collisions(paths: list[str | Path]) -> list[ValidationIssue
             seen_triples.setdefault(triple, where)
             seen_slots.setdefault(slot, (value, where))
             seen_entity_values.setdefault(ev, (relation, where))
+    return issues
+
+
+def _tokens(text: str) -> str:
+    """Lowercase, punctuation -> space, keeping Devanagari combining marks (unlike \\w)."""
+    kept = (
+        ch if ch.isspace() or unicodedata.category(ch)[0] in "LNM" else " "
+        for ch in unicodedata.normalize("NFC", text.lower()).replace("\u093c", "")
+    )
+    return " " + " ".join("".join(kept).split()) + " "
+
+
+def check_value_overlap(paths: list[str | Path]) -> list[ValidationIssue]:
+    """Warn when one fact's value (or Hindi/translit alias) occurs as whole tokens in a
+    different-valued fact's sentences.
+
+    Strict matching searches every stored memory for a fact's value, so such a fact
+    can be credited by a memory of the other fact ("chennai" inside "Chennai Super
+    Kings"). Entity-shift distractors share their base value by design and are skipped.
+    """
+    facts: list[dict[str, Any]] = []
+    for path in paths:
+        with open(path, "r", encoding="utf-8") as f:
+            facts.extend((yaml.safe_load(f) or {}).get("facts", []))
+
+    def sentences(item: dict[str, Any]) -> list[str]:
+        texts = list((item.get("surface") or {}).values())
+        update = item.get("update") or {}
+        texts += list((update.get("surface") or {}).values())
+        return texts
+
+    def targets(item: dict[str, Any]) -> set[str]:
+        out = {str(item.get("value", "")).replace("_", " ")}
+        for forms in (item.get("value_aliases") or {}).values():
+            out.update(forms)
+        return {t for t in (_tokens(x).strip() for x in out) if t}
+
+    issues: list[ValidationIssue] = []
+    for a in facts:
+        for target in targets(a):
+            needle = f" {target} "
+            for b in facts:
+                if b is a or b.get("value") == a.get("value"):
+                    continue
+                if any(needle in _tokens(t) for t in sentences(b)):
+                    issues.append(
+                        ValidationIssue(
+                            str(a.get("id")),
+                            "warning",
+                            f"value form {target!r} occurs in {b.get('id')}'s sentences",
+                        )
+                    )
+                    break
     return issues
 
 

@@ -10,12 +10,17 @@ import pytest
 import yaml
 
 from xlmem.benchmark.templates import TemplateError, load_and_render, render_domain
-from xlmem.benchmark.validate import check_cross_bank_collisions, validate_fact_bank
+from xlmem.benchmark.validate import (
+    check_cross_bank_collisions,
+    check_value_overlap,
+    validate_fact_bank,
+)
 
 ROOT = Path(__file__).parent.parent
 ENTITIES = ROOT / "data" / "templates" / "entities.yaml"
 DINING = ROOT / "data" / "templates" / "dining.yaml"
 DINING_BATCH = ROOT / "data" / "candidates" / "dining_batch_01.yaml"
+DOMAINS = ["dining", "work", "travel", "family", "finance", "hobbies", "tech"]
 
 
 def _load(path: Path) -> Any:
@@ -53,8 +58,14 @@ def test_hand_checked_rendering_with_gender_agreement(dining_facts: list[dict[st
     assert g["update"]["probe_questions"]["en"] == "What is my least favorite vegetable now?"
 
 
-def test_every_value_form_occurs_in_its_surface(dining_facts: list[dict[str, Any]]) -> None:
-    for f in dining_facts:
+@pytest.fixture(scope="module", params=DOMAINS)
+def domain_facts(request: pytest.FixtureRequest) -> tuple[str, list[dict[str, Any]]]:
+    template = ROOT / "data" / "templates" / f"{request.param}.yaml"
+    return request.param, load_and_render(template, ENTITIES)
+
+
+def test_every_value_form_occurs_in_its_surface(domain_facts: tuple[str, list]) -> None:
+    for f in domain_facts[1]:
         assert f["value"].replace("_", " ") in f["surface"]["en"].lower(), f["id"]
         for alias in f["value_aliases"]["hi"]:
             assert alias in f["surface"]["hi"], f["id"]
@@ -62,25 +73,55 @@ def test_every_value_form_occurs_in_its_surface(dining_facts: list[dict[str, Any
             assert alias in f["surface"]["hi-en"], f["id"]
 
 
-def test_probes_do_not_leak_the_answer(dining_facts: list[dict[str, Any]]) -> None:
-    for f in dining_facts:
+def test_probes_do_not_leak_the_answer(domain_facts: tuple[str, list]) -> None:
+    for f in domain_facts[1]:
         forms = [f["value"].replace("_", " ")] + f["value_aliases"]["hi"]
         forms += f["value_aliases"].get("translit", [])
         for question in f["probe_questions"].values():
             assert not any(v.lower() in question.lower() for v in forms), f["id"]
 
 
-def test_rendered_batch_passes_schema_validation(tmp_path: Path, dining_facts: list) -> None:
+def test_rendered_batch_passes_schema_validation(
+    tmp_path: Path, domain_facts: tuple[str, list]
+) -> None:
     out = tmp_path / "batch.yaml"
-    out.write_text(yaml.safe_dump({"version": "1.0", "facts": dining_facts}, allow_unicode=True))
+    out.write_text(yaml.safe_dump({"version": "1.0", "facts": domain_facts[1]}, allow_unicode=True))
     report = validate_fact_bank(out)
     assert report.is_valid and not report.warnings
-    assert report.total_distractors == 6 and report.total_updates == 9
+    assert report.total_distractors / (report.total_facts - report.total_distractors) >= 0.30
 
 
-def test_checked_in_candidate_batch_matches_template(dining_facts: list) -> None:
-    """data/candidates/dining_batch_01.yaml must be a pure render of the template."""
-    assert _load(DINING_BATCH)["facts"] == dining_facts
+def test_checked_in_candidate_batch_matches_template(domain_facts: tuple[str, list]) -> None:
+    """data/candidates/<domain>_batch_01.yaml must be a pure render of its template."""
+    domain, facts = domain_facts
+    assert _load(ROOT / "data" / "candidates" / f"{domain}_batch_01.yaml")["facts"] == facts
+
+
+def test_all_candidate_batches_are_mutually_consistent() -> None:
+    """No collisions or cross-fact value overlaps among the template-rendered batches
+    and data/facts_v1.yaml (the pre-existing health batch is reviewed separately)."""
+    paths = [ROOT / "data" / "facts_v1.yaml"]
+    paths += [ROOT / "data" / "candidates" / f"{d}_batch_01.yaml" for d in DOMAINS]
+    assert check_cross_bank_collisions(paths) == []
+    assert check_value_overlap(paths) == []
+
+
+def test_value_overlap_is_detected(tmp_path: Path) -> None:
+    bank = _bank(tmp_path, "c.yaml", [
+        {"id": "f_001", "entity": "user", "relation": "office_city", "value": "chennai",
+         "value_aliases": {"hi": ["चेन्नई"]},
+         "surface": {"en": "My office is in Chennai.", "hi": "मेरा ऑफिस चेन्नई में है।"}},
+        {"id": "f_002", "entity": "user", "relation": "cricket_team",
+         "value": "chennai_super_kings",
+         "surface": {"en": "My team is Chennai Super Kings.", "hi": "मेरी टीम चेन्नई सुपर किंग्स है।"}},
+        {"id": "f_003", "entity": "user", "relation": "vehicle", "value": "car",
+         "surface": {"en": "I drive a car.", "hi": "मेरे पास कार है।"}},
+        {"id": "f_004", "entity": "user", "relation": "card", "value": "debit_card",
+         "surface": {"en": "I use a debit card.", "hi": "मैं डेबिट कार्ड इस्तेमाल करता हूँ।"}},
+    ])
+    flagged = {i.fact_id for i in check_value_overlap([bank])}
+    # "chennai" sits inside f_002's sentence; "car" does not match the token "card".
+    assert flagged == {"f_001"}
 
 
 @pytest.mark.parametrize(

@@ -3,8 +3,9 @@
 # Templates use possessive constructions only ("<possessor> <attribute> <value> है"),
 # so Hindi agreement depends on the attribute noun's gender, never on the
 # speaker's or the entity's gender. The possessor is rendered as
-#   hi:    poss_hi_stem    + {m: "ा", f: "ी"}     e.g. "मेर"+"ा" = "मेरा", "मेरी माँ क"+"ी" = "मेरी माँ की"
-#   hi-en: poss_hien_stem  + {m: "a", f: "i"}     e.g. "Mer"+"a" = "Mera", "Meri mother k"+"i" = "Meri mother ki"
+#   hi:    poss_hi_stem    + {m: "ा", f: "ी", p: "े"}   e.g. "मेर"+"ा" = "मेरा", "मेरी माँ क"+"ी" = "मेरी माँ की"
+#   hi-en: poss_hien_stem  + {m: "a", f: "i", p: "e"}   e.g. "Mer"+"a" = "Mera", "Meri mother k"+"i" = "Meri mother ki"
+# (p = plural / honorific / oblique head noun: "मेरे घर का", "मेरे मैनेजर ... हैं")
 #   en:    poss_en                                e.g. "my", "my mother's"
 # Hinglish kinship nouns follow the existing fact bank (English nouns in a Hindi frame).
 #
@@ -46,3 +47,22 @@ entities:
     poss_en: "my friend's"
     poss_hi_stem: "मेरे दोस्त क"
     poss_hien_stem: "mere friend k"
+  # Kinship terms with no single English equivalent (BENCHMARK_SPEC.md Section 3,
+  # Family). English uses the unambiguous descriptive term; Hinglish keeps the
+  # Hindi kinship noun, as speakers do.
+  user_mama:
+    poss_en: "my maternal uncle's"
+    poss_hi_stem: "मेरे मामा क"
+    poss_hien_stem: "mere mama k"
+  user_bua:
+    poss_en: "my paternal aunt's"
+    poss_hi_stem: "मेरी बुआ क"
+    poss_hien_stem: "meri bua k"
+  user_nani:
+    poss_en: "my maternal grandmother's"
+    poss_hi_stem: "मेरी नानी क"
+    poss_hien_stem: "meri nani k"
+  user_dada:
+    poss_en: "my paternal grandfather's"
+    poss_hi_stem: "मेरे दादा क"
+    poss_hien_stem: "mere dada k"

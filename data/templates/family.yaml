@@ -1,0 +1,159 @@
+# Domain template: Family & Relationships (BENCHMARK_SPEC.md Section 3, item 5).
+# Format and placeholders: see data/templates/dining.yaml.
+#
+# Uses the Indic kinship entities (मामा, बुआ, नानी, दादा) from entities.yaml:
+# English renders them with the unambiguous descriptive term, Hinglish keeps the
+# Hindi noun. That asymmetry is the point of this domain (BENCHMARK_SPEC.md §3).
+#
+# Consistency: the user's own pet (f_005) and the mother's occupation (f_015)
+# exist in data/facts_v1.yaml and are not restated. The son and daughter are
+# children (ages below), and every other domain respects that.
+#
+# NEEDS BILINGUAL REVIEW (BENCHMARK_SPEC.md Section 7.4).
+domain: family
+
+relations:
+  person_name:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} name is {v}."
+      hi: "{poss} नाम {v} है।"
+      hi-en: "{Poss} naam {v} hai."
+    probe:
+      en: "What is {poss} name?"
+      hi: "{poss} नाम क्या है?"
+      hi-en: "{Poss} naam kya hai?"
+    correction:
+      en: "A correction: {poss} name is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} नाम {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} naam {old} nahi, {new} hai."
+    reprobe:
+      en: "So what is {poss} name?"
+      hi: "तो {poss} नाम क्या है?"
+    values:
+      rahul: {en: "Rahul", hi: "राहुल", hi-en: "Rahul"}
+      rohan: {en: "Rohan", hi: "रोहन", hi-en: "Rohan"}
+      priya: {en: "Priya", hi: "प्रिया", hi-en: "Priya"}
+      ramesh: {en: "Ramesh", hi: "रमेश", hi-en: "Ramesh"}
+      sunita: {en: "Sunita", hi: "सुनीता", hi-en: "Sunita"}
+      aarav: {en: "Aarav", hi: "आरव", hi-en: "Aarav"}
+
+  birthday_month:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} birthday is in {v}."
+      hi: "{poss} जन्मदिन {v} में आता है।"
+      hi-en: "{Poss} birthday {v} mein aata hai."
+    probe:
+      en: "In which month is {poss} birthday?"
+      hi: "{poss} जन्मदिन किस महीने में आता है?"
+      hi-en: "{Poss} birthday kis mahine mein aata hai?"
+    correction:
+      en: "A correction: {poss} birthday is not in {old}, it is in {new}."
+      hi: "एक सुधार है: {poss} जन्मदिन {old} में नहीं, बल्कि {new} में आता है।"
+      hi-en: "Ek correction hai: {poss} birthday {old} mein nahi, {new} mein aata hai."
+    reprobe:
+      en: "So in which month is {poss} birthday?"
+      hi: "तो {poss} जन्मदिन किस महीने में आता है?"
+    values:
+      march: {en: "March", hi: "मार्च", hi-en: "March"}
+      april: {en: "April", hi: "अप्रैल", hi-en: "April"}
+      july: {en: "July", hi: "जुलाई", hi-en: "July"}
+      november: {en: "November", hi: "नवंबर", hi-en: "November"}
+
+  age:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} age is {v}."
+      hi: "{poss} उम्र {v} है।"
+      hi-en: "{Poss} age {v} hai."
+    probe:
+      en: "What is {poss} age?"
+      hi: "{poss} उम्र कितनी है?"
+      hi-en: "{Poss} age kitni hai?"
+    correction:
+      en: "A correction: {poss} age is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} उम्र {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} age {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} age now?"
+      hi: "अब {poss} उम्र कितनी है?"
+    values:
+      8_years: {en: "8 years", hi: "8 साल", hi-en: "8 saal"}
+      9_years: {en: "9 years", hi: "9 साल", hi-en: "9 saal"}
+      11_years: {en: "11 years", hi: "11 साल", hi-en: "11 saal"}
+      82_years: {en: "82 years", hi: "82 साल", hi-en: "82 saal"}
+
+  pet_kind:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} pet is a {v}."
+      hi: "{poss} पालतू जानवर {v} है।"
+      hi-en: "{Poss} pet {v} hai."
+    probe:
+      en: "What kind of animal is {poss} pet?"
+      hi: "{poss} पालतू जानवर कौन सा है?"
+      hi-en: "{Poss} pet kaun sa animal hai?"
+    correction:
+      en: "A correction: {poss} pet is not a {old}, it is a {new}."
+      hi: "एक सुधार है: {poss} पालतू जानवर {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} pet {old} nahi, {new} hai."
+    reprobe:
+      en: "What kind of animal is {poss} pet now?"
+      hi: "अब {poss} पालतू जानवर कौन सा है?"
+    values:
+      cat: {en: "cat", hi: "बिल्ली", hi-en: "cat"}
+      parrot: {en: "parrot", hi: "तोता", hi-en: "parrot"}
+      rabbit: {en: "rabbit", hi: "खरगोश", hi-en: "rabbit"}
+
+  anniversary_month:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} wedding anniversary is in {v}."
+      hi: "{poss} शादी की सालगिरह {v} में आती है।"
+      hi-en: "{Poss} wedding anniversary {v} mein aati hai."
+    probe:
+      en: "In which month is {poss} wedding anniversary?"
+      hi: "{poss} शादी की सालगिरह किस महीने में आती है?"
+      hi-en: "{Poss} wedding anniversary kis mahine mein aati hai?"
+    correction:
+      en: "A correction: {poss} wedding anniversary is not in {old}, it is in {new}."
+      hi: "एक सुधार है: {poss} शादी की सालगिरह {old} में नहीं, बल्कि {new} में आती है।"
+      hi-en: "Ek correction hai: {poss} wedding anniversary {old} mein nahi, {new} mein aati hai."
+    reprobe:
+      en: "So in which month is {poss} wedding anniversary?"
+      hi: "तो {poss} शादी की सालगिरह किस महीने में आती है?"
+    values:
+      february: {en: "February", hi: "फ़रवरी", hi-en: "February"}
+      june: {en: "June", hi: "जून", hi-en: "June"}
+      december: {en: "December", hi: "दिसंबर", hi-en: "December"}
+      september: {en: "September", hi: "सितंबर", hi-en: "September"}
+
+facts:
+  - {id: f_501, relation: person_name, entity: user_brother, value: rahul, update: rohan}
+  - {id: f_501_dist, distractor_of: f_501, entity: user_friend}
+  - {id: f_502, relation: person_name, entity: user_sister, value: priya}
+  - {id: f_503, relation: person_name, entity: user_mama, value: ramesh}
+  - {id: f_503_dist, distractor_of: f_503, entity: user_dada}
+  - {id: f_504, relation: person_name, entity: user_bua, value: sunita}
+  - {id: f_505, relation: person_name, entity: user_son, value: aarav}
+
+  - {id: f_506, relation: birthday_month, entity: user_wife, value: march, update: april}
+  - {id: f_506_dist, distractor_of: f_506, entity: user_bua}
+  - {id: f_507, relation: birthday_month, entity: user_son, value: july}
+  - {id: f_508, relation: birthday_month, entity: user_nani, value: november}
+
+  - {id: f_509, relation: age, entity: user_daughter, value: 8_years, update: 9_years}
+  - {id: f_510, relation: age, entity: user_dada, value: 82_years}
+  - {id: f_510_dist, distractor_of: f_510, entity: user_nani}
+  - {id: f_511, relation: age, entity: user_son, value: 11_years}
+
+  - {id: f_512, relation: pet_kind, entity: user_sister, value: cat}
+  - {id: f_512_dist, distractor_of: f_512, entity: user_daughter}
+  - {id: f_513, relation: pet_kind, entity: user_mama, value: parrot}
+  - {id: f_514, relation: pet_kind, entity: user_friend, value: rabbit}
+
+  - {id: f_515, relation: anniversary_month, entity: user, value: february, update: june}
+  - {id: f_515_dist, distractor_of: f_515, entity: user_sister}
+  - {id: f_516, relation: anniversary_month, entity: user_brother, value: december}
+  - {id: f_517, relation: anniversary_month, entity: user_mama, value: september}

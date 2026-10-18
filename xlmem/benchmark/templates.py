@@ -12,8 +12,10 @@ from typing import Any
 
 import yaml
 
-_HI_AGREEMENT = {"m": "ा", "f": "ी"}
-_HIEN_AGREEMENT = {"m": "a", "f": "i"}
+# m / f: head noun gender. p: plural, honorific, or oblique (head noun followed by
+# a postposition, as in "मेरे घर का इंटरनेट").
+_HI_AGREEMENT = {"m": "ा", "f": "ी", "p": "े"}
+_HIEN_AGREEMENT = {"m": "a", "f": "i", "p": "e"}
 SURFACE_LANGS = ("en", "hi", "hi-en")
 REPROBE_LANGS = ("en", "hi")
 

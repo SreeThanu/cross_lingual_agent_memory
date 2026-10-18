@@ -1,0 +1,154 @@
+# Domain template: Hobbies & Entertainment (BENCHMARK_SPEC.md Section 3, item 7).
+# Format and placeholders: see data/templates/dining.yaml.
+#
+# Consistency with data/facts_v1.yaml: the user plays the guitar (f_009); no
+# relation here restates it, and the user has no "hobby" fact that would
+# contradict it. Team names avoid city names used as values elsewhere
+# (no Mumbai Indians: "mumbai" is f_002's correction value).
+#
+# NEEDS BILINGUAL REVIEW (BENCHMARK_SPEC.md Section 7.4).
+domain: hobbies
+
+relations:
+  cricket_team:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} favorite cricket team is {v}."
+      hi: "{poss} पसंदीदा क्रिकेट टीम {v} है।"
+      hi-en: "{Poss} favorite cricket team {v} hai."
+    probe:
+      en: "Which is {poss} favorite cricket team?"
+      hi: "{poss} पसंदीदा क्रिकेट टीम कौन सी है?"
+      hi-en: "{Poss} favorite cricket team kaun si hai?"
+    correction:
+      en: "A correction: {poss} favorite cricket team is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा क्रिकेट टीम {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite cricket team {old} nahi, {new} hai."
+    reprobe:
+      en: "Which is {poss} favorite cricket team now?"
+      hi: "अब {poss} पसंदीदा क्रिकेट टीम कौन सी है?"
+    values:
+      chennai_super_kings: {en: "Chennai Super Kings", hi: "चेन्नई सुपर किंग्स", hi-en: "Chennai Super Kings"}
+      rajasthan_royals: {en: "Rajasthan Royals", hi: "राजस्थान रॉयल्स", hi-en: "Rajasthan Royals"}
+      royal_challengers_bengaluru: {en: "Royal Challengers Bengaluru", hi: "रॉयल चैलेंजर्स बेंगलुरु", hi-en: "Royal Challengers Bengaluru"}
+      kolkata_knight_riders: {en: "Kolkata Knight Riders", hi: "कोलकाता नाइट राइडर्स", hi-en: "Kolkata Knight Riders"}
+
+  favorite_author:
+    gender: {hi: p, hi-en: p}   # honorific: मेरे पसंदीदा लेखक ... हैं
+    statement:
+      en: "{Poss} favorite author is {v}."
+      hi: "{poss} पसंदीदा लेखक {v} हैं।"
+      hi-en: "{Poss} favorite author {v} hain."
+    probe:
+      en: "Who is {poss} favorite author?"
+      hi: "{poss} पसंदीदा लेखक कौन हैं?"
+      hi-en: "{Poss} favorite author kaun hain?"
+    correction:
+      en: "A correction: {poss} favorite author is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा लेखक {old} नहीं, बल्कि {new} हैं।"
+      hi-en: "Ek correction hai: {poss} favorite author {old} nahi, {new} hain."
+    reprobe:
+      en: "Who is {poss} favorite author now?"
+      hi: "अब {poss} पसंदीदा लेखक कौन हैं?"
+    values:
+      premchand: {en: "Premchand", hi: "प्रेमचंद", hi-en: "Premchand"}
+      ruskin_bond: {en: "Ruskin Bond", hi: "रस्किन बॉन्ड", hi-en: "Ruskin Bond"}
+      chetan_bhagat: {en: "Chetan Bhagat", hi: "चेतन भगत", hi-en: "Chetan Bhagat"}
+      sudha_murty: {en: "Sudha Murty", hi: "सुधा मूर्ति", hi-en: "Sudha Murty"}
+
+  favorite_film:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} favorite film is {v}."
+      hi: "{poss} पसंदीदा फ़िल्म {v} है।"
+      hi-en: "{Poss} favorite film {v} hai."
+    probe:
+      en: "Which is {poss} favorite film?"
+      hi: "{poss} पसंदीदा फ़िल्म कौन सी है?"
+      hi-en: "{Poss} favorite film kaun si hai?"
+    correction:
+      en: "A correction: {poss} favorite film is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा फ़िल्म {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite film {old} nahi, {new} hai."
+    reprobe:
+      en: "Which is {poss} favorite film now?"
+      hi: "अब {poss} पसंदीदा फ़िल्म कौन सी है?"
+    values:
+      sholay: {en: "Sholay", hi: "शोले", hi-en: "Sholay"}
+      lagaan: {en: "Lagaan", hi: "लगान", hi-en: "Lagaan"}
+      dangal: {en: "Dangal", hi: "दंगल", hi-en: "Dangal"}
+      3_idiots: {en: "3 Idiots", hi: "3 इडियट्स", hi-en: "3 Idiots"}
+
+  favorite_sport:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} favorite sport to play is {v}."
+      hi: "{poss} खेलने का पसंदीदा खेल {v} है।"
+      hi-en: "{Poss} favorite sport {v} hai."
+    probe:
+      en: "What is {poss} favorite sport to play?"
+      hi: "{poss} खेलने का पसंदीदा खेल कौन सा है?"
+      hi-en: "{Poss} favorite sport kaun sa hai?"
+    correction:
+      en: "A correction: {poss} favorite sport to play is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} खेलने का पसंदीदा खेल {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite sport {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} favorite sport to play now?"
+      hi: "अब {poss} खेलने का पसंदीदा खेल कौन सा है?"
+    values:
+      badminton: {en: "badminton", hi: "बैडमिंटन", hi-en: "badminton"}
+      table_tennis: {en: "table tennis", hi: "टेबल टेनिस", hi-en: "table tennis"}
+      football: {en: "football", hi: "फ़ुटबॉल", hi-en: "football"}
+      chess: {en: "chess", hi: "शतरंज", hi-en: "chess"}
+
+  hobby:
+    gender: {hi: m, hi-en: f}   # शौक is m; Hinglish "hobby" is f ("meri hobby")
+    statement:
+      en: "{Poss} hobby is {v}."
+      hi: "{poss} शौक {v} है।"
+      hi-en: "{Poss} hobby {v} hai."
+    probe:
+      en: "What is {poss} hobby?"
+      hi: "{poss} शौक क्या है?"
+      hi-en: "{Poss} hobby kya hai?"
+    correction:
+      en: "A correction: {poss} hobby is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} शौक {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} hobby {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} hobby now?"
+      hi: "अब {poss} शौक क्या है?"
+    values:
+      photography: {en: "photography", hi: "फ़ोटोग्राफ़ी", hi-en: "photography"}
+      cooking: {en: "cooking", hi: "खाना बनाना", hi-en: "cooking"}
+      gardening: {en: "gardening", hi: "बागवानी", hi-en: "gardening"}
+      knitting: {en: "knitting", hi: "बुनाई", hi-en: "knitting"}
+      painting: {en: "painting", hi: "पेंटिंग", hi-en: "painting"}
+
+facts:
+  - {id: f_701, relation: cricket_team, entity: user, value: chennai_super_kings, update: rajasthan_royals}
+  - {id: f_701_dist, distractor_of: f_701, entity: user_brother}
+  - {id: f_702, relation: cricket_team, entity: user_son, value: royal_challengers_bengaluru}
+  - {id: f_703, relation: cricket_team, entity: user_father, value: kolkata_knight_riders}
+
+  - {id: f_704, relation: favorite_author, entity: user, value: premchand, update: ruskin_bond}
+  - {id: f_704_dist, distractor_of: f_704, entity: user_dada}
+  - {id: f_705, relation: favorite_author, entity: user_wife, value: sudha_murty}
+  - {id: f_706, relation: favorite_author, entity: user_brother, value: chetan_bhagat}
+
+  - {id: f_707, relation: favorite_film, entity: user, value: sholay, update: lagaan}
+  - {id: f_707_dist, distractor_of: f_707, entity: user_father}
+  - {id: f_708, relation: favorite_film, entity: user_sister, value: dangal}
+  - {id: f_709, relation: favorite_film, entity: user_son, value: 3_idiots}
+
+  - {id: f_710, relation: favorite_sport, entity: user, value: badminton, update: table_tennis}
+  - {id: f_710_dist, distractor_of: f_710, entity: user_wife}
+  - {id: f_711, relation: favorite_sport, entity: user_son, value: football}
+  - {id: f_712, relation: favorite_sport, entity: user_dada, value: chess}
+
+  - {id: f_713, relation: hobby, entity: user_friend, value: photography, update: cooking}
+  - {id: f_714, relation: hobby, entity: user_mother, value: gardening}
+  - {id: f_714_dist, distractor_of: f_714, entity: user_bua}
+  - {id: f_715, relation: hobby, entity: user_nani, value: knitting}
+  - {id: f_716, relation: hobby, entity: user_sister, value: painting}

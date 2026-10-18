@@ -1,0 +1,152 @@
+# Domain template: Travel & Geography (BENCHMARK_SPEC.md Section 3, item 4).
+# Format and placeholders: see data/templates/dining.yaml.
+#
+# Consistency with data/facts_v1.yaml: the user's residence (Pune, f_002, with a
+# correction to Mumbai), hometown (Jaipur, f_014) and planned trip (Manali,
+# f_010) already exist, and the brother lives in Pune (f_002_dist). No relation
+# here restates those, and no city here is Pune, Mumbai, Jaipur or Manali.
+#
+# NEEDS BILINGUAL REVIEW (BENCHMARK_SPEC.md Section 7.4).
+domain: travel
+
+relations:
+  home_city:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} home is in {v}."
+      hi: "{poss} घर {v} में है।"
+      hi-en: "{Poss} ghar {v} mein hai."
+    probe:
+      en: "In which city is {poss} home?"
+      hi: "{poss} घर किस शहर में है?"
+      hi-en: "{Poss} ghar kis city mein hai?"
+    correction:
+      en: "A correction: {poss} home is not in {old}, it is in {new}."
+      hi: "एक सुधार है: {poss} घर {old} में नहीं, बल्कि {new} में है।"
+      hi-en: "Ek correction hai: {poss} ghar {old} mein nahi, {new} mein hai."
+    reprobe:
+      en: "In which city is {poss} home now?"
+      hi: "अब {poss} घर किस शहर में है?"
+    values:
+      lucknow: {en: "Lucknow", hi: "लखनऊ", hi-en: "Lucknow"}
+      kochi: {en: "Kochi", hi: "कोच्चि", hi-en: "Kochi"}
+      indore: {en: "Indore", hi: "इंदौर", hi-en: "Indore"}
+      varanasi: {en: "Varanasi", hi: "वाराणसी", hi-en: "Varanasi"}
+
+  commute_mode:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} usual mode of commute is {v}."
+      hi: "{poss} आने-जाने का साधन {v} है।"
+      hi-en: "{Poss} commute ka mode {v} hai."
+    probe:
+      en: "What is {poss} usual mode of commute?"
+      hi: "{poss} आने-जाने का साधन क्या है?"
+      hi-en: "{Poss} commute ka mode kya hai?"
+    correction:
+      en: "A correction: {poss} usual mode of commute is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} आने-जाने का साधन {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} commute ka mode {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} usual mode of commute now?"
+      hi: "अब {poss} आने-जाने का साधन क्या है?"
+    values:
+      metro: {en: "the metro", hi: "मेट्रो", hi-en: "metro"}
+      bus: {en: "the bus", hi: "बस", hi-en: "bus"}
+      scooter: {en: "a scooter", hi: "स्कूटर", hi-en: "scooter"}
+      car: {en: "a car", hi: "कार", hi-en: "car"}
+
+  holiday_destination:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} favorite holiday destination is {v}."
+      hi: "{poss} घूमने की पसंदीदा जगह {v} है।"
+      hi-en: "{Poss} favorite holiday destination {v} hai."
+    probe:
+      en: "What is {poss} favorite holiday destination?"
+      hi: "{poss} घूमने की पसंदीदा जगह कौन सी है?"
+      hi-en: "{Poss} favorite holiday destination kaun si hai?"
+    correction:
+      en: "A correction: {poss} favorite holiday destination is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} घूमने की पसंदीदा जगह {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite holiday destination {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} favorite holiday destination now?"
+      hi: "अब {poss} घूमने की पसंदीदा जगह कौन सी है?"
+    values:
+      goa: {en: "Goa", hi: "गोवा", hi-en: "Goa"}
+      ladakh: {en: "Ladakh", hi: "लद्दाख", hi-en: "Ladakh"}
+      kerala: {en: "Kerala", hi: "केरल", hi-en: "Kerala"}
+      rishikesh: {en: "Rishikesh", hi: "ऋषिकेश", hi-en: "Rishikesh"}
+
+  dream_country:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} dream country to visit is {v}."
+      hi: "{poss} सपनों का देश {v} है।"
+      hi-en: "{Poss} dream country {v} hai."
+    probe:
+      en: "What is {poss} dream country to visit?"
+      hi: "{poss} सपनों का देश कौन सा है?"
+      hi-en: "{Poss} dream country kaun sa hai?"
+    correction:
+      en: "A correction: {poss} dream country to visit is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} सपनों का देश {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} dream country {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} dream country to visit now?"
+      hi: "अब {poss} सपनों का देश कौन सा है?"
+    values:
+      japan: {en: "Japan", hi: "जापान", hi-en: "Japan"}
+      iceland: {en: "Iceland", hi: "आइसलैंड", hi-en: "Iceland"}
+      switzerland: {en: "Switzerland", hi: "स्विट्ज़रलैंड", hi-en: "Switzerland"}
+      canada: {en: "Canada", hi: "कनाडा", hi-en: "Canada"}
+
+  favorite_airline:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} favorite airline is {v}."
+      hi: "{poss} पसंदीदा एयरलाइन {v} है।"
+      hi-en: "{Poss} favorite airline {v} hai."
+    probe:
+      en: "Which is {poss} favorite airline?"
+      hi: "{poss} पसंदीदा एयरलाइन कौन सी है?"
+      hi-en: "{Poss} favorite airline kaun si hai?"
+    correction:
+      en: "A correction: {poss} favorite airline is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा एयरलाइन {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite airline {old} nahi, {new} hai."
+    reprobe:
+      en: "Which is {poss} favorite airline now?"
+      hi: "अब {poss} पसंदीदा एयरलाइन कौन सी है?"
+    values:
+      indigo: {en: "IndiGo", hi: "इंडिगो", hi-en: "IndiGo"}
+      air_india: {en: "Air India", hi: "एयर इंडिया", hi-en: "Air India"}
+      spicejet: {en: "SpiceJet", hi: "स्पाइसजेट", hi-en: "SpiceJet"}
+      akasa_air: {en: "Akasa Air", hi: "अकासा एयर", hi-en: "Akasa Air"}
+
+facts:
+  - {id: f_401, relation: home_city, entity: user_mother, value: lucknow}
+  - {id: f_401_dist, distractor_of: f_401, entity: user_father}
+  - {id: f_402, relation: home_city, entity: user_sister, value: kochi, update: indore}
+  - {id: f_403, relation: home_city, entity: user_friend, value: varanasi}
+
+  - {id: f_404, relation: commute_mode, entity: user, value: metro, update: bus}
+  - {id: f_404_dist, distractor_of: f_404, entity: user_brother}
+  - {id: f_405, relation: commute_mode, entity: user_sister, value: scooter}
+  - {id: f_406, relation: commute_mode, entity: user_father, value: car}
+
+  - {id: f_407, relation: holiday_destination, entity: user, value: goa, update: ladakh}
+  - {id: f_407_dist, distractor_of: f_407, entity: user_son}
+  - {id: f_408, relation: holiday_destination, entity: user_wife, value: kerala}
+  - {id: f_409, relation: holiday_destination, entity: user_father, value: rishikesh}
+
+  - {id: f_410, relation: dream_country, entity: user, value: japan, update: iceland}
+  - {id: f_410_dist, distractor_of: f_410, entity: user_daughter}
+  - {id: f_411, relation: dream_country, entity: user_sister, value: switzerland}
+  - {id: f_412, relation: dream_country, entity: user_brother, value: canada}
+
+  - {id: f_413, relation: favorite_airline, entity: user, value: indigo, update: air_india}
+  - {id: f_413_dist, distractor_of: f_413, entity: user_friend}
+  - {id: f_414, relation: favorite_airline, entity: user_father, value: spicejet}
+  - {id: f_415, relation: favorite_airline, entity: user_wife, value: akasa_air}

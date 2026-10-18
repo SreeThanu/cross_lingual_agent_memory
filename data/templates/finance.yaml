@@ -1,0 +1,155 @@
+# Domain template: Financial & Administrative (BENCHMARK_SPEC.md Section 3, item 6).
+# Format and placeholders: see data/templates/dining.yaml.
+#
+# Tests whether quantities and dates survive translation (BENCHMARK_SPEC.md §3).
+# Numeric values always carry their unit ("5 तारीख", "1800 रुपये"), so a bare
+# number never becomes a match target that an age or a time could also satisfy.
+#
+# Consistency with data/facts_v1.yaml: the user's bank (HDFC, f_007) and credit
+# card network (Visa, f_016) exist. No value here contains "hdfc" or "visa".
+# The son and daughter are children and have no finance facts. Rent is only for
+# people without a home loan here.
+#
+# NEEDS BILINGUAL REVIEW (BENCHMARK_SPEC.md Section 7.4).
+domain: finance
+
+relations:
+  rent_due_day:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} rent is due on the {v} of every month."
+      hi: "{poss} किराया हर महीने की {v} को देना होता है।"
+      hi-en: "{Poss} rent har mahine ki {v} ko due hota hai."
+    probe:
+      en: "On which day of the month is {poss} rent due?"
+      hi: "{poss} किराया महीने की किस तारीख को देना होता है?"
+      hi-en: "{Poss} rent mahine ki kis tareekh ko due hota hai?"
+    correction:
+      en: "A correction: {poss} rent is not due on the {old}, it is due on the {new}."
+      hi: "एक सुधार है: {poss} किराया {old} को नहीं, बल्कि {new} को देना होता है।"
+      hi-en: "Ek correction hai: {poss} rent {old} ko nahi, {new} ko due hota hai."
+    reprobe:
+      en: "On which day of the month is {poss} rent due now?"
+      hi: "अब {poss} किराया महीने की किस तारीख को देना होता है?"
+    values:
+      5th: {en: "5th", hi: "5 तारीख", hi-en: "5 tareekh"}
+      1st: {en: "1st", hi: "1 तारीख", hi-en: "1 tareekh"}
+      10th: {en: "10th", hi: "10 तारीख", hi-en: "10 tareekh"}
+      7th: {en: "7th", hi: "7 तारीख", hi-en: "7 tareekh"}
+
+  payment_method:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} preferred payment method is {v}."
+      hi: "{poss} पेमेंट का पसंदीदा तरीका {v} है।"
+      hi-en: "{Poss} preferred payment method {v} hai."
+    probe:
+      en: "What is {poss} preferred payment method?"
+      hi: "{poss} पेमेंट का पसंदीदा तरीका क्या है?"
+      hi-en: "{Poss} preferred payment method kya hai?"
+    correction:
+      en: "A correction: {poss} preferred payment method is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पेमेंट का पसंदीदा तरीका {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} preferred payment method {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} preferred payment method now?"
+      hi: "अब {poss} पेमेंट का पसंदीदा तरीका क्या है?"
+    values:
+      upi: {en: "UPI", hi: "यूपीआई", hi-en: "UPI"}
+      debit_card: {en: "debit card", hi: "डेबिट कार्ड", hi-en: "debit card"}
+      cash: {en: "cash", hi: "नकद", hi-en: "cash"}
+      cheque: {en: "cheque", hi: "चेक", hi-en: "cheque"}
+
+  electricity_bill:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} electricity bill is about {v} a month."
+      hi: "{poss} बिजली का बिल हर महीने लगभग {v} आता है।"
+      hi-en: "{Poss} bijli ka bill har mahine lagbhag {v} aata hai."
+    probe:
+      en: "About how much is {poss} monthly electricity bill?"
+      hi: "{poss} बिजली का बिल हर महीने लगभग कितना आता है?"
+      hi-en: "{Poss} bijli ka bill har mahine lagbhag kitna aata hai?"
+    correction:
+      en: "A correction: {poss} electricity bill is not about {old}, it is about {new} a month."
+      hi: "एक सुधार है: {poss} बिजली का बिल लगभग {old} नहीं, बल्कि {new} आता है।"
+      hi-en: "Ek correction hai: {poss} bijli ka bill lagbhag {old} nahi, {new} aata hai."
+    reprobe:
+      en: "About how much is {poss} monthly electricity bill now?"
+      hi: "अब {poss} बिजली का बिल हर महीने लगभग कितना आता है?"
+    values:
+      1800_rupees: {en: "1800 rupees", hi: "1800 रुपये", hi-en: "1800 rupaye"}
+      2500_rupees: {en: "2500 rupees", hi: "2500 रुपये", hi-en: "2500 rupaye"}
+      900_rupees: {en: "900 rupees", hi: "900 रुपये", hi-en: "900 rupaye"}
+      3200_rupees: {en: "3200 rupees", hi: "3200 रुपये", hi-en: "3200 rupaye"}
+
+  health_insurer:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} health insurance is with {v}."
+      hi: "{poss} हेल्थ इंश्योरेंस {v} से है।"
+      hi-en: "{Poss} health insurance {v} se hai."
+    probe:
+      en: "Which company is {poss} health insurance with?"
+      hi: "{poss} हेल्थ इंश्योरेंस किस कंपनी से है?"
+      hi-en: "{Poss} health insurance kis company se hai?"
+    correction:
+      en: "A correction: {poss} health insurance is not with {old}, it is with {new}."
+      hi: "एक सुधार है: {poss} हेल्थ इंश्योरेंस {old} से नहीं, बल्कि {new} से है।"
+      hi-en: "Ek correction hai: {poss} health insurance {old} se nahi, {new} se hai."
+    reprobe:
+      en: "Which company is {poss} health insurance with now?"
+      hi: "अब {poss} हेल्थ इंश्योरेंस किस कंपनी से है?"
+    values:
+      star_health: {en: "Star Health", hi: "स्टार हेल्थ", hi-en: "Star Health"}
+      niva_bupa: {en: "Niva Bupa", hi: "निवा बूपा", hi-en: "Niva Bupa"}
+      care_health: {en: "Care Health", hi: "केयर हेल्थ", hi-en: "Care Health"}
+      icici_lombard: {en: "ICICI Lombard", hi: "आईसीआईसीआई लोम्बार्ड", hi-en: "ICICI Lombard"}
+
+  home_loan_bank:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} home loan is from {v}."
+      hi: "{poss} होम लोन {v} से है।"
+      hi-en: "{Poss} home loan {v} se hai."
+    probe:
+      en: "Which bank is {poss} home loan from?"
+      hi: "{poss} होम लोन किस बैंक से है?"
+      hi-en: "{Poss} home loan kis bank se hai?"
+    correction:
+      en: "A correction: {poss} home loan is not from {old}, it is from {new}."
+      hi: "एक सुधार है: {poss} होम लोन {old} से नहीं, बल्कि {new} से है।"
+      hi-en: "Ek correction hai: {poss} home loan {old} se nahi, {new} se hai."
+    reprobe:
+      en: "Which bank is {poss} home loan from now?"
+      hi: "अब {poss} होम लोन किस बैंक से है?"
+    values:
+      sbi: {en: "SBI", hi: "एसबीआई", hi-en: "SBI"}
+      axis_bank: {en: "Axis Bank", hi: "एक्सिस बैंक", hi-en: "Axis Bank"}
+      kotak: {en: "Kotak", hi: "कोटक", hi-en: "Kotak"}
+      bank_of_baroda: {en: "Bank of Baroda", hi: "बैंक ऑफ़ बड़ौदा", hi-en: "Bank of Baroda"}
+
+facts:
+  - {id: f_601, relation: rent_due_day, entity: user, value: 5th, update: 1st}
+  - {id: f_601_dist, distractor_of: f_601, entity: user_sister}
+  - {id: f_602, relation: rent_due_day, entity: user_friend, value: 10th}
+
+  - {id: f_604, relation: payment_method, entity: user, value: upi, update: debit_card}
+  - {id: f_604_dist, distractor_of: f_604, entity: user_wife}
+  - {id: f_605, relation: payment_method, entity: user_father, value: cash}
+  - {id: f_606, relation: payment_method, entity: user_dada, value: cheque}
+
+  - {id: f_607, relation: electricity_bill, entity: user, value: 1800_rupees, update: 2500_rupees}
+  - {id: f_607_dist, distractor_of: f_607, entity: user_sister}
+  - {id: f_608, relation: electricity_bill, entity: user_mother, value: 900_rupees}
+  - {id: f_609, relation: electricity_bill, entity: user_brother, value: 3200_rupees}
+
+  - {id: f_610, relation: health_insurer, entity: user, value: star_health, update: niva_bupa}
+  - {id: f_610_dist, distractor_of: f_610, entity: user_wife}
+  - {id: f_611, relation: health_insurer, entity: user_father, value: care_health}
+  - {id: f_612, relation: health_insurer, entity: user_friend, value: icici_lombard}
+
+  - {id: f_613, relation: home_loan_bank, entity: user_brother, value: axis_bank, update: bank_of_baroda}
+  - {id: f_613_dist, distractor_of: f_613, entity: user_mama}
+  - {id: f_614, relation: home_loan_bank, entity: user_father, value: sbi}
+  - {id: f_615, relation: home_loan_bank, entity: user_bua, value: kotak}
