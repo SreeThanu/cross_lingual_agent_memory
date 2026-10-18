@@ -25,10 +25,23 @@ Duplication Rate (DR) and False Merge Rate (FMR) require inspecting the entire m
 - **Inspectability Verdict:** **APPROVED.** Complete store dump is supported via cursor pagination and direct database inspection.
 
 ### 1.3 A-MEM (Active Memory - Xu et al., 2025)
+- **Correction (2026-10-18):** the original entry below the line described a graph file (`memory_network.json`) and an `AMEMAdapter` that do not exist. Verified against the source of `agiresearch/A-mem` at commit `ceffb86` (the library, as opposed to the paper-reproduction repo `WujiangXu/AgenticMemory`), with the LLM stubbed and CPU only:
+  - **Store:** every note is held in the in-process dict `AgenticMemorySystem.memories` and mirrored in an in-memory ChromaDB collection. 12 notes added gave 12 in `memories` and 12 in Chroma. A full `dump()` is possible.
+  - **No deduplication:** `add_note()` stores the turn text verbatim as a new note, even an identical one. "Evolution" only edits neighbours' tags and context and links notes. So for A-MEM, WF is ~1.0 by construction and DR measures no merging at all. This is a framework property to report, not a bug.
+  - **Isolation:** the constructor calls `client.reset()` on the process-wide Chroma client, and every instance uses the collection name `"memories"`. Creating a second instance deletes the first one's vector store. The adapter must absorb this, e.g. one instance per process or a per-user collection, or `test_reset_isolation` fails.
+  - **Defaults that would break hard rules:** `llm_backend="openai"` with `gpt-4o-mini` (paid API, rule 1), so the adapter must pass `llm_backend="ollama"` and refuse otherwise. The default embedder is `all-MiniLM-L6-v2`, which is English-only and would confound every cross-lingual comparison with Mem0 (BGE-M3), so the adapter must set a multilingual embedder.
+  - **Temperature:** `OllamaController.get_completion` accepts `temperature` but never passes it to litellm, so Ollama's default (0.8) applies, not the harness's 0.0. Shim it in the adapter, as `Mem0Adapter` does for its LLM, and record it in ARCHITECTURE.md §16 if it can't be fully controlled.
+  - **Environment:** A-MEM runs in its own env (`envs/xlmem-amem.requirements.txt`, chromadb 1.5.9). The harness env `xlmem` pins chromadb 0.4.24. Nothing in `xlmem/` imports chromadb, and mem0ai 0.1.26 does not depend on it (its requirements: openai, posthog, pydantic, pytz, qdrant-client, sqlalchemy), so that pin looks unused. A shared env may therefore be possible. Untested: the two envs also differ in torch (2.2.1 vs 2.14.0), sentence-transformers (2.5.1 vs 6.1.0) and transformers (4.38.2 vs 5.17.0), so try it in a throwaway clone of `xlmem`, not in `xlmem` itself. If they can't share one env, the adapter needs a subprocess or RPC bridge to `xlmem-amem`. Settle this before writing `amem_adapter.py`.
+- **Inspectability Verdict:** **APPROVED**, with the isolation and environment caveats above.
+
+<details><summary>Original entry (2026-09-17, inaccurate)</summary>
+
 - **Mechanism:** Interactive memory network graph backed by ChromaDB and local JSON graphs.
 - **Spike Finding:** A-MEM stores active memories as nodes in a graph index (`memory_network.json`) and indexes representations in ChromaDB. ChromaDB collections support `collection.get()`, which retrieves all stored embeddings and text documents when called without a `limit` or with `include=['documents', 'metadatas']`.
 - **Resolution:** [`AMEMAdapter`](xlmem/adapters/amem_adapter.py) will query `collection.get()` and read the graph node state directly from disk.
 - **Inspectability Verdict:** **APPROVED.** Complete store dump is supported.
+
+</details>
 
 ---
 
