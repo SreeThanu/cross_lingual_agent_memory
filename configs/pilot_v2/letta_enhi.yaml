@@ -1,0 +1,25 @@
+# Pilot v2 (2026-10-18): 3 frameworks x 4 directions x 3 seeds on facts_v1 (20 facts).
+# Identical across all 12 configs except framework and languages (Hard Rule 6).
+experiment: pilot_v2_letta_enhi
+framework: letta
+model:
+  name: qwen2.5:7b-instruct
+  quantization: q4_K_M
+  temperature: 0.0
+  backend: ollama
+  base_url: http://localhost:11434
+embedder: BAAI/bge-m3
+languages:
+  store: en
+  probe: hi
+benchmark:
+  fact_bank: data/facts_v1.yaml
+  n_facts: 20
+  filler_sessions: 1
+  distractor_ratio: 0.3
+mitigation: none
+seeds:
+  - 11
+  - 22
+  - 33
+output_dir: runs/pilot_v2/letta_enhi
