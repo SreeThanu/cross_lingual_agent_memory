@@ -33,6 +33,9 @@ relations:
       lenovo: {en: "Lenovo", hi: "लेनोवो", hi-en: "Lenovo"}
       hp: {en: "HP", hi: "एचपी", hi-en: "HP"}
       acer: {en: "Acer", hi: "एसर", hi-en: "Acer"}
+      asus: {en: "Asus", hi: "आसुस", hi-en: "Asus"}
+      msi: {en: "MSI", hi: "एमएसआई", hi-en: "MSI"}
+      toshiba: {en: "Toshiba", hi: "तोशिबा", hi-en: "Toshiba"}
 
   phone_brand:
     gender: {hi: m, hi-en: m}
@@ -56,6 +59,9 @@ relations:
       oneplus: {en: "OnePlus", hi: "वनप्लस", hi-en: "OnePlus"}
       apple: {en: "Apple", hi: "एप्पल", hi-en: "Apple"}
       nokia: {en: "Nokia", hi: "नोकिया", hi-en: "Nokia"}
+      xiaomi: {en: "Xiaomi", hi: "शाओमी", hi-en: "Xiaomi"}
+      realme: {en: "Realme", hi: "रियलमी", hi-en: "Realme"}
+      vivo: {en: "Vivo", hi: "वीवो", hi-en: "Vivo"}
 
   cloud_storage:
     gender: {hi: m, hi-en: m}
@@ -79,6 +85,9 @@ relations:
       dropbox: {en: "Dropbox", hi: "ड्रॉपबॉक्स", hi-en: "Dropbox"}
       onedrive: {en: "OneDrive", hi: "वनड्राइव", hi-en: "OneDrive"}
       icloud: {en: "iCloud", hi: "आईक्लाउड", hi-en: "iCloud"}
+      mega: {en: "MEGA", hi: "मेगा", hi-en: "MEGA"}
+      pcloud: {en: "pCloud", hi: "पीक्लाउड", hi-en: "pCloud"}
+      terabox: {en: "TeraBox", hi: "टेराबॉक्स", hi-en: "TeraBox"}
 
   home_internet:
     gender: {hi: p, hi-en: p}   # oblique: मेरे घर का इंटरनेट
@@ -102,6 +111,9 @@ relations:
       airtel: {en: "Airtel", hi: "एयरटेल", hi-en: "Airtel"}
       act_fibernet: {en: "ACT Fibernet", hi: "एक्ट फ़ाइबरनेट", hi-en: "ACT Fibernet"}
       bsnl: {en: "BSNL", hi: "बीएसएनएल", hi-en: "BSNL"}
+      hathway: {en: "Hathway", hi: "हैथवे", hi-en: "Hathway"}
+      excitel: {en: "Excitel", hi: "एक्साइटेल", hi-en: "Excitel"}
+      tata_play_fiber: {en: "Tata Play Fiber", hi: "टाटा प्ले फ़ाइबर", hi-en: "Tata Play Fiber"}
 
   smartwatch_brand:
     gender: {hi: f, hi-en: f}
@@ -125,6 +137,35 @@ relations:
       garmin: {en: "Garmin", hi: "गार्मिन", hi-en: "Garmin"}
       amazfit: {en: "Amazfit", hi: "अमेज़फ़िट", hi-en: "Amazfit"}
       titan: {en: "Titan", hi: "टाइटन", hi-en: "Titan"}
+      noise: {en: "Noise", hi: "नॉइज़", hi-en: "Noise"}
+      boat: {en: "boAt", hi: "बोट", hi-en: "boAt"}
+      fastrack: {en: "Fastrack", hi: "फ़ास्टट्रैक", hi-en: "Fastrack"}
+
+  # Batch 2. NEEDS BILINGUAL REVIEW. # अकाउंट is m.
+  email_provider:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} email account is on {v}."
+      hi: "{poss} ईमेल अकाउंट {v} पर है।"
+      hi-en: "{Poss} email account {v} par hai."
+    probe:
+      en: "Which service is {poss} email account on?"
+      hi: "{poss} ईमेल अकाउंट किस पर है?"
+      hi-en: "{Poss} email account kis par hai?"
+    correction:
+      en: "A correction: {poss} email account is not on {old}, it is on {new}."
+      hi: "एक सुधार है: {poss} ईमेल अकाउंट {old} पर नहीं, बल्कि {new} पर है।"
+      hi-en: "Ek correction hai: {poss} email account {old} par nahi, {new} par hai."
+    reprobe:
+      en: "Which service is {poss} email account on now?"
+      hi: "अब {poss} ईमेल अकाउंट किस पर है?"
+    values:
+      gmail: {en: "Gmail", hi: "जीमेल", hi-en: "Gmail"}
+      outlook: {en: "Outlook", hi: "आउटलुक", hi-en: "Outlook"}
+      yahoo_mail: {en: "Yahoo Mail", hi: "याहू मेल", hi-en: "Yahoo Mail"}
+      rediffmail: {en: "Rediffmail", hi: "रेडिफ़मेल", hi-en: "Rediffmail"}
+      zoho_mail: {en: "Zoho Mail", hi: "ज़ोहो मेल", hi-en: "Zoho Mail"}
+      proton_mail: {en: "Proton Mail", hi: "प्रोटॉन मेल", hi-en: "Proton Mail"}
 
 facts:
   - {id: f_801, relation: laptop_brand, entity: user, value: dell, update: lenovo}
@@ -151,3 +192,25 @@ facts:
   - {id: f_813_dist, distractor_of: f_813, entity: user_wife}
   - {id: f_814, relation: smartwatch_brand, entity: user_sister, value: amazfit}
   - {id: f_815, relation: smartwatch_brand, entity: user_father, value: titan}
+
+  # Batch 2 (2026-10-18). NEEDS BILINGUAL REVIEW.
+  - {id: f_816, relation: laptop_brand, entity: user_sister, value: asus, update: msi, batch: 2}
+  - {id: f_816_dist, distractor_of: f_816, entity: user_mama, batch: 2}
+  - {id: f_817, relation: laptop_brand, entity: user_son, value: toshiba, batch: 2}
+  - {id: f_818, relation: phone_brand, entity: user_brother, value: xiaomi, update: realme, batch: 2}
+  - {id: f_818_dist, distractor_of: f_818, entity: user_friend, batch: 2}
+  - {id: f_819, relation: phone_brand, entity: user_sister, value: vivo, batch: 2}
+  - {id: f_820, relation: cloud_storage, entity: user_brother, value: mega, update: pcloud, batch: 2}
+  - {id: f_820_dist, distractor_of: f_820, entity: user_mama, batch: 2}
+  - {id: f_821, relation: cloud_storage, entity: user_father, value: terabox, batch: 2}
+  - {id: f_822, relation: home_internet, entity: user_sister, value: hathway, update: excitel, batch: 2}
+  - {id: f_822_dist, distractor_of: f_822, entity: user_friend, batch: 2}
+  - {id: f_823, relation: home_internet, entity: user_bua, value: tata_play_fiber, batch: 2}
+  - {id: f_824, relation: smartwatch_brand, entity: user_brother, value: noise, update: boat, batch: 2}
+  - {id: f_824_dist, distractor_of: f_824, entity: user_son, batch: 2}
+  - {id: f_825, relation: smartwatch_brand, entity: user_daughter, value: fastrack, batch: 2}
+  - {id: f_826, relation: email_provider, entity: user, value: gmail, update: proton_mail, batch: 2}
+  - {id: f_826_dist, distractor_of: f_826, entity: user_sister, batch: 2}
+  - {id: f_827, relation: email_provider, entity: user_father, value: rediffmail, batch: 2}
+  - {id: f_828, relation: email_provider, entity: user_brother, value: outlook, update: zoho_mail, batch: 2}
+  - {id: f_829, relation: email_provider, entity: user_dada, value: yahoo_mail, batch: 2}

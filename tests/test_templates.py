@@ -91,17 +91,46 @@ def test_rendered_batch_passes_schema_validation(
     assert report.total_distractors / (report.total_facts - report.total_distractors) >= 0.30
 
 
-def test_checked_in_candidate_batch_matches_template(domain_facts: tuple[str, list]) -> None:
-    """data/candidates/<domain>_batch_01.yaml must be a pure render of its template."""
+def _plan_batches(domain: str) -> dict[str, int]:
+    plan = _load(ROOT / "data" / "templates" / f"{domain}.yaml")["facts"]
+    return {p["id"]: p.get("batch", 1) for p in plan}
+
+
+@pytest.mark.parametrize("batch", [1, 2])
+def test_checked_in_candidate_batch_matches_template(
+    domain_facts: tuple[str, list], batch: int
+) -> None:
+    """data/candidates/<domain>_batch_0N.yaml must be a pure render of its template's batch N."""
     domain, facts = domain_facts
-    assert _load(ROOT / "data" / "candidates" / f"{domain}_batch_01.yaml")["facts"] == facts
+    batches = _plan_batches(domain)
+    expected = [f for f in facts if batches[f["id"]] == batch]
+    checked_in = _load(ROOT / "data" / "candidates" / f"{domain}_batch_0{batch}.yaml")["facts"]
+    assert checked_in == expected
+
+
+def test_render_cli_writes_only_the_requested_batch(tmp_path: Path) -> None:
+    import subprocess
+    import sys
+
+    out = tmp_path / "b2.yaml"
+    subprocess.run(
+        [sys.executable, "-m", "xlmem.scripts.render_facts", "--template", str(DINING),
+         "--out", str(out), "--batch", "2"],
+        check=True, cwd=ROOT, capture_output=True,
+    )
+    ids = [f["id"] for f in _load(out)["facts"]]
+    batches = _plan_batches("dining")
+    assert ids and all(batches[i] == 2 for i in ids)
+    assert len(ids) == sum(b == 2 for b in batches.values())
 
 
 def test_all_candidate_batches_are_mutually_consistent() -> None:
     """No collisions or cross-fact value overlaps among the template-rendered batches
     and data/facts_v1.yaml (the pre-existing health batch is reviewed separately)."""
     paths = [ROOT / "data" / "facts_v1.yaml"]
-    paths += [ROOT / "data" / "candidates" / f"{d}_batch_01.yaml" for d in DOMAINS]
+    paths += [
+        ROOT / "data" / "candidates" / f"{d}_batch_0{b}.yaml" for d in DOMAINS for b in (1, 2)
+    ]
     assert check_cross_bank_collisions(paths) == []
     assert check_value_overlap(paths) == []
 

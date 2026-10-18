@@ -32,6 +32,9 @@ relations:
       kochi: {en: "Kochi", hi: "कोच्चि", hi-en: "Kochi"}
       indore: {en: "Indore", hi: "इंदौर", hi-en: "Indore"}
       varanasi: {en: "Varanasi", hi: "वाराणसी", hi-en: "Varanasi"}
+      patna: {en: "Patna", hi: "पटना", hi-en: "Patna"}
+      ranchi: {en: "Ranchi", hi: "रांची", hi-en: "Ranchi"}
+      mysuru: {en: "Mysuru", hi: "मैसूर", hi-en: "Mysuru"}
 
   commute_mode:
     gender: {hi: m, hi-en: m}
@@ -55,6 +58,9 @@ relations:
       bus: {en: "the bus", hi: "बस", hi-en: "bus"}
       scooter: {en: "a scooter", hi: "स्कूटर", hi-en: "scooter"}
       car: {en: "a car", hi: "कार", hi-en: "car"}
+      auto_rickshaw: {en: "an auto rickshaw", hi: "ऑटो रिक्शा", hi-en: "auto"}
+      bicycle: {en: "a bicycle", hi: "साइकिल", hi-en: "cycle"}
+      local_train: {en: "the local train", hi: "लोकल ट्रेन", hi-en: "local train"}
 
   holiday_destination:
     gender: {hi: f, hi-en: f}
@@ -78,6 +84,9 @@ relations:
       ladakh: {en: "Ladakh", hi: "लद्दाख", hi-en: "Ladakh"}
       kerala: {en: "Kerala", hi: "केरल", hi-en: "Kerala"}
       rishikesh: {en: "Rishikesh", hi: "ऋषिकेश", hi-en: "Rishikesh"}
+      andaman: {en: "Andaman", hi: "अंडमान", hi-en: "Andaman"}
+      sikkim: {en: "Sikkim", hi: "सिक्किम", hi-en: "Sikkim"}
+      ooty: {en: "Ooty", hi: "ऊटी", hi-en: "Ooty"}
 
   dream_country:
     gender: {hi: m, hi-en: m}
@@ -101,6 +110,9 @@ relations:
       iceland: {en: "Iceland", hi: "आइसलैंड", hi-en: "Iceland"}
       switzerland: {en: "Switzerland", hi: "स्विट्ज़रलैंड", hi-en: "Switzerland"}
       canada: {en: "Canada", hi: "कनाडा", hi-en: "Canada"}
+      new_zealand: {en: "New Zealand", hi: "न्यूज़ीलैंड", hi-en: "New Zealand"}
+      norway: {en: "Norway", hi: "नॉर्वे", hi-en: "Norway"}
+      egypt: {en: "Egypt", hi: "मिस्र", hi-en: "Egypt"}
 
   favorite_airline:
     gender: {hi: f, hi-en: f}
@@ -124,6 +136,35 @@ relations:
       air_india: {en: "Air India", hi: "एयर इंडिया", hi-en: "Air India"}
       spicejet: {en: "SpiceJet", hi: "स्पाइसजेट", hi-en: "SpiceJet"}
       akasa_air: {en: "Akasa Air", hi: "अकासा एयर", hi-en: "Akasa Air"}
+      emirates: {en: "Emirates", hi: "एमिरेट्स", hi-en: "Emirates"}
+      qatar_airways: {en: "Qatar Airways", hi: "क़तर एयरवेज़", hi-en: "Qatar Airways"}
+      lufthansa: {en: "Lufthansa", hi: "लुफ़्थांसा", hi-en: "Lufthansa"}
+
+  # Batch 2. NEEDS BILINGUAL REVIEW. # चेन is f.
+  hotel_chain:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} preferred hotel chain is {v}."
+      hi: "{poss} पसंदीदा होटल चेन {v} है।"
+      hi-en: "{Poss} favorite hotel chain {v} hai."
+    probe:
+      en: "What is {poss} preferred hotel chain?"
+      hi: "{poss} पसंदीदा होटल चेन कौन सी है?"
+      hi-en: "{Poss} favorite hotel chain kaun si hai?"
+    correction:
+      en: "A correction: {poss} preferred hotel chain is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा होटल चेन {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite hotel chain {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} preferred hotel chain now?"
+      hi: "अब {poss} पसंदीदा होटल चेन कौन सी है?"
+    values:
+      taj: {en: "Taj", hi: "ताज", hi-en: "Taj"}
+      oberoi: {en: "Oberoi", hi: "ओबेरॉय", hi-en: "Oberoi"}
+      itc_hotels: {en: "ITC Hotels", hi: "आईटीसी होटल्स", hi-en: "ITC Hotels"}
+      lemon_tree: {en: "Lemon Tree", hi: "लेमन ट्री", hi-en: "Lemon Tree"}
+      oyo: {en: "OYO", hi: "ओयो", hi-en: "OYO"}
+      marriott: {en: "Marriott", hi: "मैरियट", hi-en: "Marriott"}
 
 facts:
   - {id: f_401, relation: home_city, entity: user_mother, value: lucknow}
@@ -150,3 +191,25 @@ facts:
   - {id: f_413_dist, distractor_of: f_413, entity: user_friend}
   - {id: f_414, relation: favorite_airline, entity: user_father, value: spicejet}
   - {id: f_415, relation: favorite_airline, entity: user_wife, value: akasa_air}
+
+  # Batch 2 (2026-10-18). NEEDS BILINGUAL REVIEW.
+  - {id: f_416, relation: home_city, entity: user_bua, value: patna, update: ranchi, batch: 2}
+  - {id: f_416_dist, distractor_of: f_416, entity: user_mama, batch: 2}
+  - {id: f_417, relation: home_city, entity: user_nani, value: mysuru, batch: 2}
+  - {id: f_418, relation: commute_mode, entity: user_wife, value: auto_rickshaw, update: bicycle, batch: 2}
+  - {id: f_418_dist, distractor_of: f_418, entity: user_mother, batch: 2}
+  - {id: f_419, relation: commute_mode, entity: user_friend, value: local_train, batch: 2}
+  - {id: f_420, relation: holiday_destination, entity: user_sister, value: andaman, update: sikkim, batch: 2}
+  - {id: f_420_dist, distractor_of: f_420, entity: user_brother, batch: 2}
+  - {id: f_421, relation: holiday_destination, entity: user_mama, value: ooty, batch: 2}
+  - {id: f_422, relation: dream_country, entity: user_wife, value: new_zealand, update: norway, batch: 2}
+  - {id: f_422_dist, distractor_of: f_422, entity: user_son, batch: 2}
+  - {id: f_423, relation: dream_country, entity: user_friend, value: egypt, batch: 2}
+  - {id: f_424, relation: favorite_airline, entity: user_mother, value: emirates, update: qatar_airways, batch: 2}
+  - {id: f_424_dist, distractor_of: f_424, entity: user_sister, batch: 2}
+  - {id: f_425, relation: favorite_airline, entity: user_brother, value: lufthansa, batch: 2}
+  - {id: f_426, relation: hotel_chain, entity: user, value: taj, update: oberoi, batch: 2}
+  - {id: f_426_dist, distractor_of: f_426, entity: user_brother, batch: 2}
+  - {id: f_427, relation: hotel_chain, entity: user_father, value: itc_hotels, batch: 2}
+  - {id: f_428, relation: hotel_chain, entity: user_sister, value: lemon_tree, update: marriott, batch: 2}
+  - {id: f_429, relation: hotel_chain, entity: user_friend, value: oyo, batch: 2}

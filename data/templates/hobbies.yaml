@@ -32,6 +32,9 @@ relations:
       rajasthan_royals: {en: "Rajasthan Royals", hi: "राजस्थान रॉयल्स", hi-en: "Rajasthan Royals"}
       royal_challengers_bengaluru: {en: "Royal Challengers Bengaluru", hi: "रॉयल चैलेंजर्स बेंगलुरु", hi-en: "Royal Challengers Bengaluru"}
       kolkata_knight_riders: {en: "Kolkata Knight Riders", hi: "कोलकाता नाइट राइडर्स", hi-en: "Kolkata Knight Riders"}
+      mumbai_indians: {en: "Mumbai Indians", hi: "मुंबई इंडियंस", hi-en: "Mumbai Indians"}
+      gujarat_titans: {en: "Gujarat Titans", hi: "गुजरात टाइटंस", hi-en: "Gujarat Titans"}
+      punjab_kings: {en: "Punjab Kings", hi: "पंजाब किंग्स", hi-en: "Punjab Kings"}
 
   favorite_author:
     gender: {hi: p, hi-en: p}   # honorific: मेरे पसंदीदा लेखक ... हैं
@@ -55,6 +58,9 @@ relations:
       ruskin_bond: {en: "Ruskin Bond", hi: "रस्किन बॉन्ड", hi-en: "Ruskin Bond"}
       chetan_bhagat: {en: "Chetan Bhagat", hi: "चेतन भगत", hi-en: "Chetan Bhagat"}
       sudha_murty: {en: "Sudha Murty", hi: "सुधा मूर्ति", hi-en: "Sudha Murty"}
+      harivansh_rai_bachchan: {en: "Harivansh Rai Bachchan", hi: "हरिवंश राय बच्चन", hi-en: "Harivansh Rai Bachchan"}
+      rabindranath_tagore: {en: "Rabindranath Tagore", hi: "रवींद्रनाथ टैगोर", hi-en: "Rabindranath Tagore"}
+      narayan: {en: "R. K. Narayan", hi: "आर. के. नारायण", hi-en: "R. K. Narayan"}
 
   favorite_film:
     gender: {hi: f, hi-en: f}
@@ -78,6 +84,9 @@ relations:
       lagaan: {en: "Lagaan", hi: "लगान", hi-en: "Lagaan"}
       dangal: {en: "Dangal", hi: "दंगल", hi-en: "Dangal"}
       3_idiots: {en: "3 Idiots", hi: "3 इडियट्स", hi-en: "3 Idiots"}
+      dilwale_dulhania_le_jayenge: {en: "Dilwale Dulhania Le Jayenge", hi: "दिलवाले दुल्हनिया ले जाएंगे", hi-en: "Dilwale Dulhania Le Jayenge"}
+      queen: {en: "Queen", hi: "क्वीन", hi-en: "Queen"}
+      pakeezah: {en: "Pakeezah", hi: "पाकीज़ा", hi-en: "Pakeezah"}
 
   favorite_sport:
     gender: {hi: m, hi-en: m}
@@ -101,6 +110,9 @@ relations:
       table_tennis: {en: "table tennis", hi: "टेबल टेनिस", hi-en: "table tennis"}
       football: {en: "football", hi: "फ़ुटबॉल", hi-en: "football"}
       chess: {en: "chess", hi: "शतरंज", hi-en: "chess"}
+      swimming: {en: "swimming", hi: "तैराकी", hi-en: "swimming"}
+      kabaddi: {en: "kabaddi", hi: "कबड्डी", hi-en: "kabaddi"}
+      hockey: {en: "hockey", hi: "हॉकी", hi-en: "hockey"}
 
   hobby:
     gender: {hi: m, hi-en: f}   # शौक is m; Hinglish "hobby" is f ("meri hobby")
@@ -125,6 +137,35 @@ relations:
       gardening: {en: "gardening", hi: "बागवानी", hi-en: "gardening"}
       knitting: {en: "knitting", hi: "बुनाई", hi-en: "knitting"}
       painting: {en: "painting", hi: "पेंटिंग", hi-en: "painting"}
+      reading: {en: "reading", hi: "पढ़ना", hi-en: "reading"}
+      trekking: {en: "trekking", hi: "ट्रेकिंग", hi-en: "trekking"}
+      dancing: {en: "dancing", hi: "डांस", hi-en: "dance"}
+
+  # Batch 2. NEEDS BILINGUAL REVIEW. # वाद्ययंत्र is m.
+  favorite_instrument:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} favorite instrument to play is the {v}."
+      hi: "{poss} पसंदीदा वाद्ययंत्र {v} है।"
+      hi-en: "{Poss} favorite instrument {v} hai."
+    probe:
+      en: "What is {poss} favorite instrument to play?"
+      hi: "{poss} पसंदीदा वाद्ययंत्र कौन सा है?"
+      hi-en: "{Poss} favorite instrument kaun sa hai?"
+    correction:
+      en: "A correction: {poss} favorite instrument to play is not the {old}, it is the {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा वाद्ययंत्र {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite instrument {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} favorite instrument to play now?"
+      hi: "अब {poss} पसंदीदा वाद्ययंत्र कौन सा है?"
+    values:
+      flute: {en: "flute", hi: "बांसुरी", hi-en: "flute"}
+      tabla: {en: "tabla", hi: "तबला", hi-en: "tabla"}
+      violin: {en: "violin", hi: "वायलिन", hi-en: "violin"}
+      sitar: {en: "sitar", hi: "सितार", hi-en: "sitar"}
+      harmonium: {en: "harmonium", hi: "हारमोनियम", hi-en: "harmonium"}
+      keyboard: {en: "keyboard", hi: "कीबोर्ड", hi-en: "keyboard"}
 
 facts:
   - {id: f_701, relation: cricket_team, entity: user, value: chennai_super_kings, update: rajasthan_royals}
@@ -152,3 +193,25 @@ facts:
   - {id: f_714_dist, distractor_of: f_714, entity: user_bua}
   - {id: f_715, relation: hobby, entity: user_nani, value: knitting}
   - {id: f_716, relation: hobby, entity: user_sister, value: painting}
+
+  # Batch 2 (2026-10-18). NEEDS BILINGUAL REVIEW.
+  - {id: f_717, relation: cricket_team, entity: user_daughter, value: mumbai_indians, update: gujarat_titans, batch: 2}
+  - {id: f_717_dist, distractor_of: f_717, entity: user_friend, batch: 2}
+  - {id: f_718, relation: cricket_team, entity: user_mama, value: punjab_kings, batch: 2}
+  - {id: f_719, relation: favorite_author, entity: user_mother, value: harivansh_rai_bachchan, update: rabindranath_tagore, batch: 2}
+  - {id: f_719_dist, distractor_of: f_719, entity: user_father, batch: 2}
+  - {id: f_720, relation: favorite_author, entity: user_daughter, value: narayan, batch: 2}
+  - {id: f_721, relation: favorite_film, entity: user_wife, value: dilwale_dulhania_le_jayenge, update: queen, batch: 2}
+  - {id: f_721_dist, distractor_of: f_721, entity: user_mother, batch: 2}
+  - {id: f_722, relation: favorite_film, entity: user_dada, value: pakeezah, batch: 2}
+  - {id: f_723, relation: favorite_sport, entity: user_daughter, value: swimming, update: kabaddi, batch: 2}
+  - {id: f_723_dist, distractor_of: f_723, entity: user_sister, batch: 2}
+  - {id: f_724, relation: favorite_sport, entity: user_brother, value: hockey, batch: 2}
+  - {id: f_725, relation: hobby, entity: user_father, value: reading, update: trekking, batch: 2}
+  - {id: f_725_dist, distractor_of: f_725, entity: user_dada, batch: 2}
+  - {id: f_726, relation: hobby, entity: user_wife, value: dancing, batch: 2}
+  - {id: f_727, relation: favorite_instrument, entity: user_son, value: keyboard, update: violin, batch: 2}
+  - {id: f_728, relation: favorite_instrument, entity: user_father, value: tabla, batch: 2}
+  - {id: f_728_dist, distractor_of: f_728, entity: user_mama, batch: 2}
+  - {id: f_729, relation: favorite_instrument, entity: user_daughter, value: flute, update: sitar, batch: 2}
+  - {id: f_730, relation: favorite_instrument, entity: user_dada, value: harmonium, batch: 2}

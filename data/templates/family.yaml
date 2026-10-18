@@ -37,6 +37,9 @@ relations:
       ramesh: {en: "Ramesh", hi: "रमेश", hi-en: "Ramesh"}
       sunita: {en: "Sunita", hi: "सुनीता", hi-en: "Sunita"}
       aarav: {en: "Aarav", hi: "आरव", hi-en: "Aarav"}
+      meera: {en: "Meera", hi: "मीरा", hi-en: "Meera"}
+      anita: {en: "Anita", hi: "अनीता", hi-en: "Anita"}
+      ananya: {en: "Ananya", hi: "अनन्या", hi-en: "Ananya"}
 
   birthday_month:
     gender: {hi: m, hi-en: m}
@@ -60,6 +63,9 @@ relations:
       april: {en: "April", hi: "अप्रैल", hi-en: "April"}
       july: {en: "July", hi: "जुलाई", hi-en: "July"}
       november: {en: "November", hi: "नवंबर", hi-en: "November"}
+      january: {en: "January", hi: "जनवरी", hi-en: "January"}
+      october: {en: "October", hi: "अक्टूबर", hi-en: "October"}
+      august: {en: "August", hi: "अगस्त", hi-en: "August"}
 
   age:
     gender: {hi: f, hi-en: f}
@@ -83,6 +89,9 @@ relations:
       9_years: {en: "9 years", hi: "9 साल", hi-en: "9 saal"}
       11_years: {en: "11 years", hi: "11 साल", hi-en: "11 saal"}
       82_years: {en: "82 years", hi: "82 साल", hi-en: "82 saal"}
+      52_years: {en: "52 years", hi: "52 साल", hi-en: "52 saal"}
+      54_years: {en: "54 years", hi: "54 साल", hi-en: "54 saal"}
+      47_years: {en: "47 years", hi: "47 साल", hi-en: "47 saal"}
 
   pet_kind:
     gender: {hi: m, hi-en: m}
@@ -105,6 +114,9 @@ relations:
       cat: {en: "cat", hi: "बिल्ली", hi-en: "cat"}
       parrot: {en: "parrot", hi: "तोता", hi-en: "parrot"}
       rabbit: {en: "rabbit", hi: "खरगोश", hi-en: "rabbit"}
+      tortoise: {en: "tortoise", hi: "कछुआ", hi-en: "tortoise"}
+      fish: {en: "fish", hi: "मछली", hi-en: "fish"}
+      hamster: {en: "hamster", hi: "हैम्स्टर", hi-en: "hamster"}
 
   anniversary_month:
     gender: {hi: f, hi-en: f}
@@ -128,6 +140,35 @@ relations:
       june: {en: "June", hi: "जून", hi-en: "June"}
       december: {en: "December", hi: "दिसंबर", hi-en: "December"}
       september: {en: "September", hi: "सितंबर", hi-en: "September"}
+      january: {en: "January", hi: "जनवरी", hi-en: "January"}
+      october: {en: "October", hi: "अक्टूबर", hi-en: "October"}
+      march: {en: "March", hi: "मार्च", hi-en: "March"}
+
+  # Batch 2. NEEDS BILINGUAL REVIEW. # रंग is m; colour adjectives agree (नीला).
+  favorite_color:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} favorite color is {v}."
+      hi: "{poss} पसंदीदा रंग {v} है।"
+      hi-en: "{Poss} favorite color {v} hai."
+    probe:
+      en: "What is {poss} favorite color?"
+      hi: "{poss} पसंदीदा रंग कौन सा है?"
+      hi-en: "{Poss} favorite color kaun sa hai?"
+    correction:
+      en: "A correction: {poss} favorite color is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा रंग {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite color {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} favorite color now?"
+      hi: "अब {poss} पसंदीदा रंग कौन सा है?"
+    values:
+      blue: {en: "blue", hi: "नीला", hi-en: "blue"}
+      red: {en: "red", hi: "लाल", hi-en: "red"}
+      green: {en: "green", hi: "हरा", hi-en: "green"}
+      yellow: {en: "yellow", hi: "पीला", hi-en: "yellow"}
+      pink: {en: "pink", hi: "गुलाबी", hi-en: "pink"}
+      orange: {en: "orange", hi: "नारंगी", hi-en: "orange"}
 
 facts:
   - {id: f_501, relation: person_name, entity: user_brother, value: rahul, update: rohan}
@@ -157,3 +198,25 @@ facts:
   - {id: f_515_dist, distractor_of: f_515, entity: user_sister}
   - {id: f_516, relation: anniversary_month, entity: user_brother, value: december}
   - {id: f_517, relation: anniversary_month, entity: user_mama, value: september}
+
+  # Batch 2 (2026-10-18). NEEDS BILINGUAL REVIEW.
+  - {id: f_518, relation: person_name, entity: user_wife, value: meera, update: anita, batch: 2}
+  - {id: f_518_dist, distractor_of: f_518, entity: user_mother, batch: 2}
+  - {id: f_519, relation: person_name, entity: user_daughter, value: ananya, batch: 2}
+  - {id: f_520, relation: birthday_month, entity: user_daughter, value: january, update: october, batch: 2}
+  - {id: f_520_dist, distractor_of: f_520, entity: user_sister, batch: 2}
+  - {id: f_521, relation: birthday_month, entity: user_dada, value: august, batch: 2}
+  - {id: f_522, relation: age, entity: user_bua, value: 52_years, update: 54_years, batch: 2}
+  - {id: f_522_dist, distractor_of: f_522, entity: user_father, batch: 2}
+  - {id: f_523, relation: age, entity: user_mama, value: 47_years, batch: 2}
+  - {id: f_524, relation: pet_kind, entity: user_son, value: tortoise, update: fish, batch: 2}
+  - {id: f_524_dist, distractor_of: f_524, entity: user_brother, batch: 2}
+  - {id: f_525, relation: pet_kind, entity: user_bua, value: hamster, batch: 2}
+  - {id: f_526, relation: anniversary_month, entity: user_bua, value: january, update: october, batch: 2}
+  - {id: f_526_dist, distractor_of: f_526, entity: user_friend, batch: 2}
+  - {id: f_527, relation: anniversary_month, entity: user_dada, value: march, batch: 2}
+  - {id: f_528, relation: favorite_color, entity: user, value: blue, update: green, batch: 2}
+  - {id: f_528_dist, distractor_of: f_528, entity: user_wife, batch: 2}
+  - {id: f_529, relation: favorite_color, entity: user_daughter, value: pink, batch: 2}
+  - {id: f_530, relation: favorite_color, entity: user_son, value: red, update: yellow, batch: 2}
+  - {id: f_531, relation: favorite_color, entity: user_mother, value: orange, batch: 2}

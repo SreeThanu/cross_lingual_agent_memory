@@ -31,6 +31,11 @@ def main() -> int:
     parser.add_argument("--template", required=True, help="Domain template YAML.")
     parser.add_argument("--entities", default="data/templates/entities.yaml")
     parser.add_argument("--out", required=True, help="Output candidate YAML (must not exist).")
+    parser.add_argument(
+        "--batch", type=int, default=1,
+        help="Write only plan entries with this `batch:` (default 1; entries without one are "
+        "batch 1). The whole plan is still rendered, so uniqueness holds across batches.",
+    )
     args = parser.parse_args()
 
     out = Path(args.out)
@@ -42,6 +47,13 @@ def main() -> int:
         facts = load_and_render(args.template, args.entities)
     except TemplateError as e:
         logger.error("Template error: %s", e)
+        return 1
+    with open(args.template, encoding="utf-8") as f:
+        plan = yaml.safe_load(f)["facts"]
+    in_batch = {p["id"] for p in plan if p.get("batch", 1) == args.batch}
+    facts = [fact for fact in facts if fact["id"] in in_batch]
+    if not facts:
+        logger.error("No plan entries with batch %d in %s", args.batch, args.template)
         return 1
 
     body = yaml.safe_dump(

@@ -41,6 +41,9 @@ relations:
       chole_bhature: {en: "chole bhature", hi: "छोले भटूरे", hi-en: "chole bhature"}
       masala_dosa: {en: "masala dosa", hi: "मसाला डोसा", hi-en: "masala dosa"}
       pav_bhaji: {en: "pav bhaji", hi: "पाव भाजी", hi-en: "pav bhaji"}
+      aloo_paratha: {en: "aloo paratha", hi: "आलू पराठा", hi-en: "aloo paratha"}
+      dal_makhani: {en: "dal makhani", hi: "दाल मखनी", hi-en: "dal makhani"}
+      idli_sambar: {en: "idli sambar", hi: "इडली सांबर", hi-en: "idli sambar"}
 
   favorite_sweet:
     gender: {hi: f, hi-en: f}
@@ -65,6 +68,9 @@ relations:
       gulab_jamun: {en: "gulab jamun", hi: "गुलाब जामुन", hi-en: "gulab jamun"}
       kaju_katli: {en: "kaju katli", hi: "काजू कतली", hi-en: "kaju katli"}
       rasgulla: {en: "rasgulla", hi: "रसगुल्ला", hi-en: "rasgulla"}
+      ladoo: {en: "ladoo", hi: "लड्डू", hi-en: "ladoo"}
+      kheer: {en: "kheer", hi: "खीर", hi-en: "kheer"}
+      peda: {en: "peda", hi: "पेड़ा", hi-en: "peda"}
 
   disliked_vegetable:
     gender: {hi: f, hi-en: f}
@@ -88,6 +94,9 @@ relations:
       okra: {en: "okra", hi: "भिंडी", hi-en: "bhindi"}
       bottle_gourd: {en: "bottle gourd", hi: "लौकी", hi-en: "lauki"}
       brinjal: {en: "brinjal", hi: "बैंगन", hi-en: "baingan"}
+      cauliflower: {en: "cauliflower", hi: "फूलगोभी", hi-en: "phoolgobhi"}
+      spinach: {en: "spinach", hi: "पालक", hi-en: "palak"}
+      radish: {en: "radish", hi: "मूली", hi-en: "mooli"}
 
   favorite_fruit:
     gender: {hi: m, hi-en: m}
@@ -112,6 +121,9 @@ relations:
       guava: {en: "guava", hi: "अमरूद", hi-en: "guava"}
       papaya: {en: "papaya", hi: "पपीता", hi-en: "papaya"}
       pomegranate: {en: "pomegranate", hi: "अनार", hi-en: "pomegranate"}
+      banana: {en: "banana", hi: "केला", hi-en: "banana"}
+      watermelon: {en: "watermelon", hi: "तरबूज़", hi-en: "watermelon"}
+      chikoo: {en: "chikoo", hi: "चीकू", hi-en: "chikoo"}
 
   favorite_evening_snack:
     gender: {hi: m, hi-en: m}
@@ -135,6 +147,9 @@ relations:
       poha: {en: "poha", hi: "पोहा", hi-en: "poha"}
       dhokla: {en: "dhokla", hi: "ढोकला", hi-en: "dhokla"}
       bhelpuri: {en: "bhelpuri", hi: "भेलपुरी", hi-en: "bhelpuri"}
+      kachori: {en: "kachori", hi: "कचौरी", hi-en: "kachori"}
+      pakora: {en: "pakora", hi: "पकौड़ा", hi-en: "pakora"}
+      mathri: {en: "mathri", hi: "मठरी", hi-en: "mathri"}
 
   favorite_restaurant:
     gender: {hi: m, hi-en: m}
@@ -158,6 +173,35 @@ relations:
       sagar_ratna: {en: "Sagar Ratna", hi: "सागर रत्ना", hi-en: "Sagar Ratna"}
       moti_mahal: {en: "Moti Mahal", hi: "मोती महल", hi-en: "Moti Mahal"}
       bikanervala: {en: "Bikanervala", hi: "बीकानेरवाला", hi-en: "Bikanervala"}
+      haldiram: {en: "Haldiram's", hi: "हल्दीराम", hi-en: "Haldiram's"}
+      barbeque_nation: {en: "Barbeque Nation", hi: "बार्बेक्यू नेशन", hi-en: "Barbeque Nation"}
+      mtr: {en: "MTR", hi: "एमटीआर", hi-en: "MTR"}
+
+  # Batch 2. NEEDS BILINGUAL REVIEW. # खाना is m; Hinglish "cuisine" taken as f (like "dish"). Check.
+  favorite_cuisine:
+    gender: {hi: m, hi-en: f}
+    statement:
+      en: "{Poss} favorite cuisine is {v}."
+      hi: "{poss} पसंदीदा खाना {v} है।"
+      hi-en: "{Poss} favorite cuisine {v} hai."
+    probe:
+      en: "What is {poss} favorite cuisine?"
+      hi: "{poss} पसंदीदा खाना कौन सा है?"
+      hi-en: "{Poss} favorite cuisine kaun si hai?"
+    correction:
+      en: "A correction: {poss} favorite cuisine is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} पसंदीदा खाना {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} favorite cuisine {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} favorite cuisine now?"
+      hi: "अब {poss} पसंदीदा खाना कौन सा है?"
+    values:
+      south_indian: {en: "South Indian", hi: "दक्षिण भारतीय", hi-en: "South Indian"}
+      punjabi: {en: "Punjabi", hi: "पंजाबी", hi-en: "Punjabi"}
+      gujarati: {en: "Gujarati", hi: "गुजराती", hi-en: "Gujarati"}
+      bengali: {en: "Bengali", hi: "बंगाली", hi-en: "Bengali"}
+      chinese: {en: "Chinese", hi: "चाइनीज़", hi-en: "Chinese"}
+      italian: {en: "Italian", hi: "इटैलियन", hi-en: "Italian"}
 
 # The fact plan. Every (entity, relation) pair is unique. A distractor is an
 # entity-shift of its base fact (same relation + value, an entity with no base
@@ -194,3 +238,28 @@ facts:
   - {id: f_216_dist, distractor_of: f_216, entity: user_brother}
   - {id: f_217, relation: favorite_restaurant, entity: user_friend, value: moti_mahal}
   - {id: f_218, relation: favorite_restaurant, entity: user_wife, value: bikanervala}
+
+  # Batch 2 (2026-10-18). NEEDS BILINGUAL REVIEW.
+  - {id: f_219, relation: favorite_dish, entity: user_father, value: aloo_paratha, update: idli_sambar, batch: 2}
+  - {id: f_219_dist, distractor_of: f_219, entity: user_mama, batch: 2}
+  - {id: f_220, relation: favorite_dish, entity: user_nani, value: dal_makhani, batch: 2}
+  - {id: f_221, relation: favorite_sweet, entity: user_mother, value: ladoo, update: peda, batch: 2}
+  - {id: f_221_dist, distractor_of: f_221, entity: user_bua, batch: 2}
+  - {id: f_222, relation: favorite_sweet, entity: user_dada, value: kheer, batch: 2}
+  - {id: f_223, relation: disliked_vegetable, entity: user_daughter, value: cauliflower, update: radish, batch: 2}
+  - {id: f_223_dist, distractor_of: f_223, entity: user_brother, batch: 2}
+  - {id: f_224, relation: disliked_vegetable, entity: user_nani, value: spinach, batch: 2}
+  - {id: f_225, relation: favorite_fruit, entity: user_son, value: banana, update: chikoo, batch: 2}
+  - {id: f_225_dist, distractor_of: f_225, entity: user_daughter, batch: 2}
+  - {id: f_226, relation: favorite_fruit, entity: user_dada, value: watermelon, batch: 2}
+  - {id: f_227, relation: favorite_evening_snack, entity: user_mother, value: kachori, update: mathri, batch: 2}
+  - {id: f_227_dist, distractor_of: f_227, entity: user_nani, batch: 2}
+  - {id: f_228, relation: favorite_evening_snack, entity: user_friend, value: pakora, batch: 2}
+  - {id: f_229, relation: favorite_restaurant, entity: user_sister, value: haldiram, update: mtr, batch: 2}
+  - {id: f_229_dist, distractor_of: f_229, entity: user_mother, batch: 2}
+  - {id: f_230, relation: favorite_restaurant, entity: user_father, value: barbeque_nation, batch: 2}
+  - {id: f_231, relation: favorite_cuisine, entity: user, value: south_indian, update: italian, batch: 2}
+  - {id: f_231_dist, distractor_of: f_231, entity: user_sister, batch: 2}
+  - {id: f_232, relation: favorite_cuisine, entity: user_mother, value: gujarati, batch: 2}
+  - {id: f_233, relation: favorite_cuisine, entity: user_brother, value: chinese, update: bengali, batch: 2}
+  - {id: f_234, relation: favorite_cuisine, entity: user_wife, value: punjabi, batch: 2}

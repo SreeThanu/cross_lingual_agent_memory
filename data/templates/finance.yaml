@@ -59,6 +59,9 @@ relations:
       debit_card: {en: "debit card", hi: "डेबिट कार्ड", hi-en: "debit card"}
       cash: {en: "cash", hi: "नकद", hi-en: "cash"}
       cheque: {en: "cheque", hi: "चेक", hi-en: "cheque"}
+      net_banking: {en: "net banking", hi: "नेट बैंकिंग", hi-en: "net banking"}
+      mobile_wallet: {en: "a mobile wallet", hi: "मोबाइल वॉलेट", hi-en: "mobile wallet"}
+      bank_transfer: {en: "bank transfer", hi: "बैंक ट्रांसफ़र", hi-en: "bank transfer"}
 
   electricity_bill:
     gender: {hi: m, hi-en: m}
@@ -82,6 +85,9 @@ relations:
       2500_rupees: {en: "2500 rupees", hi: "2500 रुपये", hi-en: "2500 rupaye"}
       900_rupees: {en: "900 rupees", hi: "900 रुपये", hi-en: "900 rupaye"}
       3200_rupees: {en: "3200 rupees", hi: "3200 रुपये", hi-en: "3200 rupaye"}
+      1200_rupees: {en: "1200 rupees", hi: "1200 रुपये", hi-en: "1200 rupaye"}
+      1500_rupees: {en: "1500 rupees", hi: "1500 रुपये", hi-en: "1500 rupaye"}
+      600_rupees: {en: "600 rupees", hi: "600 रुपये", hi-en: "600 rupaye"}
 
   health_insurer:
     gender: {hi: m, hi-en: m}
@@ -105,6 +111,9 @@ relations:
       niva_bupa: {en: "Niva Bupa", hi: "निवा बूपा", hi-en: "Niva Bupa"}
       care_health: {en: "Care Health", hi: "केयर हेल्थ", hi-en: "Care Health"}
       icici_lombard: {en: "ICICI Lombard", hi: "आईसीआईसीआई लोम्बार्ड", hi-en: "ICICI Lombard"}
+      tata_aig: {en: "Tata AIG", hi: "टाटा एआईजी", hi-en: "Tata AIG"}
+      bajaj_allianz: {en: "Bajaj Allianz", hi: "बजाज आलियांज़", hi-en: "Bajaj Allianz"}
+      aditya_birla: {en: "Aditya Birla Health", hi: "आदित्य बिड़ला हेल्थ", hi-en: "Aditya Birla Health"}
 
   home_loan_bank:
     gender: {hi: m, hi-en: m}
@@ -128,6 +137,32 @@ relations:
       axis_bank: {en: "Axis Bank", hi: "एक्सिस बैंक", hi-en: "Axis Bank"}
       kotak: {en: "Kotak", hi: "कोटक", hi-en: "Kotak"}
       bank_of_baroda: {en: "Bank of Baroda", hi: "बैंक ऑफ़ बड़ौदा", hi-en: "Bank of Baroda"}
+
+  # Batch 2. NEEDS BILINGUAL REVIEW. # निवेश is m.
+  main_investment:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} main investment is in {v}."
+      hi: "{poss} मुख्य निवेश {v} में है।"
+      hi-en: "{Poss} main investment {v} mein hai."
+    probe:
+      en: "What is {poss} main investment in?"
+      hi: "{poss} मुख्य निवेश किसमें है?"
+      hi-en: "{Poss} main investment kismein hai?"
+    correction:
+      en: "A correction: {poss} main investment is not in {old}, it is in {new}."
+      hi: "एक सुधार है: {poss} मुख्य निवेश {old} में नहीं, बल्कि {new} में है।"
+      hi-en: "Ek correction hai: {poss} main investment {old} mein nahi, {new} mein hai."
+    reprobe:
+      en: "What is {poss} main investment in now?"
+      hi: "अब {poss} मुख्य निवेश किसमें है?"
+    values:
+      fixed_deposits: {en: "fixed deposits", hi: "फ़िक्स्ड डिपॉज़िट", hi-en: "FD"}
+      mutual_funds: {en: "mutual funds", hi: "म्यूचुअल फ़ंड", hi-en: "mutual funds"}
+      ppf: {en: "PPF", hi: "पीपीएफ", hi-en: "PPF"}
+      nps: {en: "NPS", hi: "एनपीएस", hi-en: "NPS"}
+      real_estate: {en: "real estate", hi: "रियल एस्टेट", hi-en: "real estate"}
+      shares: {en: "shares", hi: "शेयर", hi-en: "shares"}
 
 facts:
   - {id: f_601, relation: rent_due_day, entity: user, value: 5th, update: 1st}
@@ -153,3 +188,19 @@ facts:
   - {id: f_613_dist, distractor_of: f_613, entity: user_mama}
   - {id: f_614, relation: home_loan_bank, entity: user_father, value: sbi}
   - {id: f_615, relation: home_loan_bank, entity: user_bua, value: kotak}
+
+  # Batch 2 (2026-10-18). NEEDS BILINGUAL REVIEW.
+  - {id: f_616, relation: payment_method, entity: user_sister, value: net_banking, update: bank_transfer, batch: 2}
+  - {id: f_616_dist, distractor_of: f_616, entity: user_mama, batch: 2}
+  - {id: f_617, relation: payment_method, entity: user_brother, value: mobile_wallet, batch: 2}
+  - {id: f_618, relation: electricity_bill, entity: user_bua, value: 1200_rupees, update: 1500_rupees, batch: 2}
+  - {id: f_618_dist, distractor_of: f_618, entity: user_friend, batch: 2}
+  - {id: f_619, relation: electricity_bill, entity: user_nani, value: 600_rupees, batch: 2}
+  - {id: f_620, relation: health_insurer, entity: user_brother, value: tata_aig, update: bajaj_allianz, batch: 2}
+  - {id: f_620_dist, distractor_of: f_620, entity: user_mama, batch: 2}
+  - {id: f_621, relation: health_insurer, entity: user_sister, value: aditya_birla, batch: 2}
+  - {id: f_622, relation: main_investment, entity: user, value: mutual_funds, update: shares, batch: 2}
+  - {id: f_622_dist, distractor_of: f_622, entity: user_brother, batch: 2}
+  - {id: f_623, relation: main_investment, entity: user_father, value: fixed_deposits, batch: 2}
+  - {id: f_624, relation: main_investment, entity: user_wife, value: ppf, update: nps, batch: 2}
+  - {id: f_625, relation: main_investment, entity: user_sister, value: real_estate, batch: 2}

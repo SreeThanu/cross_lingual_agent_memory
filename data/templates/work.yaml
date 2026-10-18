@@ -32,6 +32,9 @@ relations:
       nit_trichy: {en: "NIT Trichy", hi: "एनआईटी त्रिची", hi-en: "NIT Trichy"}
       bits_pilani: {en: "BITS Pilani", hi: "बिट्स पिलानी", hi-en: "BITS Pilani"}
       delhi_university: {en: "Delhi University", hi: "दिल्ली विश्वविद्यालय", hi-en: "Delhi University"}
+      vit_vellore: {en: "VIT Vellore", hi: "वीआईटी वेल्लोर", hi-en: "VIT Vellore"}
+      jnu: {en: "JNU", hi: "जेएनयू", hi-en: "JNU"}
+      anna_university: {en: "Anna University", hi: "अन्ना यूनिवर्सिटी", hi-en: "Anna University"}
 
   job_company:
     gender: {hi: f, hi-en: f}
@@ -55,6 +58,9 @@ relations:
       hcl: {en: "HCL", hi: "एचसीएल", hi-en: "HCL"}
       accenture: {en: "Accenture", hi: "एक्सेंचर", hi-en: "Accenture"}
       reliance: {en: "Reliance", hi: "रिलायंस", hi-en: "Reliance"}
+      cognizant: {en: "Cognizant", hi: "कॉग्निज़ेंट", hi-en: "Cognizant"}
+      tech_mahindra: {en: "Tech Mahindra", hi: "टेक महिंद्रा", hi-en: "Tech Mahindra"}
+      ongc: {en: "ONGC", hi: "ओएनजीसी", hi-en: "ONGC"}
 
   office_city:
     gender: {hi: m, hi-en: m}
@@ -78,6 +84,9 @@ relations:
       gurugram: {en: "Gurugram", hi: "गुरुग्राम", hi-en: "Gurugram"}
       hyderabad: {en: "Hyderabad", hi: "हैदराबाद", hi-en: "Hyderabad"}
       ahmedabad: {en: "Ahmedabad", hi: "अहमदाबाद", hi-en: "Ahmedabad"}
+      chandigarh: {en: "Chandigarh", hi: "चंडीगढ़", hi-en: "Chandigarh"}
+      bhopal: {en: "Bhopal", hi: "भोपाल", hi-en: "Bhopal"}
+      nagpur: {en: "Nagpur", hi: "नागपुर", hi-en: "Nagpur"}
 
   shift_start:
     gender: {hi: f, hi-en: f}
@@ -101,6 +110,9 @@ relations:
       10_am: {en: "10 am", hi: "सुबह 10", hi-en: "subah 10"}
       2_pm: {en: "2 pm", hi: "दोपहर 2", hi-en: "dopahar 2"}
       6_am: {en: "6 am", hi: "सुबह 6", hi-en: "subah 6"}
+      8_am: {en: "8 am", hi: "सुबह 8", hi-en: "subah 8"}
+      11_am: {en: "11 am", hi: "सुबह 11", hi-en: "subah 11"}
+      7_am: {en: "7 am", hi: "सुबह 7", hi-en: "subah 7"}
 
   manager_name:
     gender: {hi: p, hi-en: p}   # honorific: मेरे मैनेजर ... हैं
@@ -124,6 +136,35 @@ relations:
       vikram_joshi: {en: "Vikram Joshi", hi: "विक्रम जोशी", hi-en: "Vikram Joshi"}
       suresh_iyer: {en: "Suresh Iyer", hi: "सुरेश अय्यर", hi-en: "Suresh Iyer"}
       kavita_rao: {en: "Kavita Rao", hi: "कविता राव", hi-en: "Kavita Rao"}
+      anjali_mehta: {en: "Anjali Mehta", hi: "अंजलि मेहता", hi-en: "Anjali Mehta"}
+      rohit_kulkarni: {en: "Rohit Kulkarni", hi: "रोहित कुलकर्णी", hi-en: "Rohit Kulkarni"}
+      farhan_sheikh: {en: "Farhan Sheikh", hi: "फ़रहान शेख़", hi-en: "Farhan Sheikh"}
+
+  # Batch 2. NEEDS BILINGUAL REVIEW.
+  department:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} department at work is {v}."
+      hi: "{poss} डिपार्टमेंट {v} है।"
+      hi-en: "{Poss} department {v} hai."
+    probe:
+      en: "What is {poss} department at work?"
+      hi: "{poss} डिपार्टमेंट कौन सा है?"
+      hi-en: "{Poss} department kaun sa hai?"
+    correction:
+      en: "A correction: {poss} department is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} डिपार्टमेंट {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} department {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} department at work now?"
+      hi: "अब {poss} डिपार्टमेंट कौन सा है?"
+    values:
+      marketing: {en: "marketing", hi: "मार्केटिंग", hi-en: "marketing"}
+      sales: {en: "sales", hi: "सेल्स", hi-en: "sales"}
+      finance: {en: "finance", hi: "फ़ाइनेंस", hi-en: "finance"}
+      hr: {en: "HR", hi: "एचआर", hi-en: "HR"}
+      legal: {en: "legal", hi: "लीगल", hi-en: "legal"}
+      research: {en: "research", hi: "रिसर्च", hi-en: "research"}
 
 facts:
   - {id: f_301, relation: alma_mater, entity: user, value: iit_bombay, update: nit_trichy}
@@ -150,3 +191,24 @@ facts:
   - {id: f_313_dist, distractor_of: f_313, entity: user_friend}
   - {id: f_314, relation: manager_name, entity: user_brother, value: suresh_iyer}
   - {id: f_315, relation: manager_name, entity: user_sister, value: kavita_rao}
+
+  # Batch 2 (2026-10-18). NEEDS BILINGUAL REVIEW.
+  - {id: f_316, relation: alma_mater, entity: user_wife, value: vit_vellore, update: anna_university, batch: 2}
+  - {id: f_316_dist, distractor_of: f_316, entity: user_bua, batch: 2}
+  - {id: f_317, relation: alma_mater, entity: user_mama, value: jnu, batch: 2}
+  - {id: f_318, relation: job_company, entity: user_mama, value: cognizant, update: tech_mahindra, batch: 2}
+  - {id: f_319, relation: job_company, entity: user_father, value: ongc, batch: 2}
+  - {id: f_320, relation: office_city, entity: user_bua, value: chandigarh, update: bhopal, batch: 2}
+  - {id: f_320_dist, distractor_of: f_320, entity: user_wife, batch: 2}
+  - {id: f_321, relation: office_city, entity: user_father, value: nagpur, batch: 2}
+  - {id: f_322, relation: shift_start, entity: user_wife, value: 8_am, update: 11_am, batch: 2}
+  - {id: f_322_dist, distractor_of: f_322, entity: user_bua, batch: 2}
+  - {id: f_323, relation: shift_start, entity: user_mama, value: 7_am, batch: 2}
+  - {id: f_324, relation: manager_name, entity: user_wife, value: anjali_mehta, update: rohit_kulkarni, batch: 2}
+  - {id: f_324_dist, distractor_of: f_324, entity: user_bua, batch: 2}
+  - {id: f_325, relation: manager_name, entity: user_mama, value: farhan_sheikh, batch: 2}
+  - {id: f_326, relation: department, entity: user_sister, value: marketing, update: research, batch: 2}
+  - {id: f_327, relation: department, entity: user_brother, value: sales, batch: 2}
+  - {id: f_327_dist, distractor_of: f_327, entity: user_mama, batch: 2}
+  - {id: f_328, relation: department, entity: user_friend, value: finance, update: legal, batch: 2}
+  - {id: f_329, relation: department, entity: user_bua, value: hr, batch: 2}
