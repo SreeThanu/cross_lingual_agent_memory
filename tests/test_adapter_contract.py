@@ -18,12 +18,28 @@ def adapter(request: pytest.FixtureRequest) -> MemoryAdapter:
     return get_adapter(request.param)
 
 
+# Same adapters, but the real frameworks are marked `gpu`: these tests exercise
+# the live store (Ollama for Mem0, the Letta server), so they cannot run offline.
+# Deselected by `pytest -m "not gpu"`; the mock adapter still runs them offline.
+@pytest.fixture(
+    params=[
+        "mock",
+        pytest.param("mem0", marks=pytest.mark.gpu),
+        pytest.param("letta", marks=pytest.mark.gpu),
+    ]
+)
+def live_adapter(request: pytest.FixtureRequest) -> MemoryAdapter:
+    """Adapters for tests that need the framework's live backend."""
+    return get_adapter(request.param)
+
+
 def test_supports_dump_is_true(adapter: MemoryAdapter) -> None:
     """Hard Rule 7: supports_dump must be True."""
     assert adapter.supports_dump is True, f"{adapter.name} must declare supports_dump = True"
 
 
-def test_write_and_dump_roundtrip(adapter: MemoryAdapter) -> None:
+def test_write_and_dump_roundtrip(live_adapter: MemoryAdapter) -> None:
+    adapter = live_adapter
     """Verify that turns written are returned by dump()."""
     user_id = "test_user_dump"
     adapter.reset(user_id)
@@ -147,7 +163,8 @@ def test_dump_completeness_not_top_k(adapter: MemoryAdapter) -> None:
         f"dump() returned {len(dumped)} entries instead of all 12"
     )
 
-def test_retrieve_roundtrip(adapter: MemoryAdapter) -> None:
+def test_retrieve_roundtrip(live_adapter: MemoryAdapter) -> None:
+    adapter = live_adapter
     """Verify that stored memory can be retrieved via query."""
     user_id = "test_user_retrieve"
     adapter.reset(user_id)
@@ -167,7 +184,8 @@ def test_retrieve_roundtrip(adapter: MemoryAdapter) -> None:
     assert any("blue" in m.text.lower() for m in retrieved)
 
 
-def test_reset_isolation(adapter: MemoryAdapter) -> None:
+def test_reset_isolation(live_adapter: MemoryAdapter) -> None:
+    adapter = live_adapter
     """Verify reset() wipes target user memory without affecting another user."""
     user_a = "user_alpha"
     user_b = "user_beta"
@@ -190,7 +208,8 @@ def test_reset_isolation(adapter: MemoryAdapter) -> None:
     assert len(adapter.dump(user_b)) == 1, "User B memory was corrupted by resetting User A"
 
 
-def test_update_operation(adapter: MemoryAdapter) -> None:
+def test_update_operation(live_adapter: MemoryAdapter) -> None:
+    adapter = live_adapter
     """Verify update ingestion via MemoryAdapter."""
     user_id = "test_user_update"
     adapter.reset(user_id)
