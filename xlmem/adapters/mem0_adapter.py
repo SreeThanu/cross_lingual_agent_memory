@@ -31,9 +31,11 @@ class Mem0Adapter(MemoryAdapter):
         llm_model: str = "qwen2.5:7b-instruct",
         embedder_model: str = "BAAI/bge-m3",
         ollama_base_url: str = "http://localhost:11434",
+        temperature: float = 0.0,
         offline_fallback: bool = False,
     ) -> None:
         self.llm_model = llm_model
+        self.temperature = temperature
         self.embedder_model = embedder_model
         self.ollama_base_url = ollama_base_url
         self.offline_fallback = offline_fallback
@@ -114,7 +116,7 @@ class Mem0Adapter(MemoryAdapter):
                     "config": {
                         "model": self.llm_model,
                         "ollama_base_url": self.ollama_base_url,
-                        "temperature": 0.0,
+                        "temperature": self.temperature,
                     },
                 },
                 "embedder": {

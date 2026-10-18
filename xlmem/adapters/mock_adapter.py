@@ -18,7 +18,18 @@ class MockAdapter(MemoryAdapter):
     name: str = "mock"
     supports_dump: bool = True
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        llm_model: str = "mock",
+        embedder_model: str = "mock",
+        ollama_base_url: str = "",
+        temperature: float = 0.0,
+    ) -> None:
+        # Accepts the standard adapter settings (base.ADAPTER_SETTINGS); no model is used.
+        self.llm_model = llm_model
+        self.embedder_model = embedder_model
+        self.ollama_base_url = ollama_base_url
+        self.temperature = temperature
         # Stores user_id -> list of Memory objects
         self.stores: dict[str, list[Memory]] = {}
         self._counter: int = 0

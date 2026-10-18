@@ -34,12 +34,22 @@ class UpdateResult:
     metadata: dict[str, Any] = field(default_factory=dict)
 
 
+# Settings the runner passes to every adapter constructor (see MemoryAdapter).
+ADAPTER_SETTINGS = ("llm_model", "embedder_model", "ollama_base_url", "temperature")
+
+
 class MemoryAdapter(ABC):
     """Uniform interface over heterogeneous memory frameworks.
 
     Every framework (Mem0, Letta, A-MEM) must implement this interface.
     Hard requirement: supports_dump must be True and dump() must return
     the full store (not top-k).
+
+    Construction contract: every adapter accepts the keyword arguments
+    ADAPTER_SETTINGS (llm_model, embedder_model, ollama_base_url, temperature),
+    which the runner always passes from the experiment config. Adapters map them
+    to their framework's own names (e.g. an Ollama embedder tag) internally, so
+    the runner never special-cases a framework.
     """
 
     name: str

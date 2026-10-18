@@ -46,13 +46,24 @@ class LettaAdapter(MemoryAdapter):
         self,
         base_url: str = "http://localhost:8283",
         llm_model: str = "qwen2.5:7b-instruct",
-        embedder_model: str = "bge-m3:latest",
+        embedder_model: str = "BAAI/bge-m3",
+        ollama_base_url: str = "http://localhost:11434",
+        temperature: float = 0.0,
         token: str | None = None,
         offline_fallback: bool = False,
     ) -> None:
         self.base_url = base_url
+        self.llm_model = llm_model
+        self.embedder_model = embedder_model
+        # The Letta server reaches Ollama itself and owns the agent's sampling
+        # settings, so these two are kept for the run log only. Whether the server
+        # matches them must be checked against the live server (OPEN_ISSUES §1.2).
+        self.ollama_base_url = ollama_base_url
+        self.temperature = temperature
+        # Same embedder mapping as Mem0Adapter: the config's HF id -> Ollama tag.
+        ollama_embedder = "bge-m3:latest" if embedder_model == "BAAI/bge-m3" else embedder_model
         self.llm_handle = f"ollama/{llm_model}"
-        self.embedding_handle = f"ollama/{embedder_model}"
+        self.embedding_handle = f"ollama/{ollama_embedder}"
         self.offline_fallback = offline_fallback
         self._client: Any = None
         self._agent_ids: dict[str, str] = {}

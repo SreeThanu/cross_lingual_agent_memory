@@ -25,6 +25,25 @@ from xlmem.runner.session import SessionRunner
 logger = logging.getLogger(__name__)
 
 
+def adapter_settings(config: ExperimentConfig) -> dict[str, Any]:
+    """The model settings every adapter is built with (adapters.base.ADAPTER_SETTINGS).
+
+    Without these, adapters fall back to their own default model, so a config that
+    names another backbone would silently run the default one.
+    """
+    if config.framework != "mock" and config.model.backend != "ollama":
+        raise ValueError(
+            f"Memory frameworks are driven through Ollama only; model.backend is "
+            f"{config.model.backend!r}."
+        )
+    return {
+        "llm_model": config.model.name,
+        "embedder_model": config.embedder,
+        "ollama_base_url": config.model.base_url,
+        "temperature": config.model.temperature,
+    }
+
+
 class ExperimentRunner:
     """Orchestrates an end-to-end XLMem experiment run across configured seeds."""
 
@@ -82,7 +101,7 @@ class ExperimentRunner:
             ) from e
 
         user_id = f"user_{self.config.experiment}_{seed}"
-        adapter: MemoryAdapter = get_adapter(self.config.framework)
+        adapter: MemoryAdapter = get_adapter(self.config.framework, **adapter_settings(self.config))
         adapter.reset(user_id=user_id)
 
         session_runner = SessionRunner(adapter=adapter, user_id=user_id)
@@ -191,6 +210,7 @@ class ExperimentRunner:
                 "store_lang": self.config.languages.store,
                 "probe_lang": self.config.languages.probe,
                 "n_facts": len(facts),
+                "adapter_settings": adapter_settings(self.config),
             }
             f.write(json.dumps(meta, ensure_ascii=False) + "\n")
 
