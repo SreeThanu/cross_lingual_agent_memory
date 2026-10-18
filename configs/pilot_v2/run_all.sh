@@ -10,7 +10,7 @@ cd "$(dirname "$0")/../.."
 PY=~/miniforge3/envs/xlmem/bin/python
 OUT=runs/pilot_v2
 mkdir -p "$OUT/manifest" "$OUT/logs"
-export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 ANONYMIZED_TELEMETRY=False PYTHONDONTWRITEBYTECODE=1
+export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 ANONYMIZED_TELEMETRY=False MEM0_TELEMETRY=False PYTHONDONTWRITEBYTECODE=1
 
 if [ -n "$(git status --porcelain -- xlmem configs data)" ]; then
   echo "Refusing to start: uncommitted changes in xlmem/, configs/ or data/." >&2

@@ -7,16 +7,58 @@ Hard Requirement: dump() must return the complete store, not top-k.
 from __future__ import annotations
 
 import logging
+import os
 from typing import Any
-from xlmem.adapters.base import (
+
+# Mem0 sends anonymous usage events to posthog.com unless this is off, and reads it
+# once at import time, so it must be set before mem0 is first imported (below, lazily).
+os.environ["MEM0_TELEMETRY"] = "False"
+
+from xlmem.adapters.base import (  # noqa: E402
     ConsolidationResult,
     MemoryAdapter,
     UpdateResult,
     WriteResult,
 )
-from xlmem.benchmark.facts import Memory, Turn
+from xlmem.benchmark.facts import Memory, Turn  # noqa: E402
 
 logger = logging.getLogger(__name__)
+
+
+def _ollama_model_names(listing: Any) -> set[str]:
+    """Model tags from an Ollama list() response, old (dict "name") or new (Model.model)."""
+    names = set()
+    for model in listing["models"]:
+        name = getattr(model, "model", None) or model.get("name") or model.get("model")
+        if name:
+            names.add(name)
+    return names
+
+
+def _require_local_model(self: Any) -> None:
+    """Replacement for Mem0's _ensure_model_exists: never pull, fail if the model is missing.
+
+    Mem0 0.1.26 matches on model["name"], which ollama>=0.4 no longer sets, so it pulled
+    on every init: an internet call per run, and a run killed by one DNS hiccup
+    (pilot_v2 mem0_hien, 2026-10-18). Pulling mid-experiment could also change weights.
+    """
+    if self.config.model not in _ollama_model_names(self.client.list()):
+        raise RuntimeError(
+            f"Ollama model {self.config.model!r} is not pulled locally; "
+            "pull it before running (the harness never pulls)."
+        )
+
+
+def _patch_mem0_ollama() -> None:
+    """Disable Mem0's model auto-pull and telemetry. Idempotent."""
+    from mem0.embeddings.ollama import OllamaEmbedding
+    from mem0.llms.ollama import OllamaLLM
+    from mem0.memory import telemetry
+
+    OllamaEmbedding._ensure_model_exists = _require_local_model
+    OllamaLLM._ensure_model_exists = _require_local_model
+    # Belt and braces, in case mem0 was imported before MEM0_TELEMETRY was set.
+    telemetry.telemetry.posthog.disabled = True
 
 
 class Mem0Adapter(MemoryAdapter):
@@ -100,6 +142,8 @@ class Mem0Adapter(MemoryAdapter):
     def _init_mem0(self, custom_config: dict[str, Any] | None) -> None:
         try:
             from mem0 import Memory as Mem0Memory
+
+            _patch_mem0_ollama()
 
             # Default configuration for local inference without paid APIs
             default_config = {
