@@ -19,6 +19,7 @@ from xlmem.adapters.base import (  # noqa: E402
     MemoryAdapter,
     UpdateResult,
     WriteResult,
+    capture_framework_errors,
 )
 from xlmem.benchmark.facts import Memory, Turn  # noqa: E402
 
@@ -233,12 +234,17 @@ class Mem0Adapter(MemoryAdapter):
             try:
                 msg = [{"role": turn.role, "content": turn.text}]
                 meta = {"fact_id": turn.fact_id or "", "kind": turn.kind, "lang": turn.lang}
-                res = self._mem0_instance.add(
-                    messages=msg,
-                    user_id=user_id,
-                    metadata=meta,
+                with capture_framework_errors("mem0") as framework_errors:
+                    res = self._mem0_instance.add(
+                        messages=msg,
+                        user_id=user_id,
+                        metadata=meta,
+                    )
+                return WriteResult(
+                    success=True,
+                    memory_id=str(res),
+                    metadata={"response": res, "framework_errors": framework_errors},
                 )
-                return WriteResult(success=True, memory_id=str(res), metadata={"response": res})
             except Exception as e:
                 if self.offline_fallback:
                     logger.warning("Live Mem0 write failed, preserved in fallback store: %s", e)
@@ -305,7 +311,9 @@ class Mem0Adapter(MemoryAdapter):
     def update(self, user_id: str, correction: Turn) -> UpdateResult:
         """Apply a correction turn to Mem0."""
         w_res = self.write(user_id=user_id, turn=correction)
-        return UpdateResult(success=w_res.success, updated_memory_id=w_res.memory_id)
+        return UpdateResult(
+            success=w_res.success, updated_memory_id=w_res.memory_id, metadata=w_res.metadata
+        )
 
     def dump(self, user_id: str) -> list[Memory]:
         """Return the COMPLETE store.

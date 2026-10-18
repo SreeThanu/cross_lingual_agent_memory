@@ -36,6 +36,7 @@ from xlmem.adapters.base import (
     MemoryAdapter,
     UpdateResult,
     WriteResult,
+    capture_framework_errors,
 )
 from xlmem.benchmark.facts import Memory, Turn
 
@@ -216,7 +217,7 @@ class AMEMAdapter(MemoryAdapter):
         """Ingest a turn: A-MEM stores the text as a new note and runs evolution."""
         system = self._system(user_id)
         try:
-            with self._user_scope(user_id):
+            with self._user_scope(user_id), capture_framework_errors("agentic_memory") as errs:
                 note_id = system.add_note(turn.text)
         except Exception as e:  # A-MEM raises bare exceptions from LLM/Chroma calls
             logger.warning("A-MEM add_note failed for %s: %s", user_id, e)
@@ -227,7 +228,7 @@ class AMEMAdapter(MemoryAdapter):
             "lang": turn.lang,
             "session_id": turn.session_id,
         }
-        return WriteResult(success=True, memory_id=note_id)
+        return WriteResult(success=True, memory_id=note_id, metadata={"framework_errors": errs})
 
     def consolidate(self, user_id: str) -> ConsolidationResult:
         """A-MEM evolves memories on write; no explicit consolidation (AGENTS.md §14)."""
@@ -257,7 +258,9 @@ class AMEMAdapter(MemoryAdapter):
     def update(self, user_id: str, correction: Turn) -> UpdateResult:
         """A correction is another conversational turn; A-MEM stores it as a new note."""
         w_res = self.write(user_id=user_id, turn=correction)
-        return UpdateResult(success=w_res.success, updated_memory_id=w_res.memory_id)
+        return UpdateResult(
+            success=w_res.success, updated_memory_id=w_res.memory_id, metadata=w_res.metadata
+        )
 
     def dump(self, user_id: str) -> list[Memory]:
         """Return the COMPLETE store: every note in A-MEM's in-process note dict.

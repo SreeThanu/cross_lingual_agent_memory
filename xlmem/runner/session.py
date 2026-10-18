@@ -10,6 +10,18 @@ from xlmem.benchmark.facts import Memory, Turn
 logger = logging.getLogger(__name__)
 
 
+def _logged_metadata(metadata: dict[str, object]) -> dict[str, object]:
+    """The adapter-result fields the run log keeps: a raised error and logged soft failures.
+
+    The success flag alone is not ground truth (Write Fidelity reads dump()); these
+    make framework-internal failures countable per turn. Recorded, never judged.
+    """
+    return {
+        "error": metadata.get("error"),
+        "framework_errors": list(metadata.get("framework_errors") or []),  # type: ignore[call-overload]
+    }
+
+
 class SessionRunner:
     """Orchestrates turn ingestion into a MemoryAdapter."""
 
@@ -32,6 +44,7 @@ class SessionRunner:
                     "text": turn.text,
                     "write_success": w_res.success,
                     "memory_id": w_res.memory_id,
+                    **_logged_metadata(w_res.metadata),
                 })
             elif turn.kind == "correction":
                 u_res = self.adapter.update(user_id=self.user_id, correction=turn)
@@ -43,6 +56,7 @@ class SessionRunner:
                     "text": turn.text,
                     "update_success": u_res.success,
                     "updated_memory_id": u_res.updated_memory_id,
+                    **_logged_metadata(u_res.metadata),
                 })
 
         return records

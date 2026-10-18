@@ -128,3 +128,27 @@ def test_shared_backend_imports_chromadb_in_a_fresh_interpreter() -> None:
     )
     assert result.returncode == 0, result.stderr[-2000:]
     assert result.stdout.strip().endswith("ok")
+
+
+def test_swallowed_evolution_error_is_reported_on_write_and_update(
+    adapter: AMEMAdapter, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A-MEM logs a failed evolution step and stores the note anyway (pilot_v2 amem_hien)."""
+
+    def completion(**kwargs: Any) -> Any:
+        prompt = kwargs["messages"][-1]["content"]
+        content = ('{"should_evolve": tr' if "should_evolve" in prompt
+                   else json.dumps({"keywords": ["k"], "context": "c", "tags": ["t"]}))
+        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=content))])
+
+    monkeypatch.setattr(litellm, "completion", completion)
+    adapter.reset("u")
+    first = adapter.write("u", _turn("I live in Pune.", "f_1"))
+    second = adapter.write("u", _turn("I work at Infosys.", "f_2"))  # has a neighbour to evolve
+    update = adapter.update("u", _turn("Actually I live in Mumbai.", "f_1"))
+
+    assert first.success and second.success and update.success
+    assert first.metadata["framework_errors"] == []
+    assert any("memory evolution" in e for e in second.metadata["framework_errors"])
+    assert any("memory evolution" in e for e in update.metadata["framework_errors"])
+    assert len(adapter.dump("u")) == 3  # the notes were stored regardless

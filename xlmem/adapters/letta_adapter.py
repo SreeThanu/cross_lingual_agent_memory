@@ -293,7 +293,9 @@ class LettaAdapter(MemoryAdapter):
     def update(self, user_id: str, correction: Turn) -> UpdateResult:
         """Apply a correction turn by sending it as a message, same as write()."""
         w_res = self.write(user_id=user_id, turn=correction)
-        return UpdateResult(success=w_res.success, updated_memory_id=w_res.memory_id)
+        return UpdateResult(
+            success=w_res.success, updated_memory_id=w_res.memory_id, metadata=w_res.metadata
+        )
 
     def dump(self, user_id: str) -> list[Memory]:
         """Return the COMPLETE store: core memory blocks + all archival passages.

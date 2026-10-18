@@ -2,9 +2,14 @@
 
 from __future__ import annotations
 
+import logging
+import os
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any
+
 from xlmem.benchmark.facts import Memory, Turn
 
 
@@ -32,6 +37,31 @@ class UpdateResult:
     success: bool
     updated_memory_id: str | None = None
     metadata: dict[str, Any] = field(default_factory=dict)
+
+
+@contextmanager
+def capture_framework_errors(package: str) -> Iterator[list[str]]:
+    """Collect ERROR log records emitted from inside a framework package's source files.
+
+    Frameworks log some internal failures and carry on (Mem0's reconciliation, A-MEM's
+    memory evolution), so the turn still looks successful. Adapters put these in
+    WriteResult.metadata["framework_errors"] so the run log can count them per turn.
+    """
+    errors: list[str] = []
+    marker = f"{os.sep}{package}{os.sep}"
+
+    class _Collector(logging.Handler):
+        def emit(self, record: logging.LogRecord) -> None:
+            if marker in record.pathname:
+                errors.append(record.getMessage())
+
+    handler = _Collector(level=logging.ERROR)
+    root = logging.getLogger()
+    root.addHandler(handler)
+    try:
+        yield errors
+    finally:
+        root.removeHandler(handler)
 
 
 # Settings the runner passes to every adapter constructor (see MemoryAdapter).
