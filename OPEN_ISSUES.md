@@ -116,3 +116,21 @@ Duplication Rate (DR) and False Merge Rate (FMR) require inspecting the entire m
   - **Unresolved (needs a spec decision):** contrast followed by negation ("…, but cashews are not listed" → UPDATED). See METRICS_SPEC §3.3 item 7.
   - `scripts/rescore_metrics_v2.py` is aligned with v2.1: its diagnostic loader uses the same re-probe validation, the S4 stage counts AFFIRMED old values, and the provenance keeps `git status` columns intact.
   - **Pilot v2 rescore not rerun under v2.1.** Its outputs stay labelled `metrics_version: "2"`.
+
+### 2.6 Metrics v3 (matching contract MC-1, D1), 2026-10-27
+- **Implemented** on branch `scoring/matching-v3`, uncommitted for review. The v2.1 baseline is commit `c1c658c`.
+- **Code and data:**
+  - foundation `xlmem/scoring/matching.py`; support `support.py`; policies `metrics_v3.py`; alias bank v2 `alias_bank.py`;
+  - the alias bank for `facts_v1`: `data/aliases/facts_v1.aliases.v2.yaml`, 138 tier-A spans, tier B empty;
+  - golden tests `tests/golden/test_matching_v3.py`;
+  - rescore script `scripts/rescore_metrics_v3.py` (not yet run).
+- **Refinements made during implementation** (all recorded in METRICS_SPEC §3.5.3 and §3.5.8; each one is needed for a revision-3 golden row):
+  - O5 applies to contrast- and NOW-affirmed mentions only. The "Y, not X" after-forms are exempt.
+  - A NOW cue next to a mention affirms it ("ab cashews").
+  - A cue consumed by another mention's pattern doesn't make other mentions ambiguous.
+  - Only the first token of a cue pair is an ambiguity cue.
+  - The FMR population is the distractors actually injected, categories are decided per sentence, and a BASE_LOST category is added.
+- **Open:**
+  - tier-B elicitation and the bilingual validation of the cue lexicons and of the Hindi/Hinglish golden wordings (proposal §6);
+  - D6b; D8 (gates DR/FMR validation-coverage claims).
+

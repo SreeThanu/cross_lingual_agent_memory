@@ -1,0 +1,918 @@
+# Alias bank v2 for metrics v3 (METRICS_SPEC §3.5.4). Tier-A entries are token-span
+# references into the fact's own authored text; the loader re-extracts and checks `expect`.
+# tier_b is empty until bilingual annotators elicit and freeze variants (blind to outputs).
+# Not yet bilingually reviewed (BENCHMARK_SPEC §7.4).
+alias_bank_version: 2
+tokenizer_version: mc1-tok-1
+fact_bank: data/facts_v1.yaml
+fact_bank_sha256: 4f65aa0ca73af43a02721afb2b0d472d98ad3aabe4a8de69db36dc18b8d5af0f
+authored: '2026-10-27'
+facts:
+  f_001:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 6
+      end: 7
+      expect: peanuts
+    - field: surface
+      lang: hi
+      role: value
+      start: 1
+      end: 2
+      expect: मूंगफली
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 1
+      end: 2
+      expect: peanuts
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: allergy
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: एलर्जी
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: allergy
+    - field: update.surface
+      lang: en
+      role: updated_value
+      start: 9
+      end: 10
+      expect: cashews
+    - field: update.surface
+      lang: hi
+      role: updated_value
+      start: 8
+      end: 9
+      expect: काजू
+    - field: update.surface
+      lang: hi-en
+      role: updated_value
+      start: 7
+      end: 8
+      expect: cashews
+    tier_b: []
+    tier_c: []
+  f_001_dist:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 6
+      end: 7
+      expect: peanuts
+    - field: surface
+      lang: hi
+      role: value
+      start: 3
+      end: 4
+      expect: मूंगफली
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 3
+      end: 4
+      expect: peanuts
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: allergy
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: एलर्जी
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: allergy
+    - field: surface
+      lang: en
+      role: subject_cue
+      start: 1
+      end: 2
+      expect: sister
+    - field: surface
+      lang: hi
+      role: subject_cue
+      start: 1
+      end: 2
+      expect: बहन
+    - field: surface
+      lang: hi-en
+      role: subject_cue
+      start: 1
+      end: 2
+      expect: sister
+    tier_b: []
+    tier_c: []
+  f_002:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 4
+      end: 5
+      expect: Pune
+    - field: surface
+      lang: hi
+      role: value
+      start: 3
+      end: 4
+      expect: पुणे
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 2
+      end: 3
+      expect: Pune
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 2
+      end: 3
+      expect: live
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: रहता
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: rehta
+    - field: update.surface
+      lang: en
+      role: updated_value
+      start: 6
+      end: 7
+      expect: Mumbai
+    - field: update.surface
+      lang: hi
+      role: updated_value
+      start: 3
+      end: 4
+      expect: मुंबई
+    - field: update.surface
+      lang: hi-en
+      role: updated_value
+      start: 3
+      end: 4
+      expect: Mumbai
+    tier_b: []
+    tier_c: []
+  f_002_dist:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 4
+      end: 5
+      expect: Pune
+    - field: surface
+      lang: hi
+      role: value
+      start: 2
+      end: 3
+      expect: पुणे
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 2
+      end: 3
+      expect: Pune
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 2
+      end: 3
+      expect: lives
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: रहता
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: rehta
+    - field: surface
+      lang: en
+      role: subject_cue
+      start: 1
+      end: 2
+      expect: brother
+    - field: surface
+      lang: hi
+      role: subject_cue
+      start: 1
+      end: 2
+      expect: भाई
+    - field: surface
+      lang: hi-en
+      role: subject_cue
+      start: 1
+      end: 2
+      expect: brother
+    tier_b: []
+    tier_c: []
+  f_003:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 3
+      end: 4
+      expect: Infosys
+    - field: surface
+      lang: hi
+      role: value
+      start: 1
+      end: 2
+      expect: इंफोसिस
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 1
+      end: 2
+      expect: Infosys
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 1
+      end: 2
+      expect: work
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 8
+      end: 9
+      expect: काम
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: engineer
+    - field: update.surface
+      lang: en
+      role: updated_value
+      start: 7
+      end: 8
+      expect: TCS
+    - field: update.surface
+      lang: hi
+      role: updated_value
+      start: 7
+      end: 8
+      expect: टीसीएस
+    - field: update.surface
+      lang: hi-en
+      role: updated_value
+      start: 6
+      end: 7
+      expect: TCS
+    tier_b: []
+    tier_c: []
+  f_003_dist:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 5
+      end: 6
+      expect: Infosys
+    - field: surface
+      lang: hi
+      role: value
+      start: 3
+      end: 4
+      expect: इंफोसिस
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 3
+      end: 4
+      expect: Infosys
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 3
+      end: 4
+      expect: works
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: काम
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: kaam
+    - field: surface
+      lang: en
+      role: subject_cue
+      start: 1
+      end: 2
+      expect: wife
+    - field: surface
+      lang: hi
+      role: subject_cue
+      start: 1
+      end: 2
+      expect: पत्नी
+    - field: surface
+      lang: hi-en
+      role: subject_cue
+      start: 1
+      end: 2
+      expect: wife
+    tier_b: []
+    tier_c: []
+  f_004:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 3
+      end: 4
+      expect: Marathi
+    - field: surface
+      lang: hi
+      role: value
+      start: 4
+      end: 5
+      expect: मराठी
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 4
+      end: 5
+      expect: Marathi
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 1
+      end: 2
+      expect: speak
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: बोलता
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: bolta
+    tier_b: []
+    tier_c: []
+  f_005:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 3
+      end: 5
+      expect: golden retriever
+    - field: surface
+      lang: hi
+      role: value
+      start: 6
+      end: 8
+      expect: गोल्डन रिट्रीवर
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 5
+      end: 7
+      expect: golden retriever
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: dog
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 8
+      end: 9
+      expect: कुत्ता
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 7
+      end: 8
+      expect: dog
+    tier_b: []
+    tier_c: []
+  f_006:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 5
+      end: 7
+      expect: filter coffee
+    - field: surface
+      lang: hi
+      role: value
+      start: 5
+      end: 7
+      expect: फ़िल्टर कॉफ़ी
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 4
+      end: 6
+      expect: filter coffee
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 3
+      end: 4
+      expect: beverage
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: ड्रिंक
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 3
+      end: 4
+      expect: beverage
+    tier_b: []
+    tier_c: []
+  f_007:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 6
+      end: 7
+      expect: HDFC
+    - field: surface
+      lang: hi
+      role: value
+      start: 4
+      end: 5
+      expect: एचडीएफसी
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 4
+      end: 5
+      expect: HDFC
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 7
+      end: 8
+      expect: Bank
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: बैंक
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: Bank
+    tier_b: []
+    tier_c: []
+  f_008:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 2
+      end: 3
+      expect: Linux
+    - field: surface
+      lang: hi
+      role: value
+      start: 4
+      end: 5
+      expect: लिनक्स
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 4
+      end: 5
+      expect: Linux
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 3
+      end: 5
+      expect: operating system
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 5
+      end: 7
+      expect: ऑपरेटिंग सिस्टम
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: OS
+    tier_b: []
+    tier_c: []
+  f_009:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 3
+      end: 4
+      expect: guitar
+    - field: surface
+      lang: hi
+      role: value
+      start: 3
+      end: 4
+      expect: गिटार
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 3
+      end: 4
+      expect: guitar
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 1
+      end: 2
+      expect: play
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: बजाता
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: play
+    tier_b: []
+    tier_c: []
+  f_010:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 6
+      end: 7
+      expect: Manali
+    - field: surface
+      lang: hi
+      role: value
+      start: 3
+      end: 4
+      expect: मनाली
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 3
+      end: 4
+      expect: Manali
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 4
+      end: 5
+      expect: trip
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 6
+      end: 7
+      expect: योजना
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 6
+      end: 7
+      expect: planning
+    tier_b: []
+    tier_c: []
+  f_011:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 4
+      end: 6
+      expect: O positive
+    - field: surface
+      lang: hi
+      role: value
+      start: 3
+      end: 5
+      expect: ओ पॉजिटिव
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 3
+      end: 5
+      expect: O positive
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 1
+      end: 3
+      expect: blood group
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 1
+      end: 3
+      expect: ब्लड ग्रुप
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 1
+      end: 3
+      expect: blood group
+    tier_b: []
+    tier_c: []
+  f_012:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 4
+      end: 5
+      expect: vegetarian
+    - field: surface
+      lang: hi
+      role: value
+      start: 2
+      end: 3
+      expect: शाकाहारी
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 2
+      end: 3
+      expect: vegetarian
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: diet
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 3
+      end: 4
+      expect: भोजन
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 3
+      end: 4
+      expect: khana
+    tier_b: []
+    tier_c: []
+  f_013:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 5
+      end: 6
+      expect: Python
+    - field: surface
+      lang: hi
+      role: value
+      start: 4
+      end: 5
+      expect: पायथन
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 4
+      end: 5
+      expect: Python
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 2
+      end: 3
+      expect: programming
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 2
+      end: 3
+      expect: प्रोग्रामिंग
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 2
+      end: 3
+      expect: programming
+    tier_b: []
+    tier_c: []
+  f_014:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 3
+      end: 4
+      expect: Jaipur
+    - field: surface
+      lang: hi
+      role: value
+      start: 2
+      end: 3
+      expect: जयपुर
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 2
+      end: 3
+      expect: Jaipur
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 1
+      end: 2
+      expect: hometown
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 1
+      end: 2
+      expect: गृहनगर
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 1
+      end: 2
+      expect: hometown
+    tier_b: []
+    tier_c: []
+  f_015:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 5
+      end: 6
+      expect: teacher
+    - field: surface
+      lang: hi
+      role: value
+      start: 4
+      end: 5
+      expect: शिक्षिका
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 4
+      end: 5
+      expect: teacher
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 1
+      end: 2
+      expect: mother
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 1
+      end: 2
+      expect: माँ
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 1
+      end: 2
+      expect: mother
+    tier_b: []
+    tier_c: []
+  f_016:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 7
+      end: 8
+      expect: Visa
+    - field: surface
+      lang: hi
+      role: value
+      start: 4
+      end: 5
+      expect: वीज़ा
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 4
+      end: 5
+      expect: Visa
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 2
+      end: 4
+      expect: credit card
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 2
+      end: 4
+      expect: क्रेडिट कार्ड
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 2
+      end: 4
+      expect: credit card
+    tier_b: []
+    tier_c: []
+  f_017:
+    tier_a:
+    - field: surface
+      lang: en
+      role: value
+      start: 4
+      end: 5
+      expect: Pixel
+    - field: surface
+      lang: hi
+      role: value
+      start: 2
+      end: 3
+      expect: पिक्सेल
+    - field: surface
+      lang: hi-en
+      role: value
+      start: 2
+      end: 3
+      expect: Pixel
+    - field: surface
+      lang: en
+      role: relation_cue
+      start: 5
+      end: 6
+      expect: smartphone
+    - field: surface
+      lang: hi
+      role: relation_cue
+      start: 3
+      end: 4
+      expect: स्मार्टफोन
+    - field: surface
+      lang: hi-en
+      role: relation_cue
+      start: 3
+      end: 4
+      expect: smartphone
+    tier_b: []
+    tier_c: []

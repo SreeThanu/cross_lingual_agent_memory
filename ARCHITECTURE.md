@@ -226,6 +226,20 @@ Steps 1–11 need the GPU. **Step 12 does not** — scoring and re-scoring run o
 
 Metric definitions are versioned (METRICS_SPEC §6); v1 and v2 SR/DR values are not comparable.
 
+**Metrics v3 (current; METRICS_SPEC §3.5).** The table above is the v2.1 view. In v3, every metric goes through one matching contract (MC-1):
+- **Foundation:** `xlmem/scoring/matching.py`, which does Unicode-safe whole-token matching with nukta folding, language-scoped cue lexicons (en / hi / hi-en) and longest match.
+- **Support evidence:** `support.py`. It decides whether a record supports *this fact*, using subject attribution under the template guarantee and the relation status CONFIRMED / UNKNOWN / CONFLICTING.
+- **Metric policies:** `metrics_v3.py`, one per metric:
+  - WF over intended planted base facts;
+  - strict recall over supported top-k records, with no lenient fallback;
+  - SR/MR relative to the fact's old and corrected values;
+  - DR counting only records that support the same fact;
+  - FMR with snapshot-aware categories (JOINT, WRONG_PERSON, OVERWRITTEN, …).
+- **Aliases:** an alias bank v2 (`alias_bank.py`, `data/aliases/*.aliases.v2.yaml`) with tier-A token spans, tier B (bilingual, frozen) and tier C (sensitivity only).
+- **Reporting:** UNRESOLVED evidence never earns credit. It is reported with relation-unverified counts and an insufficient-validation flag that never changes a score.
+
+The v2.1 path stays available (`--metrics-version 2.1`).
+
 **Write Fidelity is the first thing to check.** If a fact never entered the store, a retrieval "failure" is really a write failure — a distinction no existing benchmark makes.
 
 ---

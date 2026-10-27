@@ -9,16 +9,29 @@ from pathlib import Path
 import sys
 from typing import Any
 from xlmem.benchmark.facts import Fact, Memory, ProbeResult
+from xlmem.scoring.alias_bank import AliasBankV2, default_alias_bank_path, load_alias_bank_v2
 from xlmem.scoring.aliases import ValueAliases, default_alias_path, load_value_aliases
+from xlmem.scoring.matching import split_sentences
+from xlmem.scoring.metrics_v3 import (
+    false_merge_v3,
+    plant_duplication_v3,
+    recall_v3,
+    staleness_v3,
+    validation_report,
+    write_fidelity_v3,
+)
 from xlmem.scoring.duplication import compute_false_merge_rate, compute_plant_duplication_rate
 from xlmem.scoring.retrieval import compute_recall_at_k, compute_write_fidelity
 from xlmem.scoring.staleness import InvalidReprobe, compute_staleness_v2, parse_reprobe_record
+from xlmem.scoring.support import MatchBank
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("score")
 
 # METRICS_SPEC.md §6. Bump whenever a metric's definition changes.
 METRICS_VERSION = "2.1"
+# Matching contract MC-1 (METRICS_SPEC §3.5). v2.1 stays reproducible via compute_seed_scores.
+METRICS_VERSION_V3 = "3"
 
 
 def compute_seed_scores(
@@ -149,6 +162,117 @@ def compute_seed_scores(
     return scores
 
 
+def _read_seed_inputs(seed_dir: Path) -> dict[str, Any]:
+    """Raw inputs of one seed dir for v3: snapshots as texts, log records by kind."""
+    run_log_file = seed_dir / "run_log.jsonl"
+    if not run_log_file.exists():
+        raise FileNotFoundError(f"Missing run log: {run_log_file}")
+
+    def texts(name: str) -> list[str] | None:
+        path = seed_dir / name
+        if not path.exists():
+            return None
+        with open(path, "r", encoding="utf-8") as f:
+            return [Memory.from_dict(m).text for m in json.load(f)]
+
+    out: dict[str, Any] = {
+        "plant": texts("store_after_plant.json"), "final": texts("store_final.json") or [],
+        "metadata": {}, "planted": [], "corrected": [], "distractors": [],
+        "probes": [], "reprobes": [],
+    }  # fmt: skip
+    with open(run_log_file, "r", encoding="utf-8") as f:
+        for line in f:
+            if not line.strip():
+                continue
+            record = json.loads(line)
+            rtype = record.get("record_type")
+            if rtype == "metadata":
+                out["metadata"] = record
+            elif rtype == "reprobe_result":
+                out["reprobes"].append(parse_reprobe_record(record.get("data")))
+            elif rtype == "probe_result":
+                out["probes"].append(ProbeResult.from_dict(record.get("data") or {}))
+            elif rtype == "turn_trace":
+                data = record.get("data") or {}
+                fid, kind = data.get("fact_id"), data.get("kind")
+                if fid and kind == "plant":
+                    out["planted"].append(str(fid))
+                elif fid and kind == "correction":
+                    out["corrected"].append(str(fid))
+                elif fid and kind == "filler":
+                    out["distractors"].append(str(fid))
+    return out
+
+
+def compute_seed_scores_v3(
+    seed_dir: Path, facts: list[Fact], alias_bank: AliasBankV2 | None = None
+) -> dict[str, Any]:
+    """Metrics v3 (matching contract MC-1) for one seed dir; writes nothing."""
+    inp = _read_seed_inputs(seed_dir)
+    meta = inp["metadata"]
+    store_lang = str(meta.get("store_lang") or "en")
+    bank = MatchBank(facts, alias_bank)
+    plant = inp["plant"]
+    snap = {tuple(s) for t in plant or [] for s in split_sentences(t)}
+
+    wf = write_fidelity_v3(bank, inp["planted"], plant, store_lang)
+    dr = plant_duplication_v3(bank, inp["planted"], plant, store_lang)
+    recall = recall_v3(bank, wf["written"], inp["probes"], store_lang, snap)
+    written = set(wf["written"]) if plant is not None else None
+    sr = staleness_v3(bank, inp["corrected"], written, set(wf["provisional"]), inp["reprobes"])
+    fmr = false_merge_v3(bank, inp["distractors"], plant, inp["final"], store_lang)
+    validation = validation_report(wf, dr, recall, sr, fmr)
+
+    invalid: dict[str, str] = {}
+    for key, rep in (("write_fidelity", wf), ("plant_duplication_rate", dr),
+                     ("false_merge_rate", fmr)):  # fmt: skip
+        if rep[key] is None:
+            invalid[key] = str(rep["invalid_reason"])
+    if sr["staleness_rate"] is None:
+        invalid["staleness_rate"] = invalid["miss_rate"] = str(sr["invalid_reason"])
+
+    scores: dict[str, Any] = {
+        "metrics_version": METRICS_VERSION_V3,
+        "write_fidelity": wf["write_fidelity"],
+        "wf_confirmed": wf["wf_confirmed"],
+        "plant_duplication_rate": dr["plant_duplication_rate"],
+        "false_merge_rate": fmr["false_merge_rate"],
+        "staleness_rate": sr["staleness_rate"],
+        "miss_rate": sr["miss_rate"],
+        "write_ineligible_rate": sr["write_ineligible_rate"],
+    }
+    for k in (1, 3, 5):
+        scores[f"recall_at_{k}_strict"] = recall[f"recall_at_{k}"]
+        scores[f"distractor_retrieval_at_{k}"] = recall[f"distractor_retrieval_at_{k}"]
+    sr_counts = (
+        "eligible_corrections",
+        "updated_count",
+        "stale_count",
+        "miss_count",
+        "write_ineligible_count",
+        "missing_or_invalid_reprobe_count",
+        "unresolved_count",
+    )
+    for key in sr_counts:
+        scores[key] = sr[key]
+    scores["validation"] = validation
+    scores["detail"] = {
+        "store_lang": store_lang,
+        "write_fidelity": wf,
+        "plant_duplication": dr,
+        "recall": recall,
+        "staleness": sr,
+        "false_merge": fmr,
+        "alias_bank": {
+            "path": getattr(alias_bank, "path", None),
+            "sha256": getattr(alias_bank, "sha256", None),
+        },
+    }
+    if invalid:
+        scores["invalid_metrics"] = invalid
+    return scores
+
+
 def _refusal(path: Path) -> str:
     return f"Refusing to overwrite existing {path}; pass overwrite=True (CLI: --overwrite)"
 
@@ -158,25 +282,33 @@ def score_single_seed_dir(
     facts: list[Fact],
     aliases: ValueAliases | None = None,
     overwrite: bool = False,
+    metrics_version: str = METRICS_VERSION,
+    alias_bank: AliasBankV2 | None = None,
 ) -> dict[str, Any]:
     """Compute all metrics for a single seed directory and write seed_dir/scores.json.
 
     Refuses (FileExistsError) if scores.json already exists, unless overwrite=True, so the
-    original scores of a historical run can't be replaced by accident.
+    original scores of a historical run can't be replaced by accident. `metrics_version`
+    selects the v2.1 path (default, for reproducing existing results) or "3".
     """
     scores_path = seed_dir / "scores.json"
     if scores_path.exists() and not overwrite:
         raise FileExistsError(_refusal(scores_path))
-    scores = compute_seed_scores(seed_dir, facts=facts, aliases=aliases)
+    if metrics_version == METRICS_VERSION_V3:
+        scores = compute_seed_scores_v3(seed_dir, facts=facts, alias_bank=alias_bank)
+    elif metrics_version == METRICS_VERSION:
+        scores = compute_seed_scores(seed_dir, facts=facts, aliases=aliases)
+    else:
+        raise ValueError(f"unknown metrics_version {metrics_version!r}")
 
     # Save scores to seed_dir/scores.json without modifying run_log.jsonl
     with open(scores_path, "w" if overwrite else "x", encoding="utf-8") as f:
         json.dump(scores, f, indent=2, ensure_ascii=False)
 
     logger.info(
-        "Scored %s -> WF: %.2f, Recall@1: %.2f (strict), plant DR: %s, SR: %s",
-        seed_dir.name, scores["write_fidelity"], scores["recall_at_1_strict"],
-        scores["plant_duplication_rate"], scores["staleness_rate"],
+        "Scored %s (metrics v%s) -> WF: %s, Recall@1: %s (strict), plant DR: %s, SR: %s",
+        seed_dir.name, scores["metrics_version"], scores["write_fidelity"],
+        scores["recall_at_1_strict"], scores["plant_duplication_rate"], scores["staleness_rate"],
     )  # fmt: skip
     return scores
 
@@ -196,6 +328,19 @@ def load_aliases_for(
     return load_value_aliases(alias_path, facts, facts_path)
 
 
+def load_alias_bank_for(
+    facts: list[Fact], facts_path: Path, alias_bank_arg: str | None
+) -> AliasBankV2 | None:
+    """Load the v3 alias bank given on the CLI, or the default one next to the fact bank."""
+    path = Path(alias_bank_arg) if alias_bank_arg else default_alias_bank_path(facts_path)
+    if not path.exists():
+        if alias_bank_arg:
+            raise FileNotFoundError(f"Alias bank not found: {path}")
+        logger.warning("No v3 alias bank at %s: only English canonical values will match", path)
+        return None
+    return load_alias_bank_v2(path, facts, facts_path)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Re-score XLMem run logs offline without GPU.")
     parser.add_argument("--run", required=True, help="Path to experiment run directory (e.g. runs/mem0_qwen_hi2en).")
@@ -204,6 +349,17 @@ def main() -> int:
         "--aliases",
         default=None,
         help="SR alias sidecar (default: data/aliases/<facts stem>.aliases.yaml).",
+    )
+    parser.add_argument(
+        "--metrics-version",
+        choices=[METRICS_VERSION_V3, METRICS_VERSION],
+        default=METRICS_VERSION_V3,
+        help="Metric definitions to apply (default: 3; 2.1 reproduces earlier results).",
+    )
+    parser.add_argument(
+        "--alias-bank",
+        default=None,
+        help="v3 alias bank (default: data/aliases/<facts stem>.aliases.v2.yaml).",
     )
     parser.add_argument(
         "--overwrite",
@@ -221,10 +377,14 @@ def main() -> int:
 
     # Load facts if available, otherwise construct dummy facts for smoke tests
     aliases: ValueAliases | None = None
+    alias_bank: AliasBankV2 | None = None
     if facts_path.exists():
         from xlmem.benchmark.facts import load_facts
         facts = load_facts(facts_path)
-        aliases = load_aliases_for(facts, facts_path, args.aliases)
+        if args.metrics_version == METRICS_VERSION_V3:
+            alias_bank = load_alias_bank_for(facts, facts_path, args.alias_bank)
+        else:
+            aliases = load_aliases_for(facts, facts_path, args.aliases)
     else:
         from xlmem.scripts.smoke import SMOKE_FACTS
         facts = SMOKE_FACTS
@@ -242,7 +402,14 @@ def main() -> int:
         return 2
 
     for s_dir in seed_dirs:
-        score_single_seed_dir(s_dir, facts=facts, aliases=aliases, overwrite=args.overwrite)
+        score_single_seed_dir(
+            s_dir,
+            facts=facts,
+            aliases=aliases,
+            overwrite=args.overwrite,
+            metrics_version=args.metrics_version,
+            alias_bank=alias_bank,
+        )
 
     return 0
 

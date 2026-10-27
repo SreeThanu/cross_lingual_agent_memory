@@ -115,8 +115,17 @@ def test_cli_overwrite_flag_rescores_every_seed(
     for seed in (s11, s22):
         assert (
             json.loads((seed / "scores.json").read_text(encoding="utf-8"))["metrics_version"]
-            == "2.1"
+            == "3"  # the CLI defaults to metrics v3
         )
+
+
+def test_cli_can_still_score_with_v21(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """v2.1 stays reproducible: --metrics-version 2.1 selects the frozen path."""
+    bank = tmp_path / "facts.yaml"
+    bank.write_text(FACT_BANK_YAML, encoding="utf-8")
+    s11 = _seed(tmp_path / "run" / "seed_11")
+    assert _run_cli(monkeypatch, tmp_path / "run", bank, "--metrics-version", "2.1") == 0
+    assert json.loads((s11 / "scores.json").read_text(encoding="utf-8"))["metrics_version"] == "2.1"
 
 
 def test_cli_scores_a_fresh_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
