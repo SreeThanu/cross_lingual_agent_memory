@@ -144,7 +144,7 @@ def test_golden_mini_benchmark_end_to_end(tmp_path: Path) -> None:
     # In MockAdapter, all 10 English plant turns are written directly
     assert scores["write_fidelity"] == pytest.approx(1.0, abs=1e-4)
     assert "recall_at_1_strict" in scores
-    assert "duplication_rate" in scores
+    assert "plant_duplication_rate" in scores
     assert "false_merge_rate" in scores
 
 

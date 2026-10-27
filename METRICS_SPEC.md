@@ -1,6 +1,6 @@
 # METRICS_SPEC.md — XLMem Metrics Specification
 
-**Status:** Approved Specification  
+**Status:** Approved Specification · **Metrics version:** v2.1 (2026-10-27; see §6)  
 **Purpose:** Defines exact mathematical formulas, operation attribution, matching algorithms (strict vs lenient), failure isolation ordering, and seed aggregation procedures for XLMem.
 
 ---
@@ -56,12 +56,26 @@ $$\text{EA} = \text{Recall}(L_{\text{store}}=\text{hi}, L_{\text{probe}}=\text{e
 
 ### 2.2 Operation 2: CONSOLIDATE
 
-#### A. Duplication Rate (DR)
+#### A. Duplication Rate (DR), primary: `plant_duplication_rate` (metrics v2, decision D7)
 Measures the failure of the consolidation mechanism to recognise that two turns (or parallel cross-lingual statements) express the same ground truth fact, resulting in redundant memory bloat.
-$$\text{DR} = \frac{1}{|\mathcal{F}_{\text{planted}}|} \sum_{f \in \mathcal{F}_{\text{planted}}} \max(0, N_{\text{records}}(f, \mathcal{M}) - 1)$$
-where $N_{\text{records}}(f, \mathcal{M})$ is the count of distinct memory records in `dump()` matching fact $f$.
+$$\text{DR}_{\text{plant}} = \frac{1}{|\mathcal{F}_{\text{base}}|} \sum_{f \in \mathcal{F}_{\text{base}}} \max(0, N_{\text{records}}(f, \mathcal{M}_{\text{plant}}) - 1)$$
+- $\mathcal{F}_{\text{base}}$: the facts that have a `plant` turn in `run_log.jsonl` and are not distractors (`distractor_of` is null). Distractors and corrections are never members.
+- $\mathcal{M}_{\text{plant}}$: Snapshot A, `store_after_plant.json`. The runner takes it after the plant session and its consolidation trigger, **before** any filler, distractor or correction turn (BENCHMARK_SPEC §5). So distractor and correction records cannot be in it.
+- $N_{\text{records}}(f, \mathcal{M}_{\text{plant}})$: the number of distinct records in Snapshot A that `strict_match` (§3.1) $f$'s canonical value or one of $f$'s own authored surface sentences. This matcher is unchanged from v1.
+- **Missing facts:** a planted fact with $N = 0$ contributes $0$ and stays in the denominator (it is a WRITE failure, measured by WF).
+- **Multiple matches:** a fact matched by $N > 1$ records contributes $N - 1$. One record that matches two different facts counts once toward each.
+- **Missing Snapshot A:** $\text{DR}_{\text{plant}}$ is `null`, with a reason in `invalid_metrics`. It never falls back to the final store.
+- **No base facts planted:** `null`, with a reason.
+- **Uniform across frameworks:** no framework metadata (`metadata.fact_id`, `kind`, …) is used. Every framework is scored on its record texts alone.
 - **Domain:** $[0.0, \infty)$ (ideal is $0.0$; $1.0$ means on average every fact is stored twice).
-- **Operation Tested:** CONSOLIDATE.
+- **Operation Tested:** CONSOLIDATE, at the end of the plant phase only. Duplication a framework creates later (it consolidates at different times, AGENTS.md §14) is out of scope for the primary metric.
+- **Known limitations:**
+  - (a) The session structure plants each fact once and never restates it (open decision D8), so a real duplicate can only come from a framework splitting one statement into several records.
+  - (b) `strict_match` mis-normalises Devanagari (open decision D1), so duplicates written in Hindi are under-detected.
+
+**Not official: post-session DR.** Duplication on the final store (Snapshot B) is a possible future *diagnostic*. Before it can be one, it needs validated language aliases (D1) and tested handling of distractor and correction records. The v1 `duplication_rate` (below) is not a valid version of it.
+
+**Superseded: v1 `duplication_rate`.** Same formula, computed on Snapshot B (falling back to Snapshot A) over **all** facts, distractors included. Every record containing the value counted, so a distractor ("My sister has an allergy to peanuts") and a correction ("…not peanuts, but cashews") both counted as copies of the base fact. In the pilot every non-zero v1 DR came from this. See §6.
 
 #### B. False Merge Rate (FMR)
 Measures over-eager consolidation where two semantically related but distinct facts (e.g. a base fact and its near-miss distractor) are incorrectly collapsed into a single memory entry.
@@ -94,11 +108,49 @@ $$\text{Recall}_{\text{cross-lang}} = \frac{1}{2}\left(\text{Recall}(\text{hi}\t
 
 ### 2.4 Operation 4: UPDATE
 
-#### A. Staleness Rate (SR)
-The fraction of corrected facts where querying post-correction returns the obsolete value rather than the updated value.
-$$\text{SR} = \frac{|\{f \in \mathcal{F}_{\text{corrected}} \mid \text{returns\_superseded}(f, \text{response}) \lor \text{conflicted}(f, \text{response})\}|}{|\mathcal{F}_{\text{corrected}}|}$$
-- **Domain:** $[0.0, 1.0]$ (ideal is $0.0$; high means updates fail to clear old cross-lingual memories).
+#### A. Staleness Rate (SR) and Miss Rate (MR) (metrics v2, decision D6)
+**What it measures:** *observed stale recall after correction*. SR is judged from the agent's generated re-probe answer. It is **not** a direct measurement of the internal store: a framework can keep a stale record that the answer never surfaces, or answer stale from a store that holds only the new record.
+
+**Populations.** For one seed:
+- $\mathcal{F}_{\text{corrected}}$: facts with a `turn_trace` record of `kind: "correction"` in `run_log.jsonl`. Facts that merely carry `update` data in the fact bank are **not** members (the generator corrects only a subset, BENCHMARK_SPEC §5).
+- **Write gate:** $f \in \mathcal{F}_{\text{corrected}}$ is *write-ineligible* if $f$ is not in $\mathcal{F}_{\text{written}}$ under the existing WF criterion (§2.1, Snapshot A). It is reported separately and excluded from SR and MR. If the original value was never stored, whether the update replaced it is undefined (§1, write-first rule).
+- **Re-probe validity:** each remaining fact needs exactly one `reprobe_result` record with its `fact_id` and a `response` field. A missing, duplicated or field-less record is *missing_or_invalid*. Operationally (v2.1):
+  - A record is *well-formed* only if its `data` is a mapping with a non-empty string `fact_id` and `probe_lang`, a string `store_lang` and a string `response`. The `response` may be empty: an empty answer is MISS. If `retrieved` is present, it must be a list of memory records.
+  - A null or non-string `response` is never converted to text.
+  - Validity is judged on **raw** records. For a fact to qualify, it must have exactly one raw record, and that record must be well-formed. One well-formed plus one malformed record is two records, so the fact is *missing_or_invalid*.
+  - A malformed record whose `fact_id` is missing or unusable can't be attributed to a fact. It could be a duplicate of any correction, so its presence makes the seed's SR and MR `null` (case (v) below).
+  - Malformed records never stop the rest of the seed from being scored.
+- **Fact reference:** a correction whose `fact_id` is not in the fact bank, or whose fact has no `update` block, is *missing_or_invalid*. This is a data defect, and the write gate is not applied to it.
+- **Alias availability:** if `probe_lang` is not `en`, the fact needs authored aliases (§3.3) for both its old and updated value in `probe_lang`. Otherwise it is *missing_or_invalid*. English-only matching is never applied silently to a non-English answer.
+- $\mathcal{F}_{\text{eligible}}$: the corrected facts left after these exclusions.
+
+**Outcome of each eligible re-probe** (exactly one, rules in §3.3):
+- `STALE`: the old value is *asserted* as current, whether or not the new value is also there ("conflicted" counts as stale, as in v1).
+- `UPDATED`: the new value is asserted and the old value is not asserted.
+- `MISS`: anything else, i.e. an empty, wrong, garbled or unrelated answer, an old value mentioned only in an ambiguous frame, or a new value that is only negated.
+
+$$\text{SR} = \frac{|\text{STALE}|}{|\mathcal{F}_{\text{eligible}}|}, \qquad \text{MR} = \frac{|\text{MISS}|}{|\mathcal{F}_{\text{eligible}}|}, \qquad \text{write\_ineligible\_rate} = \frac{|\text{write-ineligible}|}{|\mathcal{F}_{\text{corrected}}|}$$
+
+Misses stay in the SR denominator. A wrong answer is a MISS, never STALE.
+
+**Reconciliation (checked by the scorer):** $|\mathcal{F}_{\text{corrected}}| = |\text{write-ineligible}| + |\text{missing\_or\_invalid}| + |\mathcal{F}_{\text{eligible}}|$ and $|\mathcal{F}_{\text{eligible}}| = |\text{UPDATED}| + |\text{STALE}| + |\text{MISS}|$.
+
+**SR and MR are `null`** (with the reason in `invalid_metrics`; the counts are still reported) when:
+- (i) the log has no correction turn;
+- (ii) Snapshot A is missing, so the write gate can't be applied;
+- (iii) any correction is *missing_or_invalid* (a write-eligible correction without a valid re-probe or aliases, or a bad fact reference). In a correct run every correction refers to a known fact with an `update` block and gets re-probed, so a gap is a harness or data defect and the whole seed's SR is invalid;
+- (iv) $|\mathcal{F}_{\text{eligible}}| = 0$, e.g. every corrected fact is write-ineligible;
+- (v) the log holds a malformed `reprobe_result` that can't be attributed to a fact (v2.1).
+
+`write_ineligible_rate` is `null` only in cases (i) and (ii).
+
+**Reported per seed:** `eligible_corrections`, `updated_count`, `stale_count`, `miss_count`, `write_ineligible_count`, `missing_or_invalid_reprobe_count`, `staleness_rate`, `miss_rate`, `write_ineligible_rate`, plus each fact's outcome and the matched spans. **Across seeds:** the mean ± sample std of the per-seed rates (§5), with `n_seeds` valid and the eligible count per seed. Seeds are never pooled into one denominator.
+
+- **Domain:** SR, MR in $[0.0, 1.0]$ (SR ideal is $0.0$).
 - **Operation Tested:** UPDATE.
+- **Strict only.** SR v2 has no lenient (NLI) tier. §3's rule that every response metric is reported under both modes doesn't apply to SR v2, because decision D6 excludes NLI and LLM judges from this metric. A lenient SR would be a new, separately versioned metric.
+
+**Superseded: v1 `staleness_rate`.** Denominator = every fact with `update` data (whether or not it was corrected). Stale if `strict_match(old) or (not strict_match(new) and not hit_strict)`, but the runner always writes `hit_strict = False`, so **any** answer without the new value counted as stale. Answers were matched against the English values only, with no negation handling, and a missing re-probe counted as not stale. See §6.
 
 ---
 
@@ -118,7 +170,54 @@ Uses the local open-weight multilingual NLI model `mDeBERTa-v3-base-xnli-multili
    - In Hindi: *"यूज़र को मूंगफली से एलर्जी है।"*
 3. **Hit Condition:** $P(\text{entailment} \mid P, H) \ge 0.70$.
 
-Both Strict and Lenient scores must be reported side-by-side in all final evaluation tables.
+Both Strict and Lenient scores must be reported side-by-side in all final evaluation tables. (Exception: SR v2, §2.4.)
+
+### 3.3 Staleness re-probe matching (SR v2 only, decision D6)
+SR v2 classifies re-probe answers with its own deterministic matcher, `xlmem/scoring/staleness.py`. The §3.1 matcher (`judge.strict_match`) can't be used. Its normalisation deletes Devanagari vowel signs ("काजू" → "क ज"), and its raw-substring fallback would then match unrelated Hindi words. Fixing §3.1 is part of the open decision D1 and would change WF and recall, so until D1 lands **SR uses a different matcher from WF, recall, DR and FMR**. That difference is a known limitation, to be resolved together with D1.
+
+1. **Normalisation:** Unicode NFC, `casefold()`, `_` → space.
+2. **Sentences:** the answer is split on `. ! ? । ॥ ;` and newlines. Every rule below applies within one sentence.
+3. **Tokens:** maximal runs of characters whose Unicode category is a letter (L\*), a mark (M\*) or a decimal digit (Nd). Everything else separates tokens. Vowel signs are kept. "don't" becomes `don`, `t`. A mixed-script run such as "कashews" is one token and matches no target.
+4. **Targets.**
+   - Old: the canonical `value`, plus the authored aliases for `probe_lang` (§3.4).
+   - New: `update.updated_value`, plus its authored aliases for `probe_lang`.
+   - The canonical (English) values are targets in every probe language, because answers often embed them.
+   - Plural variant: if a target's last token is ASCII-alphabetic, also try that token with a trailing `s` removed (if longer than 3 characters) or added (as in §3.1).
+   - A **mention** is a target's token sequence occurring contiguously, as whole tokens, in a sentence.
+5. **Frame of each mention**, checked in this order:
+   1. **AFFIRMED (supported contrast):**
+      - `but` or `बल्कि` among the 2 tokens before the mention, with no negation cue (`not no never नहीं न मत`) between it and the mention ("not X, but Y"; "X से नहीं, बल्कि Y से").
+      - `instead` or `not` as the very next token ("Y instead of X"; "Y, not X").
+      - The pair `न कि` among the 4 tokens after the mention, with no other negation cue before it ("Y से एलर्जी है, न कि X से").
+   2. **NEGATED (supported negation or past frame):**
+      - English: `not`, `no` or `never` among the 3 tokens before; `instead of` / `rather than` right before; `previously`, `earlier` or `formerly` among the 4 tokens before; the pair `used to` starting among the 6 tokens before ("used to be allergic to X"); `was` or `were` among the 3 tokens before.
+      - Hindi: `नहीं` among the 2 tokens after ("X से नहीं", "X नहीं"); `न कि` right before; `बजाय` among the 2 tokens after ("X के बजाय"); `पहले` among the 4 tokens before; `था` / `थी` / `थे` among the 3 tokens after.
+   3. **AMBIGUOUS:** the sentence contains any cue token from the lexicon below, but no supported pattern covers the mention.
+   4. **ASSERTED:** everything else.
+   - Cue lexicon. English: `not no never nor neither instead rather but however although though longer t was were previously earlier formerly used`. Hindi: `नहीं न मत बजाय लेकिन परंतु किंतु बल्कि पहले था थी थे`.
+6. **Outcome:**
+   - any old mention ASSERTED **or AFFIRMED** → `STALE`. AFFIRMED is the contrastive form of assertion ("peanuts, not cashews"; "not cashews, but peanuts"), so the rule is the same for both values (§2.4: STALE = old value asserted as current). v2.0 counted AFFIRMED only for the new value;
+   - otherwise, any old mention AMBIGUOUS → `MISS`;
+   - otherwise, any new mention ASSERTED (or AFFIRMED) → `UPDATED`;
+   - otherwise → `MISS`.
+   - A sentence such as "You are allergic to cashews and peanuts" asserts both values, so it is STALE (conflicted).
+7. **Limitations (must be reported with any SR number):**
+   - The patterns are a short, fixed list. They do not capture Hindi or English semantics in general. Any construction not listed is ASSERTED if the sentence has no cue word, and AMBIGUOUS → MISS if it does.
+   - Hindi transliterations of the English value ("कैश्वर", "काश्वे") are not authored aliases, so such answers are MISS.
+   - Code-switched (`hi-en`) answers have no aliases yet, so their re-probes are *missing_or_invalid*.
+   - **Unresolved (needs a specification decision): contrast followed by negation.** An AFFIRMED frame from a preceding `but` / `बल्कि` is not cancelled by a negation that *follows* the mention. So "I don't know, but cashews are not listed." is scored UPDATED, where MISS is the expected result. Not changed in v2.1.
+   - **Disclosure:** the pattern list was written on 2026-10-27, *after* the 36 pilot v2 re-probe answers had been read during the D6 analysis. Two refinements were added the same day while writing the hand-computed tests (`tests/test_metrics_v2.py`), **before** any pilot run was rescored: the "Y, not X" / "Y …, न कि X" affirmed forms, and the 6-token `used to` window. It is based on the benchmark's own authored correction templates ("not X, but Y", "X से नहीं, बल्कि Y से") and common negation forms, but the pilot answers are not an independent test set for it. No native-speaker validation has been done.
+
+### 3.4 Authored value aliases for SR (decision D6)
+Aliases live in a sidecar file next to the fact bank: `data/aliases/<fact bank stem>.aliases.yaml`. They are not stored in the fact bank, so `facts_v1.yaml` and the hashes in the pilot manifests are unchanged, and nothing here pre-empts the field design of the open decision D1.
+- The file records the sha256 of the fact bank it was written for. The loader refuses to use it with any other fact bank.
+- Per fact, it holds `value: {<lang>: [...]}` and `updated_value: {<lang>: [...]}`.
+- **Authoring rule (enforced by the loader):**
+  - Every `value` alias must occur verbatim in the same fact's `surface[<lang>]`.
+  - Every `updated_value` alias must occur verbatim in the same fact's `update.surface[<lang>]`.
+  - Aliases are never taken from model outputs.
+- **Scope:** used **only** by SR v2. WF, recall, DR and FMR do not read the file. Whether they should is D1.
+- Like the surfaces, the aliases still need bilingual review (BENCHMARK_SPEC §7.4).
 
 ---
 
@@ -161,7 +260,10 @@ Consider a mini-run of $N=5$ planted facts in Hindi (`hi`), probed in English (`
 - Fact $f_2$ updated: "User moved from Pune to Mumbai".
 - Re-probe: "Where does the user live now?"
 - Response: "You live in Pune and Mumbai." (Contains stale value).
-- **Staleness Rate (SR):** $1 / 1 = 1.00$ ($100\%$).
+- $f_2$ has a correction turn and was written (Step 1), so it is eligible: $|\mathcal{F}_{\text{eligible}}| = 1$.
+- "pune" and "mumbai" are both ASSERTED (the sentence has no cue word) → `STALE` (conflicted).
+- **Staleness Rate (SR):** $1 / 1 = 1.00$ ($100\%$). **Miss Rate (MR):** $0 / 1 = 0.00$.
+- (If the response had been "You live in Delhi.", the outcome would be `MISS`: SR $= 0.00$, MR $= 1.00$. Under v1 it was scored stale.)
 
 ---
 
@@ -174,3 +276,33 @@ To ensure statistical significance and prevent cherry-picking:
 3. All values in `results/` are formatted as:
    $$\bar{M} \pm s$$
 4. **Single-seed reporting is strictly prohibited.** Any cell in a table without mean and variance over $\ge 3$ seeds is invalid.
+
+---
+
+## 6. Metric Version History
+
+Each `scores.json` written by `xlmem/scripts/score.py` carries `metrics_version`. Files without the field are v1.
+
+| Version | Date | Change | Decision record |
+|---|---|---|---|
+| v1 | 2026-09-17 | Initial definitions | — |
+| **v2** | 2026-10-27 | **SR** redefined (§2.4, §3.3, §3.4): denominator = corrected and write-eligible facts with a valid re-probe; three outcomes UPDATED / STALE / MISS; separate MR and write-ineligible rate; authored Hindi aliases; deterministic negation handling; `null` when the evidence is insufficient. **Primary DR** becomes `plant_duplication_rate` (§2.2): Snapshot A, base facts only. The v1 `duplication_rate` is dropped from official scores. WF, recall, FMR, LTG and EA are unchanged. | D6, D7: `docs/STATUS_2026-10-18.md` (decision log) |
+| **v2.1** | 2026-10-27 | **SR only.** (a) §3.3 item 6: an AFFIRMED old-value mention now counts toward STALE, as an ASSERTED one already did. v2.0 scored contrastive stale answers as MISS. (b) §2.4: re-probe validity is judged on raw records (well-formedness defined; a null or non-string `response` is invalid; a malformed record can't hide a duplicate; an unattributable malformed record → `null`, case (v)). Found by the read-only audit of 2026-10-27. MR, DR and every other metric are unchanged. | D6 (corrections within the approved definition) |
+
+**Approval:** approved by the student on 2026-10-27. The guide delegated decisions D1–D7 to the student (as the student reported on 2026-10-18). Still open and **not** changed by v2: D1 (Hindi matching for WF and recall), D6b (correcting every fact with `update` data instead of the 20% subset), D8 (restatement turns).
+
+**Defects in v1 that v2 fixes:**
+- **SR**
+  - The denominator counted facts that were never corrected (in the pilot, 3 instead of 1, so SR ≤ 0.33).
+  - Every answer without the new value counted as stale, because `hit_strict` is always `False` in runner logs. Wrong answers were therefore update failures.
+  - Answers were matched against the English values only, so correct Hindi answers counted as stale.
+  - A negated old value ("not peanuts") counted as stale.
+  - A missing per-fact re-probe counted as not stale.
+- **DR:** distractor and correction records on the final store, plus distractors in the denominator, inflated DR. No pilot store held a real duplicate.
+
+**Compatibility:**
+- **v2.0 → v2.1:** the pilot v2 rescore (`runs/pilot_v2/rescore_metrics-v2/`, labelled `metrics_version: "2"`) was **not** rerun. The audit found no pilot answer with an AFFIRMED old-value mention and no malformed, duplicated or null re-probe record, so both v2.1 changes are expected to leave every pilot value as it is. That expectation has not been confirmed by a rescore.
+- v1 and v2 SR and DR values are **not comparable** and must never share a table or an average.
+- The pilot v2 runs were rescored offline under v2. The v1 values are kept unchanged in each `seed_*/scores.json`, indexed in `docs/rescore/pilot_v2_baseline_v1.json`.
+- The comparison is in `docs/rescore/pilot_v2_v1_vs_v2.md`.
+- No run needs to be repeated for v2: every input it uses (correction turn traces, `reprobe_result`, Snapshot A) is already in the logs.

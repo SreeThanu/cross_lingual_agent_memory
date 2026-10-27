@@ -94,7 +94,7 @@ python -m xlmem.scripts.check_env
 | Adapter conformance | `pytest tests/test_adapter_contract.py` |
 | Smoke run (5 facts, ~5 min) | `python -m xlmem.scripts.smoke --framework mem0` |
 | Real experiment | `python -m xlmem.scripts.run --config configs/mem0_qwen_hi2en.yaml` |
-| Re-score existing logs (no GPU) | `python -m xlmem.scripts.score --run runs/<id>` |
+| Re-score existing logs (no GPU) | `python -m xlmem.scripts.score --run runs/<id>` (refuses if any `scores.json` exists; add `--overwrite` only to replace them deliberately) |
 | Aggregate results | `python -m xlmem.scripts.aggregate --runs runs/ --out results/` |
 | Lint + format | `ruff check --fix . && ruff format .` |
 | Types | `mypy xlmem/` |

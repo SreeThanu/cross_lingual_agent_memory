@@ -218,11 +218,13 @@ Steps 1–11 need the GPU. **Step 12 does not** — scoring and re-scoring run o
 |---|---|---|
 | **XL-Recall@k** | hits / planted, where probe_lang ≠ store_lang | Retrieve |
 | **Language Transfer Gap (LTG)** | Recall(same-lang) − Recall(cross-lang) | Retrieve |
-| **Duplication Rate (DR)** | (store entries mapping to fact *f*) − 1, averaged over facts | Consolidate |
+| **Duplication Rate (DR)**, `plant_duplication_rate` (v2) | max(0, records matching *f* − 1), averaged over planted base facts, on Snapshot A (`store_after_plant.json`) only; `null` if the snapshot is missing | Consolidate |
 | **False Merge Rate (FMR)** | fraction of distractor pairs collapsed into one entry | Consolidate |
-| **Staleness Rate (SR)** | post-correction probes returning the old value | Update |
+| **Staleness Rate (SR)** (v2) | STALE / eligible corrections, where eligible = actually corrected ∩ written (WF) ∩ valid re-probe; outcomes UPDATED / STALE / MISS; Miss Rate (MR) = MISS / eligible reported beside it; deterministic matcher with authored aliases (METRICS_SPEC §3.3) | Update |
 | **Encoding Asymmetry (EA)** | Recall(store=hi) − Recall(store=en) | Write |
 | **Write Fidelity** | fraction of planted facts that appear in `dump()` at all | Write |
+
+Metric definitions are versioned (METRICS_SPEC §6); v1 and v2 SR/DR values are not comparable.
 
 **Write Fidelity is the first thing to check.** If a fact never entered the store, a retrieval "failure" is really a write failure — a distinction no existing benchmark makes.
 

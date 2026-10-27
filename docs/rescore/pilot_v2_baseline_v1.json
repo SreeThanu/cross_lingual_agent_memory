@@ -1,0 +1,863 @@
+{
+  "description": "Original metrics-v1 scores of runs/pilot_v2, indexed before rescoring. The files themselves are left in place and unmodified.",
+  "indexed_at": "2026-10-27T12:43:04.859549+00:00",
+  "metrics_version": "1",
+  "fact_bank": {
+    "path": "data/facts_v1.yaml",
+    "sha256": "4f65aa0ca73af43a02721afb2b0d472d98ad3aabe4a8de69db36dc18b8d5af0f"
+  },
+  "runs": {
+    "amem_enen": {
+      "run_code_git_sha": "8e12ba49f61ffc3bd521fb9d08c74571ac01446f",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/amem_enen/seed_11",
+          "sha256": {
+            "run_log.jsonl": "6285a57b40246675b639af9247ca3322383ef85b3ef70b8ac1d900187cb931c5",
+            "store_after_plant.json": "5fcf1c5f7dbfdc5e3a6da68c082f074650d19b9c755994cc449ef0a2ce9d3d13",
+            "store_final.json": "82d6bf8dadc596287e64152e80fea0100567431d965a640a50651e58b5406ec7",
+            "scores.json": "5e3904a188f9af72e8ea6862b18871ad0f7bb6fdbcea2b5e016046e60d2e0287"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.8,
+            "recall_at_3_strict": 0.85,
+            "recall_at_5_strict": 0.85,
+            "recall_at_1_lenient": 0.8,
+            "recall_at_3_lenient": 0.85,
+            "recall_at_5_lenient": 0.85,
+            "duplication_rate": 0.2,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/amem_enen/seed_22",
+          "sha256": {
+            "run_log.jsonl": "60c7eafbcbb0fe6f79b5b232d441bab482170978b67dab7cc61162c5a7bd9417",
+            "store_after_plant.json": "1244748e18eb2e4fc71b8790d5ee9970d6a2d62ea281c43a5865103081fcecdc",
+            "store_final.json": "096f959628f85e5bc3092838037b73d6f7263ec8e339ab01ecc710684878e36f",
+            "scores.json": "5e3904a188f9af72e8ea6862b18871ad0f7bb6fdbcea2b5e016046e60d2e0287"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.8,
+            "recall_at_3_strict": 0.85,
+            "recall_at_5_strict": 0.85,
+            "recall_at_1_lenient": 0.8,
+            "recall_at_3_lenient": 0.85,
+            "recall_at_5_lenient": 0.85,
+            "duplication_rate": 0.2,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/amem_enen/seed_33",
+          "sha256": {
+            "run_log.jsonl": "eb23bb4bd03ea036933eb2639c704b847940635d0c43f4ad5021b33d8f7b009d",
+            "store_after_plant.json": "6a964bc6a08be165d176e645fa4be31b37d22fd800977816a03dc3f9342c089d",
+            "store_final.json": "00c521688eed1a21b3df7ee676f5461ee13a04bd6523a2239be103d825271e73",
+            "scores.json": "5e3904a188f9af72e8ea6862b18871ad0f7bb6fdbcea2b5e016046e60d2e0287"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.8,
+            "recall_at_3_strict": 0.85,
+            "recall_at_5_strict": 0.85,
+            "recall_at_1_lenient": 0.8,
+            "recall_at_3_lenient": 0.85,
+            "recall_at_5_lenient": 0.85,
+            "duplication_rate": 0.2,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        }
+      }
+    },
+    "amem_enhi": {
+      "run_code_git_sha": "8e12ba49f61ffc3bd521fb9d08c74571ac01446f",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/amem_enhi/seed_11",
+          "sha256": {
+            "run_log.jsonl": "92d875568142ce1a5ae249e3d531e126bcd3409f3f2a05a82ff122f144aa08ca",
+            "store_after_plant.json": "2785b9055b5b2b992a02e9668530e51d5d38149cbe2051fb4cb9a3ae6008777e",
+            "store_final.json": "b68e7bdf3cb4697a957395c7ad3196f6760d2b9d97917bb2a073ace340e363ff",
+            "scores.json": "28990f660f99cd7da987fa359a7e542cd41918a3fe7aaa14f19467fb08e196db"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.8,
+            "recall_at_3_strict": 0.8,
+            "recall_at_5_strict": 0.8,
+            "recall_at_1_lenient": 0.8,
+            "recall_at_3_lenient": 0.8,
+            "recall_at_5_lenient": 0.8,
+            "duplication_rate": 0.2,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/amem_enhi/seed_22",
+          "sha256": {
+            "run_log.jsonl": "afa2a24fc6d8d9ed9cabdc0a28ad7d42fadd7f85cc89093c29da695047eabb53",
+            "store_after_plant.json": "9084088165dbe228cfce1c877132bda09af41d35167351f08cb1fbbebc5dba6d",
+            "store_final.json": "e58c71f3e95033179db2d4436f7d85cefb959e81d48d58ae651724c53a6df37d",
+            "scores.json": "28990f660f99cd7da987fa359a7e542cd41918a3fe7aaa14f19467fb08e196db"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.8,
+            "recall_at_3_strict": 0.8,
+            "recall_at_5_strict": 0.8,
+            "recall_at_1_lenient": 0.8,
+            "recall_at_3_lenient": 0.8,
+            "recall_at_5_lenient": 0.8,
+            "duplication_rate": 0.2,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/amem_enhi/seed_33",
+          "sha256": {
+            "run_log.jsonl": "305f6c4b785caa4315598d73953b6476a09d052058b355389096f98b252ffd32",
+            "store_after_plant.json": "f5269ca928b3c8502aa8e521ed7ee3fd7a24937082dd5a6c97b99a03317cd29c",
+            "store_final.json": "b4b0795ef0ce573ea34f81e72eb2582830c621deb1830da2e9eb5dfdef84be8f",
+            "scores.json": "28990f660f99cd7da987fa359a7e542cd41918a3fe7aaa14f19467fb08e196db"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.8,
+            "recall_at_3_strict": 0.8,
+            "recall_at_5_strict": 0.8,
+            "recall_at_1_lenient": 0.8,
+            "recall_at_3_lenient": 0.8,
+            "recall_at_5_lenient": 0.8,
+            "duplication_rate": 0.2,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        }
+      }
+    },
+    "amem_hien": {
+      "run_code_git_sha": "8e12ba49f61ffc3bd521fb9d08c74571ac01446f",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/amem_hien/seed_11",
+          "sha256": {
+            "run_log.jsonl": "2d367def53b65437fa4fcfff2db54d320ee37051120a2aa217fd525012fda119",
+            "store_after_plant.json": "d64dc8a91723ebd387043e04146450c9251b9b46c595e92a9c00a28cfa5c4932",
+            "store_final.json": "21dc39df1cf3ea3245b4dcf6da200b370bdfae2ad367b9f86c2c2794d458b11e",
+            "scores.json": "c238ace813f295492506646729e0eb305c84a8664c200c760c847af786c61d11"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.85,
+            "recall_at_1_strict": 0.8823529411764706,
+            "recall_at_3_strict": 1.0,
+            "recall_at_5_strict": 1.0,
+            "recall_at_1_lenient": 0.8823529411764706,
+            "recall_at_3_lenient": 1.0,
+            "recall_at_5_lenient": 1.0,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/amem_hien/seed_22",
+          "sha256": {
+            "run_log.jsonl": "912ce73b9da3dc18a5445ae35760e3c0c7632c05b66d42c3a6968fe9224514d6",
+            "store_after_plant.json": "bf6739d88a0bce3f46bf0644b4c5647b56eb030e23795b57ef05d758624ac328",
+            "store_final.json": "e7866ed3520059ca8bd3f311cc7fbcdcf177da9dfed55667853499dcaf99f8b5",
+            "scores.json": "c238ace813f295492506646729e0eb305c84a8664c200c760c847af786c61d11"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.85,
+            "recall_at_1_strict": 0.8823529411764706,
+            "recall_at_3_strict": 1.0,
+            "recall_at_5_strict": 1.0,
+            "recall_at_1_lenient": 0.8823529411764706,
+            "recall_at_3_lenient": 1.0,
+            "recall_at_5_lenient": 1.0,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/amem_hien/seed_33",
+          "sha256": {
+            "run_log.jsonl": "caf98632e8e4af63b58d0221c85bdac428220b06a2eaadb7f20a53889cc88008",
+            "store_after_plant.json": "11cf6e96df36a94f7333714bfcd1953334b4359d66950f7d25fe5d0e3476633a",
+            "store_final.json": "26aed4fdac569860eaf35bb273cebf95fe6dab6ead701d4d075653af3f910f74",
+            "scores.json": "c238ace813f295492506646729e0eb305c84a8664c200c760c847af786c61d11"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.85,
+            "recall_at_1_strict": 0.8823529411764706,
+            "recall_at_3_strict": 1.0,
+            "recall_at_5_strict": 1.0,
+            "recall_at_1_lenient": 0.8823529411764706,
+            "recall_at_3_lenient": 1.0,
+            "recall_at_5_lenient": 1.0,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        }
+      }
+    },
+    "amem_hihi": {
+      "run_code_git_sha": "8e12ba49f61ffc3bd521fb9d08c74571ac01446f",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/amem_hihi/seed_11",
+          "sha256": {
+            "run_log.jsonl": "3cc52ec3d97a04795a4d67cba8d9d814ab734a507fab950dd489aa5d0ea1e8bb",
+            "store_after_plant.json": "80ec9a4dd038d7ab051e5296db9b1211cca51098d0740331adc157fd9464895b",
+            "store_final.json": "a5f95b0d6191cef41cf245660f1b1304b3fb4587280f9d8ab5cf31bbeed2c970",
+            "scores.json": "9fb327f455032bcfbe1b7f8faf67566526e22c00e7f96d09b338ca4501c8e35f"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.85,
+            "recall_at_1_strict": 0.9411764705882353,
+            "recall_at_3_strict": 0.9411764705882353,
+            "recall_at_5_strict": 0.9411764705882353,
+            "recall_at_1_lenient": 0.9411764705882353,
+            "recall_at_3_lenient": 0.9411764705882353,
+            "recall_at_5_lenient": 0.9411764705882353,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/amem_hihi/seed_22",
+          "sha256": {
+            "run_log.jsonl": "aefe3d53534ce26f89a70e00598352fdd01c9cb7de844b862ca0bef2d5b206c3",
+            "store_after_plant.json": "364ab6c8c2b1e20f891d754d29dc2ca25842992f9fd1948f8a4e47dbfa622c61",
+            "store_final.json": "f51008e26d27e2af67b1da09e90447bfca05da651b351dea2fdcf651d2116e41",
+            "scores.json": "9fb327f455032bcfbe1b7f8faf67566526e22c00e7f96d09b338ca4501c8e35f"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.85,
+            "recall_at_1_strict": 0.9411764705882353,
+            "recall_at_3_strict": 0.9411764705882353,
+            "recall_at_5_strict": 0.9411764705882353,
+            "recall_at_1_lenient": 0.9411764705882353,
+            "recall_at_3_lenient": 0.9411764705882353,
+            "recall_at_5_lenient": 0.9411764705882353,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/amem_hihi/seed_33",
+          "sha256": {
+            "run_log.jsonl": "2dddc6cb15fbd2ebd9ed471c34018b29b6506ea90f1d3cb3d2feeaebf08d43bb",
+            "store_after_plant.json": "823ae1bcac60a544d0e229855902b3853ea2880ebecd991d533bfbf3ab45a1ce",
+            "store_final.json": "f8907f37ec4d7cfaac2bc5db1fd42b4083bcf9908b4d5b0cb31bee8ed6103e1e",
+            "scores.json": "9fb327f455032bcfbe1b7f8faf67566526e22c00e7f96d09b338ca4501c8e35f"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.85,
+            "recall_at_1_strict": 0.9411764705882353,
+            "recall_at_3_strict": 0.9411764705882353,
+            "recall_at_5_strict": 0.9411764705882353,
+            "recall_at_1_lenient": 0.9411764705882353,
+            "recall_at_3_lenient": 0.9411764705882353,
+            "recall_at_5_lenient": 0.9411764705882353,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        }
+      }
+    },
+    "letta_enen": {
+      "run_code_git_sha": "8e12ba49f61ffc3bd521fb9d08c74571ac01446f",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/letta_enen/seed_11",
+          "sha256": {
+            "run_log.jsonl": "d74a3cb5aec39c9055d0a9ae7189587eb866b5042a9b641915c2ddc9e77f130d",
+            "store_after_plant.json": "6943553bc409a96061f7240570f484d74c5df27ca7d6268f1c048aca44f8ee65",
+            "store_final.json": "8c43e32e0a7d72d19eebc0efaaa8a294aee21599e1457bf4cf31510b75535b0e",
+            "scores.json": "6869664a9cd7396b286d68280a33404221e19ab00aaffd9fd4e08b73478d0331"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.95,
+            "recall_at_1_strict": 0.8421052631578947,
+            "recall_at_3_strict": 0.8421052631578947,
+            "recall_at_5_strict": 0.8421052631578947,
+            "recall_at_1_lenient": 0.8421052631578947,
+            "recall_at_3_lenient": 0.8421052631578947,
+            "recall_at_5_lenient": 0.8421052631578947,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/letta_enen/seed_22",
+          "sha256": {
+            "run_log.jsonl": "43e24900441ddba3cf6409a313bb36a4aa1dc919f333fb14e7c6f1e6e88c9609",
+            "store_after_plant.json": "a5a3dc74311ad3033318b15b5e2f826dced13d6d4b63f7be12a5ddccedefcf75",
+            "store_final.json": "393a723b68dbcb34d8e01c36674e7c04cfc900d7e49eddc9a0e39214f7e631d2",
+            "scores.json": "ff7e482038cf444c5ae0417f131ae78539db09808b388bac23d494fc27e42570"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.8,
+            "recall_at_1_strict": 0.8125,
+            "recall_at_3_strict": 0.8125,
+            "recall_at_5_strict": 0.8125,
+            "recall_at_1_lenient": 0.8125,
+            "recall_at_3_lenient": 0.8125,
+            "recall_at_5_lenient": 0.8125,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/letta_enen/seed_33",
+          "sha256": {
+            "run_log.jsonl": "b943570e3dfa85be0ee5e882afddfa7f53a91f6892f8f2b62aee2da0417064e0",
+            "store_after_plant.json": "d725b53f14c25dfb21de6c879b3435309ec93dee1edf9eec62056cafa46e98fd",
+            "store_final.json": "6c1c2f80a6bdc7a5af72b38a7d327651d8ce82b6bb8b75dc5beb257a1d38e18c",
+            "scores.json": "402da4f72727210032f94bab175e10cedaaf5c477c134c90890c7f8230a9b8f9"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.85,
+            "recall_at_3_strict": 0.85,
+            "recall_at_5_strict": 0.85,
+            "recall_at_1_lenient": 0.85,
+            "recall_at_3_lenient": 0.85,
+            "recall_at_5_lenient": 0.85,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        }
+      }
+    },
+    "letta_enhi": {
+      "run_code_git_sha": "8e12ba49f61ffc3bd521fb9d08c74571ac01446f",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/letta_enhi/seed_11",
+          "sha256": {
+            "run_log.jsonl": "9103b9d2fa63ac39ba5be1ca9aa3d863227611576d62ceb207242552ff3d0674",
+            "store_after_plant.json": "88ee43cb33ce80b6bfbaf5e53a079e0bdbcdbb816a2b53da24ea863eda66a3b0",
+            "store_final.json": "9fb9b4c7e16b5e685904acf38a4eb8472d2d3afec3498cad30ae7bd1e034e665",
+            "scores.json": "129d666acd4bbea980c30dbc0058440123ef7bd5d7b0bc1bad1c59e1883f3d6d"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.85,
+            "recall_at_1_strict": 0.8235294117647058,
+            "recall_at_3_strict": 0.8235294117647058,
+            "recall_at_5_strict": 0.8235294117647058,
+            "recall_at_1_lenient": 0.8235294117647058,
+            "recall_at_3_lenient": 0.8235294117647058,
+            "recall_at_5_lenient": 0.8235294117647058,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/letta_enhi/seed_22",
+          "sha256": {
+            "run_log.jsonl": "35ad2f08a1b7afeda9f75b5e6584d71638e025526f2fb87836d2793372e67957",
+            "store_after_plant.json": "a47808056083fb9f1f220cb09244fc307dfb57f399d26a5f0d5f39e0071b9627",
+            "store_final.json": "953657162cae033d9acc77c8f893efe2860f99228ec44e69ec39a8feb002ad26",
+            "scores.json": "a86c6f979b919aec6c1b5effd631c43bfb501b410ec22057951b71115eb9834f"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.95,
+            "recall_at_1_strict": 0.8421052631578947,
+            "recall_at_3_strict": 0.8421052631578947,
+            "recall_at_5_strict": 0.8421052631578947,
+            "recall_at_1_lenient": 0.8421052631578947,
+            "recall_at_3_lenient": 0.8421052631578947,
+            "recall_at_5_lenient": 0.8421052631578947,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/letta_enhi/seed_33",
+          "sha256": {
+            "run_log.jsonl": "506fafe92ed6778b097cff9ba9fbbd0a96c885ae5446e1f0122cf5ef7d597f59",
+            "store_after_plant.json": "cf6ccd518b04e4b8a985311c4e183c9af020947a92e4fe3a48e83840f5e68d48",
+            "store_final.json": "e685181ae9afc0b90c5d649ceae27a305015300a6371a217972dceda6017d484",
+            "scores.json": "129d666acd4bbea980c30dbc0058440123ef7bd5d7b0bc1bad1c59e1883f3d6d"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.85,
+            "recall_at_1_strict": 0.8235294117647058,
+            "recall_at_3_strict": 0.8235294117647058,
+            "recall_at_5_strict": 0.8235294117647058,
+            "recall_at_1_lenient": 0.8235294117647058,
+            "recall_at_3_lenient": 0.8235294117647058,
+            "recall_at_5_lenient": 0.8235294117647058,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        }
+      }
+    },
+    "letta_hien": {
+      "run_code_git_sha": "8e12ba49f61ffc3bd521fb9d08c74571ac01446f",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/letta_hien/seed_11",
+          "sha256": {
+            "run_log.jsonl": "69b21e204534eab224a1ef27d809fab95985b9a855f235e2330df6e96bbdc512",
+            "store_after_plant.json": "5116e745c694ccbde5d3a0c3027dc3f4303469e8b0c969080db09154fb4eab90",
+            "store_final.json": "9cf028a472a02c8cea791e4dd56296fd501d9ebc27fcd46d173eb44b754d4e56",
+            "scores.json": "e04c22cb55fd89fbed202c3dacceb6337072bf60a19e39b23b83649bacd1c344"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.15,
+            "recall_at_1_strict": 1.0,
+            "recall_at_3_strict": 1.0,
+            "recall_at_5_strict": 1.0,
+            "recall_at_1_lenient": 1.0,
+            "recall_at_3_lenient": 1.0,
+            "recall_at_5_lenient": 1.0,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/letta_hien/seed_22",
+          "sha256": {
+            "run_log.jsonl": "9c24ae5d63d947257b2c5f1a89c682c94640b730f6f95b912946f8b50e985b60",
+            "store_after_plant.json": "911f2f562d9dcbe1dd022968e323a9d97b50be71a222b5ddb7a02a8ddfb7f28c",
+            "store_final.json": "ecbe936949e854c73d1fb3f9f539342a0b3f03c4f32e38ec4df984e716220087",
+            "scores.json": "6d5cac24edce4bf5dfe15b6c70276efaa6ebfc25ef423421263fa51493eb558a"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.2,
+            "recall_at_1_strict": 0.75,
+            "recall_at_3_strict": 0.75,
+            "recall_at_5_strict": 0.75,
+            "recall_at_1_lenient": 0.75,
+            "recall_at_3_lenient": 0.75,
+            "recall_at_5_lenient": 0.75,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/letta_hien/seed_33",
+          "sha256": {
+            "run_log.jsonl": "936d6643a4a771d0a9e23b3d4ad2b4bc0c791043153d50ec63967731a7647ac0",
+            "store_after_plant.json": "4383dc93f6cb726b2649e80d615a8d6298b9f32668180c9845a435726b3a59d1",
+            "store_final.json": "3454f081631dc1f609677fdc00ad4fa05aca7f780dcd42dd26f806a453dc0168",
+            "scores.json": "8406b8b993f98afe5bb95c53e01286db3332cc769d0a00f099a383e74da74b40"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.15,
+            "recall_at_1_strict": 0.6666666666666666,
+            "recall_at_3_strict": 0.6666666666666666,
+            "recall_at_5_strict": 0.6666666666666666,
+            "recall_at_1_lenient": 0.6666666666666666,
+            "recall_at_3_lenient": 0.6666666666666666,
+            "recall_at_5_lenient": 0.6666666666666666,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        }
+      }
+    },
+    "letta_hihi": {
+      "run_code_git_sha": "8e12ba49f61ffc3bd521fb9d08c74571ac01446f",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/letta_hihi/seed_11",
+          "sha256": {
+            "run_log.jsonl": "a09e0393325e4501c960fe746e122de3f0d645b7696fac7af16e27413a47deae",
+            "store_after_plant.json": "379f131de69467d6c073f56e5e4b6fb454fc4abc368f9acbb90df02864f319cc",
+            "store_final.json": "1796617827951e1385972ee868cabe537d79668df13375faf5961ffa92cc3d78",
+            "scores.json": "5d5f0a245a9df8ff140c9f9a3c3dc6e35798d51764368341fef46f6bddca9999"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.15,
+            "recall_at_1_strict": 0.6666666666666666,
+            "recall_at_3_strict": 0.6666666666666666,
+            "recall_at_5_strict": 0.6666666666666666,
+            "recall_at_1_lenient": 0.6666666666666666,
+            "recall_at_3_lenient": 0.6666666666666666,
+            "recall_at_5_lenient": 0.6666666666666666,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/letta_hihi/seed_22",
+          "sha256": {
+            "run_log.jsonl": "e785299ae191ec563a1470066f45a9a2988d4df23eb49a7e4f4faba5ca06627f",
+            "store_after_plant.json": "f1a9e6ddab980a880aff77511321c9a06b658bd8f03f513300d6b85745a30785",
+            "store_final.json": "d7171209ca1fee7bc89959292b59b3e5351a2c845448ffbdbc408614f4ffc74c",
+            "scores.json": "ec36f08ae5acb1f65c31108c8d375d649ec618da52f115263f23a6a19eecebcf"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.25,
+            "recall_at_1_strict": 0.8,
+            "recall_at_3_strict": 0.8,
+            "recall_at_5_strict": 0.8,
+            "recall_at_1_lenient": 0.8,
+            "recall_at_3_lenient": 0.8,
+            "recall_at_5_lenient": 0.8,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/letta_hihi/seed_33",
+          "sha256": {
+            "run_log.jsonl": "9380494bb88b1ea23eba323b4a805e097d0eb3855255a9f163fb5f6df187fe40",
+            "store_after_plant.json": "c295504889ca7939e30673c329950ec7aa79a531656b582fa7beb5490a7a5688",
+            "store_final.json": "740e9f4002d4f5aafb3c4c899ccbad9739062cf219f6f27be9b18211d34101df",
+            "scores.json": "6d5cac24edce4bf5dfe15b6c70276efaa6ebfc25ef423421263fa51493eb558a"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.2,
+            "recall_at_1_strict": 0.75,
+            "recall_at_3_strict": 0.75,
+            "recall_at_5_strict": 0.75,
+            "recall_at_1_lenient": 0.75,
+            "recall_at_3_lenient": 0.75,
+            "recall_at_5_lenient": 0.75,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        }
+      }
+    },
+    "mem0_enen": {
+      "run_code_git_sha": "8e12ba49f61ffc3bd521fb9d08c74571ac01446f",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/mem0_enen/seed_11",
+          "sha256": {
+            "run_log.jsonl": "d09e4c30a06fae4eaceafee7048e29411009406269891d8b2f55403d3b27f2ef",
+            "store_after_plant.json": "03db723ee3e16157e0ca059e7f871c40290f36bf3ab075fc0d3213eceaf368b3",
+            "store_final.json": "87a2fee8ca5112a8883ecab2c68cf999eb73a6ea874ef3105bf25e3c3f0b5209",
+            "scores.json": "2fdebfbe4fb5a14fd8033bd0986bb5adc7e6f5a5037547c9cf081738646eb03a"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.75,
+            "recall_at_3_strict": 0.85,
+            "recall_at_5_strict": 0.85,
+            "recall_at_1_lenient": 0.75,
+            "recall_at_3_lenient": 0.85,
+            "recall_at_5_lenient": 0.85,
+            "duplication_rate": 0.1,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/mem0_enen/seed_22",
+          "sha256": {
+            "run_log.jsonl": "e55401eb7c5710628d7003ccaf541dbddf8b1253951e860a60dc584daf2b3f8b",
+            "store_after_plant.json": "b12948ead8a5eb54e90e5e47ff89a512e94a2dd650d8ef0b80f1bc50da94b037",
+            "store_final.json": "7d712cae756a81d5b803d2cf318fa94c807b041ad3ec3619db4d48b0b0689666",
+            "scores.json": "2fdebfbe4fb5a14fd8033bd0986bb5adc7e6f5a5037547c9cf081738646eb03a"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.75,
+            "recall_at_3_strict": 0.85,
+            "recall_at_5_strict": 0.85,
+            "recall_at_1_lenient": 0.75,
+            "recall_at_3_lenient": 0.85,
+            "recall_at_5_lenient": 0.85,
+            "duplication_rate": 0.1,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/mem0_enen/seed_33",
+          "sha256": {
+            "run_log.jsonl": "c9d896e157d4c19c334360425d78de80dcc1a7a2b0466c6941cbea0a2acb6f08",
+            "store_after_plant.json": "d5b8d0113df30faaa9fcb9cbe7c2c80502acdcde870e3147e6c9357cc7262402",
+            "store_final.json": "5a7891fcc26778891221570f21718c923bf09ee2b8d54e181f81f55150ae64ce",
+            "scores.json": "2fdebfbe4fb5a14fd8033bd0986bb5adc7e6f5a5037547c9cf081738646eb03a"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.75,
+            "recall_at_3_strict": 0.85,
+            "recall_at_5_strict": 0.85,
+            "recall_at_1_lenient": 0.75,
+            "recall_at_3_lenient": 0.85,
+            "recall_at_5_lenient": 0.85,
+            "duplication_rate": 0.1,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        }
+      }
+    },
+    "mem0_enhi": {
+      "run_code_git_sha": "8e12ba49f61ffc3bd521fb9d08c74571ac01446f",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/mem0_enhi/seed_11",
+          "sha256": {
+            "run_log.jsonl": "8ae50dac1cc0506deee36dcd1c3c81675a1bca1227b494d1ab3e0ed25d474d31",
+            "store_after_plant.json": "2cefe65e2214ee840c3200a64719893b79c69e50ce0d93398e9baf2e10d98bc1",
+            "store_final.json": "c1bae5691c5c74af5c4a5ab342316f36274d42cdd008441081e4049e9b25368f",
+            "scores.json": "e75fc51785e26298bc95f73180a0e02d5407791aa2bcddd078adb00491aeb74c"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.75,
+            "recall_at_3_strict": 0.8,
+            "recall_at_5_strict": 0.8,
+            "recall_at_1_lenient": 0.75,
+            "recall_at_3_lenient": 0.8,
+            "recall_at_5_lenient": 0.8,
+            "duplication_rate": 0.1,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/mem0_enhi/seed_22",
+          "sha256": {
+            "run_log.jsonl": "b4509847555a4aff93584d631b3fa6e611d6a92c501ce278f7b691be6d6d2fb6",
+            "store_after_plant.json": "09dffe58c079089ae53cc86d0c085a0796dbb7fb91dc4aaadc9cb3e33dc3f5c2",
+            "store_final.json": "f29e16b4d677e0e51e372979ff73d1096436ee2aa812821b12048820e733605e",
+            "scores.json": "e75fc51785e26298bc95f73180a0e02d5407791aa2bcddd078adb00491aeb74c"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.75,
+            "recall_at_3_strict": 0.8,
+            "recall_at_5_strict": 0.8,
+            "recall_at_1_lenient": 0.75,
+            "recall_at_3_lenient": 0.8,
+            "recall_at_5_lenient": 0.8,
+            "duplication_rate": 0.1,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/mem0_enhi/seed_33",
+          "sha256": {
+            "run_log.jsonl": "28b190c2c5bb1c1cf9c3bfb1c65e8a1d509922de3e65fb9482658439972c4202",
+            "store_after_plant.json": "37b090c2961986e27ba489f2a6b049709239eaec91744a94125679a7e2455c11",
+            "store_final.json": "6b68a56286550ec96c36ab3b15f4f70918d271f173050fbf3568775757040c47",
+            "scores.json": "e75fc51785e26298bc95f73180a0e02d5407791aa2bcddd078adb00491aeb74c"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 1.0,
+            "recall_at_1_strict": 0.75,
+            "recall_at_3_strict": 0.8,
+            "recall_at_5_strict": 0.8,
+            "recall_at_1_lenient": 0.75,
+            "recall_at_3_lenient": 0.8,
+            "recall_at_5_lenient": 0.8,
+            "duplication_rate": 0.1,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        }
+      }
+    },
+    "mem0_hien": {
+      "run_code_git_sha": "58dbcac6594d78556c06db25e82a73f3217d353d",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/mem0_hien/seed_11",
+          "sha256": {
+            "run_log.jsonl": "fdc73bf5d7b67c55256f952bf5a73d305782942ad5a347e4bb470573a1e8baba",
+            "store_after_plant.json": "126fc518af4441679d8d6bd04ded85dc039417b8c884fc2786bf817777aee266",
+            "store_final.json": "7165facb75daecb2e744119c629c58e598bfe8297e89e91707370e10839d41e4",
+            "scores.json": "9f3f6c76ae5c2dbd76d8bac5f71032c9adcf2429511c37bc11e5e6bdae38889a"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.35,
+            "recall_at_1_strict": 0.7142857142857143,
+            "recall_at_3_strict": 0.7142857142857143,
+            "recall_at_5_strict": 0.8571428571428571,
+            "recall_at_1_lenient": 0.7142857142857143,
+            "recall_at_3_lenient": 0.7142857142857143,
+            "recall_at_5_lenient": 0.8571428571428571,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/mem0_hien/seed_22",
+          "sha256": {
+            "run_log.jsonl": "f0c10c419e07a4db99295b3e7eaf36f88d90a6a4253bfcde28d74f9ea7e9dbbd",
+            "store_after_plant.json": "ab5111e52328895410dca32092ae3e13b0d2462eb687da6aa58d2bf93275a02c",
+            "store_final.json": "fb3adddaf31edf0acfb96154141e426a40f906fe1ba6c413af0cccffbe79884e",
+            "scores.json": "5184498f77e0e11013144dce218afc5bf90456a2dc117a8b739358d14a8130c3"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.4,
+            "recall_at_1_strict": 0.75,
+            "recall_at_3_strict": 0.75,
+            "recall_at_5_strict": 0.875,
+            "recall_at_1_lenient": 0.75,
+            "recall_at_3_lenient": 0.75,
+            "recall_at_5_lenient": 0.875,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/mem0_hien/seed_33",
+          "sha256": {
+            "run_log.jsonl": "ae1186519ce82716694ba761ad00c475ccbeb21952c6ec8b6b93436f70d1073e",
+            "store_after_plant.json": "5e3fbe6f38684072a1031ee5e4d706c05228097a612b0f0d2317f6a9f87346d0",
+            "store_final.json": "6e8b7b0f9a3dbe1ba071276b949078dca27ecc9dbbe8e775c6cd57d761f2c82b",
+            "scores.json": "9f3f6c76ae5c2dbd76d8bac5f71032c9adcf2429511c37bc11e5e6bdae38889a"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.35,
+            "recall_at_1_strict": 0.7142857142857143,
+            "recall_at_3_strict": 0.7142857142857143,
+            "recall_at_5_strict": 0.8571428571428571,
+            "recall_at_1_lenient": 0.7142857142857143,
+            "recall_at_3_lenient": 0.7142857142857143,
+            "recall_at_5_lenient": 0.8571428571428571,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        }
+      }
+    },
+    "mem0_hihi": {
+      "run_code_git_sha": "8e12ba49f61ffc3bd521fb9d08c74571ac01446f",
+      "seeds": {
+        "seed_11": {
+          "path": "runs/pilot_v2/mem0_hihi/seed_11",
+          "sha256": {
+            "run_log.jsonl": "f517477c7b53903a150dbb8de645056539d6295f7500ddd637bd590783a37bcd",
+            "store_after_plant.json": "c860879a60d4fbdffb5b39bc6bfa12409092f33c7d45dd2d2b84e330b9f87a3c",
+            "store_final.json": "2eb52e5707f3cf8a0149151cf8e7aac5a3fdc07879dcddcfbbe3ff3fd12bb847",
+            "scores.json": "8618dc58b17809f0adea91473130b39bb7c39c545189cb2a8a517dae699e5eda"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.35,
+            "recall_at_1_strict": 0.7142857142857143,
+            "recall_at_3_strict": 0.8571428571428571,
+            "recall_at_5_strict": 0.8571428571428571,
+            "recall_at_1_lenient": 0.7142857142857143,
+            "recall_at_3_lenient": 0.8571428571428571,
+            "recall_at_5_lenient": 0.8571428571428571,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_22": {
+          "path": "runs/pilot_v2/mem0_hihi/seed_22",
+          "sha256": {
+            "run_log.jsonl": "91c3276fecf60ea7a0df33c5ac24b97cfb8532530e64c0f76f2926b39d98e686",
+            "store_after_plant.json": "ee88402bbba2d3e2ec6231b488922192a65084f4c45f42865fd93906e5ccf328",
+            "store_final.json": "f4b12d47c8ccfded8c15690f786c95569b26a366509469716fb435bf104f74c9",
+            "scores.json": "fb910bc537bfb5c02810f553839ecdb8aa48071c920b1b772fd7603ea4e55d88"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.4,
+            "recall_at_1_strict": 0.75,
+            "recall_at_3_strict": 0.875,
+            "recall_at_5_strict": 0.875,
+            "recall_at_1_lenient": 0.75,
+            "recall_at_3_lenient": 0.875,
+            "recall_at_5_lenient": 0.875,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.3333333333333333
+          }
+        },
+        "seed_33": {
+          "path": "runs/pilot_v2/mem0_hihi/seed_33",
+          "sha256": {
+            "run_log.jsonl": "c409307e1efc5ddcd9cbf4fe19a8acfcfc7a56984bd748636adeeeb393a9cbb7",
+            "store_after_plant.json": "4e68e726704965955d715b01632e61d54c069bee9150ce1ddd835213a9514fe4",
+            "store_final.json": "34aacddc609e321f172d664c683476acdeaf801275428904590416f8d5918017",
+            "scores.json": "f5b018625b945db5e8a4a1d4f45aceb64a4426735997a39beb253938bdf875b2"
+          },
+          "missing_files": [],
+          "scores_v1": {
+            "write_fidelity": 0.35,
+            "recall_at_1_strict": 0.7142857142857143,
+            "recall_at_3_strict": 0.8571428571428571,
+            "recall_at_5_strict": 0.8571428571428571,
+            "recall_at_1_lenient": 0.7142857142857143,
+            "recall_at_3_lenient": 0.8571428571428571,
+            "recall_at_5_lenient": 0.8571428571428571,
+            "duplication_rate": 0.0,
+            "false_merge_rate": 0.0,
+            "staleness_rate": 0.0
+          }
+        }
+      }
+    }
+  }
+}

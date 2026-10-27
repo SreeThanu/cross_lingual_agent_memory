@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Sequence
+from typing import Any, Sequence
 from xlmem.benchmark.facts import Fact, Memory
 from xlmem.scoring.judge import strict_match
 
@@ -11,7 +11,9 @@ def compute_duplication_rate(
     planted_facts: Sequence[Fact],
     dumped_memories: Sequence[Memory],
 ) -> float:
-    """Compute Duplication Rate (DR) on store snapshot.
+    """SUPERSEDED (metrics v1) Duplication Rate; use compute_plant_duplication_rate.
+
+    v1 counted distractor and correction records as duplicates (METRICS_SPEC §6).
 
     DR = (1 / |F|) * sum_{f in F} max(0, N_records(f) - 1).
     A score of 0.0 indicates no duplicate records.
@@ -79,3 +81,36 @@ def compute_false_merge_rate(
             false_merges += 1
 
     return false_merges / len(distractor_pairs)
+
+
+def compute_plant_duplication_rate(
+    facts: Sequence[Fact],
+    planted_fact_ids: Sequence[str],
+    plant_memories: Sequence[Memory] | None,
+) -> tuple[float | None, dict[str, Any]]:
+    """Primary DR, metrics v2 (`plant_duplication_rate`, METRICS_SPEC.md §2.2, decision D7).
+
+    Scored on Snapshot A over planted base facts only, so distractor and correction records
+    (which arrive after Snapshot A) cannot count. Returns (rate or None, per-fact detail).
+    """
+    planted = set(planted_fact_ids)
+    base = [f for f in facts if f.id in planted and f.distractor_of is None]
+    detail: dict[str, Any] = {
+        "n_base_facts": len(base),
+        "records_per_fact": {},
+        "invalid_reason": None,
+    }
+    if plant_memories is None:
+        detail["invalid_reason"] = "store_after_plant.json missing; no fallback to the final store"
+        return None, detail
+    if not base:
+        detail["invalid_reason"] = "no planted base facts in run_log.jsonl"
+        return None, detail
+
+    total_excess = 0
+    for fact in base:
+        aliases = list(fact.surface.values())
+        n = sum(1 for m in plant_memories if strict_match(fact.value, m.text, aliases=aliases))
+        detail["records_per_fact"][fact.id] = n
+        total_excess += max(0, n - 1)
+    return total_excess / len(base), detail

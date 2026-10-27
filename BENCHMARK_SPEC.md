@@ -161,6 +161,11 @@ Session K+2: RE-PROBE PHASE (Staleness Test)
   - Snapshot B: dump() -> store_final.json
 ```
 
+**Snapshot roles (metrics v2, METRICS_SPEC §6):**
+- **Snapshot A** (`store_after_plant.json`) is taken after the plant session's consolidation trigger and **before** any filler, distractor or correction turn (`xlmem/runner/experiment.py`). It is the store for Write Fidelity, for the SR write gate, and for the primary Duplication Rate (`plant_duplication_rate`).
+- **Snapshot B** (`store_final.json`) is taken after the re-probe. It is the store for FMR and the input to any future post-session diagnostics. It is not used for primary DR.
+- The set of corrected facts is read from the run log (`turn_trace` records with `kind: "correction"`), never from the fact bank's `update` blocks. This section's fixed 20% correction subset is unchanged by v2 (D6b is still open).
+
 ### Turn Kinds and Schema
 Every turn in the script conforms to the `Turn` dataclass:
 - `plant`: User provides a novel ground truth fact.

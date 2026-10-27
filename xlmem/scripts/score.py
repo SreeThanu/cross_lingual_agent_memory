@@ -9,16 +9,26 @@ from pathlib import Path
 import sys
 from typing import Any
 from xlmem.benchmark.facts import Fact, Memory, ProbeResult
-from xlmem.scoring.duplication import compute_duplication_rate, compute_false_merge_rate
+from xlmem.scoring.aliases import ValueAliases, default_alias_path, load_value_aliases
+from xlmem.scoring.duplication import compute_false_merge_rate, compute_plant_duplication_rate
 from xlmem.scoring.retrieval import compute_recall_at_k, compute_write_fidelity
-from xlmem.scoring.staleness import compute_staleness_rate
+from xlmem.scoring.staleness import InvalidReprobe, compute_staleness_v2, parse_reprobe_record
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 logger = logging.getLogger("score")
 
+# METRICS_SPEC.md §6. Bump whenever a metric's definition changes.
+METRICS_VERSION = "2.1"
 
-def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, Any]:
-    """Compute all metrics for a single seed directory from logs and snapshots."""
+
+def compute_seed_scores(
+    seed_dir: Path, facts: list[Fact], aliases: ValueAliases | None = None
+) -> dict[str, Any]:
+    """Compute all metrics for one seed directory from its logs and snapshots; writes nothing.
+
+    Pure with respect to the run directory, so historical runs can be rescored into a
+    separate location without touching their original scores.json.
+    """
     store_plant_file = seed_dir / "store_after_plant.json"
     store_final_file = seed_dir / "store_final.json"
     run_log_file = seed_dir / "run_log.jsonl"
@@ -26,8 +36,8 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, Any]:
     if not run_log_file.exists():
         raise FileNotFoundError(f"Missing run log: {run_log_file}")
 
-    # Load snapshots
-    plant_memories: list[Memory] = []
+    # Load snapshots. Snapshot A missing is distinguished from an empty Snapshot A.
+    plant_memories: list[Memory] | None = None
     if store_plant_file.exists():
         with open(store_plant_file, "r", encoding="utf-8") as f:
             plant_memories = [Memory.from_dict(m) for m in json.load(f)]
@@ -41,21 +51,35 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, Any]:
     # (Session K) probe; reprobe_result is the post-correction (Session K+2)
     # re-probe -- these are DISTINCT phases and must not be conflated (see
     # BENCHMARK_SPEC.md Section 5). Staleness Rate is defined over the re-probe.
+    # Every raw reprobe_result is kept: a malformed one becomes an InvalidReprobe rather
+    # than being dropped, so it still counts toward SR v2's exactly-one-record rule.
     probe_results: list[ProbeResult] = []
-    reprobe_results: list[ProbeResult] = []
+    reprobe_results: list[ProbeResult | InvalidReprobe] = []
+    planted_ids: list[str] = []
+    corrected_ids: list[str] = []
     with open(run_log_file, "r", encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             if not line:
                 continue
             record = json.loads(line)
-            if record.get("record_type") == "probe_result":
-                probe_results.append(ProbeResult.from_dict(record["data"]))
-            elif record.get("record_type") == "reprobe_result":
-                reprobe_results.append(ProbeResult.from_dict(record["data"]))
+            rtype = record.get("record_type")
+            if rtype == "reprobe_result":
+                reprobe_results.append(parse_reprobe_record(record.get("data")))
+                continue
+            data = record.get("data") or {}
+            if rtype == "probe_result":
+                probe_results.append(ProbeResult.from_dict(data))
+            elif rtype == "turn_trace" and data.get("fact_id"):
+                if data.get("kind") == "plant":
+                    planted_ids.append(str(data["fact_id"]))
+                elif data.get("kind") == "correction":
+                    corrected_ids.append(str(data["fact_id"]))
 
     # 1. WRITE FIDELITY (CHECKED FIRST!)
-    wf, written_fact_ids = compute_write_fidelity(planted_facts=facts, dumped_memories=plant_memories)
+    wf, written_fact_ids = compute_write_fidelity(
+        planted_facts=facts, dumped_memories=plant_memories or []
+    )
     written_set = set(written_fact_ids)
 
     # 2. RETRIEVAL RECALL (Evaluated on written facts to prevent conflation)
@@ -67,33 +91,34 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, Any]:
     recall_3_lenient = compute_recall_at_k(facts=facts, probe_results=probe_results, k=3, mode="lenient", eligible_fact_ids=written_set)
     recall_5_lenient = compute_recall_at_k(facts=facts, probe_results=probe_results, k=5, mode="lenient", eligible_fact_ids=written_set)
 
-    # 3. CONSOLIDATION (DR and FMR)
-    dr = compute_duplication_rate(planted_facts=facts, dumped_memories=final_memories or plant_memories)
+    # 3. CONSOLIDATION: primary DR on Snapshot A over planted base facts (v2, D7); FMR unchanged.
+    plant_dr, plant_dr_detail = compute_plant_duplication_rate(
+        facts=facts, planted_fact_ids=planted_ids, plant_memories=plant_memories
+    )
     distractor_pairs = [(f, d) for f in facts for d in facts if d.distractor_of == f.id]
-    fmr = compute_false_merge_rate(distractor_pairs=distractor_pairs, dumped_memories=final_memories or plant_memories)
+    fmr = compute_false_merge_rate(
+        distractor_pairs=distractor_pairs, dumped_memories=final_memories or plant_memories or []
+    )
 
-    # 4. UPDATE (Staleness Rate) -- must use the post-correction reprobe_result
-    # records, never probe_result (which predates the correction turn).
-    corrected_facts = [f for f in facts if f.update_data is not None]
+    # 4. UPDATE: SR v2 (D6) -- corrected (from the log) ∩ written ∩ valid re-probe.
+    sr = compute_staleness_v2(
+        facts=facts,
+        corrected_fact_ids=corrected_ids,
+        written_fact_ids=written_set if plant_memories is not None else None,
+        reprobe_results=reprobe_results,
+        aliases=aliases,
+    )
+
     invalid_metrics: dict[str, str] = {}
-    sr: float | None
-    if corrected_facts and not reprobe_results:
-        # No re-probe was recorded, so SR is undefined -- report it as null rather
-        # than a number (compute_staleness_rate would return 0.0, i.e. "every update
-        # worked", for a phase that never ran).
-        reason = (
-            "no reprobe_result records in run_log.jsonl; log predates the re-probe "
-            "phase fix. Re-run the experiment to measure SR."
-        )
-        logger.warning("%s: staleness_rate INVALID -- %s", seed_dir.name, reason)
-        invalid_metrics["staleness_rate"] = reason
-        sr = None
-    else:
-        sr = compute_staleness_rate(
-            corrected_facts=corrected_facts, reprobe_results=reprobe_results
-        )
+    if plant_dr is None:
+        invalid_metrics["plant_duplication_rate"] = str(plant_dr_detail["invalid_reason"])
+    if sr["staleness_rate"] is None:
+        invalid_metrics["staleness_rate"] = str(sr["invalid_reason"])
+        invalid_metrics["miss_rate"] = str(sr["invalid_reason"])
+        logger.warning("%s: staleness_rate INVALID -- %s", seed_dir.name, sr["invalid_reason"])
 
     scores: dict[str, Any] = {
+        "metrics_version": METRICS_VERSION,
         "write_fidelity": wf,
         "recall_at_1_strict": recall_1_strict,
         "recall_at_3_strict": recall_3_strict,
@@ -101,26 +126,90 @@ def score_single_seed_dir(seed_dir: Path, facts: list[Fact]) -> dict[str, Any]:
         "recall_at_1_lenient": recall_1_lenient,
         "recall_at_3_lenient": recall_3_lenient,
         "recall_at_5_lenient": recall_5_lenient,
-        "duplication_rate": dr,
+        "plant_duplication_rate": plant_dr,
         "false_merge_rate": fmr,
-        "staleness_rate": sr,
+        "staleness_rate": sr["staleness_rate"],
+        "miss_rate": sr["miss_rate"],
+        "write_ineligible_rate": sr["write_ineligible_rate"],
+        "eligible_corrections": sr["eligible_corrections"],
+        "updated_count": sr["updated_count"],
+        "stale_count": sr["stale_count"],
+        "miss_count": sr["miss_count"],
+        "write_ineligible_count": sr["write_ineligible_count"],
+        "missing_or_invalid_reprobe_count": sr["missing_or_invalid_reprobe_count"],
+        "staleness_detail": {
+            "corrected_count": sr["corrected_count"],
+            "unattributed_invalid_reprobes": sr["unattributed_invalid_reprobes"],
+            "per_fact": sr["per_fact"],
+        },
+        "plant_duplication_detail": plant_dr_detail,
     }
     if invalid_metrics:
         scores["invalid_metrics"] = invalid_metrics
+    return scores
+
+
+def _refusal(path: Path) -> str:
+    return f"Refusing to overwrite existing {path}; pass overwrite=True (CLI: --overwrite)"
+
+
+def score_single_seed_dir(
+    seed_dir: Path,
+    facts: list[Fact],
+    aliases: ValueAliases | None = None,
+    overwrite: bool = False,
+) -> dict[str, Any]:
+    """Compute all metrics for a single seed directory and write seed_dir/scores.json.
+
+    Refuses (FileExistsError) if scores.json already exists, unless overwrite=True, so the
+    original scores of a historical run can't be replaced by accident.
+    """
+    scores_path = seed_dir / "scores.json"
+    if scores_path.exists() and not overwrite:
+        raise FileExistsError(_refusal(scores_path))
+    scores = compute_seed_scores(seed_dir, facts=facts, aliases=aliases)
 
     # Save scores to seed_dir/scores.json without modifying run_log.jsonl
-    scores_path = seed_dir / "scores.json"
-    with open(scores_path, "w", encoding="utf-8") as f:
-        json.dump(scores, f, indent=2)
+    with open(scores_path, "w" if overwrite else "x", encoding="utf-8") as f:
+        json.dump(scores, f, indent=2, ensure_ascii=False)
 
-    logger.info("Scored %s -> WF: %.2f, Recall@1: %.2f (strict), DR: %.2f", seed_dir.name, wf, recall_1_strict, dr)
+    logger.info(
+        "Scored %s -> WF: %.2f, Recall@1: %.2f (strict), plant DR: %s, SR: %s",
+        seed_dir.name, scores["write_fidelity"], scores["recall_at_1_strict"],
+        scores["plant_duplication_rate"], scores["staleness_rate"],
+    )  # fmt: skip
     return scores
+
+
+def load_aliases_for(
+    facts: list[Fact], facts_path: Path, aliases_arg: str | None
+) -> ValueAliases | None:
+    """Load the alias sidecar given on the CLI, or the default one next to the fact bank."""
+    alias_path = Path(aliases_arg) if aliases_arg else default_alias_path(facts_path)
+    if not alias_path.exists():
+        if aliases_arg:
+            raise FileNotFoundError(f"Alias file not found: {alias_path}")
+        logger.warning(
+            "No alias file at %s: non-English re-probes will be invalid for SR", alias_path
+        )
+        return None
+    return load_value_aliases(alias_path, facts, facts_path)
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Re-score XLMem run logs offline without GPU.")
     parser.add_argument("--run", required=True, help="Path to experiment run directory (e.g. runs/mem0_qwen_hi2en).")
     parser.add_argument("--facts", default="data/facts_v1.yaml", help="Path to fact bank YAML.")
+    parser.add_argument(
+        "--aliases",
+        default=None,
+        help="SR alias sidecar (default: data/aliases/<facts stem>.aliases.yaml).",
+    )
+    parser.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Replace existing scores.json files (default: refuse and write nothing).",
+    )
     args = parser.parse_args()
 
     run_path = Path(args.run)
@@ -131,20 +220,29 @@ def main() -> int:
         return 1
 
     # Load facts if available, otherwise construct dummy facts for smoke tests
+    aliases: ValueAliases | None = None
     if facts_path.exists():
         from xlmem.benchmark.facts import load_facts
         facts = load_facts(facts_path)
+        aliases = load_aliases_for(facts, facts_path, args.aliases)
     else:
         from xlmem.scripts.smoke import SMOKE_FACTS
         facts = SMOKE_FACTS
 
     # Check if this is a single seed dir or an experiment dir containing seed_*
-    seed_dirs = [p for p in run_path.iterdir() if p.is_dir() and p.name.startswith("seed_")]
+    seed_dirs = sorted(p for p in run_path.iterdir() if p.is_dir() and p.name.startswith("seed_"))
     if not seed_dirs:
         seed_dirs = [run_path]
 
+    # Refuse before scoring anything, so a refusal never leaves a run half re-scored.
+    existing = [s / "scores.json" for s in seed_dirs if (s / "scores.json").exists()]
+    if existing and not args.overwrite:
+        for path in existing:
+            logger.error(_refusal(path))
+        return 2
+
     for s_dir in seed_dirs:
-        score_single_seed_dir(s_dir, facts=facts)
+        score_single_seed_dir(s_dir, facts=facts, aliases=aliases, overwrite=args.overwrite)
 
     return 0
 

@@ -97,3 +97,22 @@ Duplication Rate (DR) and False Merge Rate (FMR) require inspecting the entire m
 - **Correction (post-fix):** The "subsequent English reprobe" above was not a genuine re-probe. The runner did not implement the RE-PROBE phase (BENCHMARK_SPEC.md Session K+2): it fed the Session-K probe — taken *before* the correction turn was ever issued — into `compute_staleness_rate` as if it were a post-correction re-probe. Every correction was therefore guaranteed to score as stale (SR = 1.00) regardless of what the framework actually did, since it had no opportunity to see the update. This was a harness bug, not a Mem0 defect; the bug has since been fixed (RE-PROBE now runs after CORRECTION, as its own `reprobe_result` record).
 - **Do not treat this as evidence that Mem0 handles updates correctly, either.** A single post-fix re-run of this same single-seed, 20-fact `hi→en` pilot now measures `SR = 0.00`, with Mem0 performing a genuine in-place `UPDATE` and the re-probe correctly retrieving the corrected value — but one re-run of one seed is not evidence of general correctness any more than the original single run was evidence of failure (AGENTS.md Hard Rule 5: never report a single seed).
 - **Status:** Update staleness for Mem0 (and any other framework) is **unresolved** and requires the full multi-seed evaluation called for in the original follow-up above, run against the fixed harness.
+
+### 2.5 SR and DR redefined as metrics v2 (D6, D7), 2026-10-27
+- **What changed:** METRICS_SPEC §2.2, §2.4, §3.3, §3.4, §6. SR now has an eligibility gate (actually corrected ∩ written ∩ valid re-probe) and three outcomes, with Miss Rate reported separately. The primary DR is computed on Snapshot A over planted base facts only.
+- **Pilot v2 rescore:**
+  - Rescored offline: `scripts/rescore_metrics_v2.py`.
+  - Outputs: `runs/pilot_v2/rescore_metrics-v2/` (local, gitignored).
+  - Baseline index and comparison: `docs/rescore/`.
+  - The original `scores.json` files were not modified.
+- **Known limitations that remain:**
+  - SR uses its own Devanagari-safe matcher, while WF, recall, DR and FMR still use `judge.strict_match` (D1).
+  - The negation patterns are a short, fixed list, written after the pilot answers had been read (METRICS_SPEC §3.3 item 7).
+  - Hindi transliterations of English values count as MISS.
+  - `hi-en` re-probes are invalid because no aliases exist for them.
+  - The pilot corrects one fact per seed, in `store_lang`, so cross-lingual update is untested.
+  - **Fixed in metrics v2.1 (audit, 2026-10-27):** `xlmem/scripts/score.py` now refuses to overwrite an existing `scores.json` unless `--overwrite` (or `overwrite=True`) is given. For historical runs, still use the rescore script, which writes to a new directory.
+  - **Also fixed in v2.1:** re-probe validity is now judged on raw records, and an AFFIRMED old-value mention counts as STALE (METRICS_SPEC §6).
+  - **Unresolved (needs a spec decision):** contrast followed by negation ("…, but cashews are not listed" → UPDATED). See METRICS_SPEC §3.3 item 7.
+  - `scripts/rescore_metrics_v2.py` is aligned with v2.1: its diagnostic loader uses the same re-probe validation, the S4 stage counts AFFIRMED old values, and the provenance keeps `git status` columns intact.
+  - **Pilot v2 rescore not rerun under v2.1.** Its outputs stay labelled `metrics_version: "2"`.

@@ -1,0 +1,29 @@
+# Authored value aliases for Staleness Rate v2 (METRICS_SPEC §3.4, decision D6).
+#
+# Rule (enforced by xlmem.scoring.aliases.load_value_aliases):
+#   - every `value` alias occurs verbatim in the same fact's surface[<lang>]
+#   - every `updated_value` alias occurs verbatim in the same fact's update.surface[<lang>]
+#   - never taken from model outputs
+# Used only by SR v2; WF / recall / DR / FMR do not read this file (D1 is open).
+# Covers the facts in facts_v1.yaml that carry an `update` block.
+# Not yet bilingually reviewed (BENCHMARK_SPEC §7.4).
+alias_bank_version: 1
+fact_bank: data/facts_v1.yaml
+fact_bank_sha256: 4f65aa0ca73af43a02721afb2b0d472d98ad3aabe4a8de69db36dc18b8d5af0f
+authored: 2026-10-27
+facts:
+  f_001:
+    value:
+      hi: ["मूंगफली"]
+    updated_value:
+      hi: ["काजू"]
+  f_002:
+    value:
+      hi: ["पुणे"]
+    updated_value:
+      hi: ["मुंबई"]
+  f_003:
+    value:
+      hi: ["इंफोसिस"]
+    updated_value:
+      hi: ["टीसीएस"]
