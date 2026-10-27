@@ -35,7 +35,9 @@ VERDICT = ["Verdict (OK / Fix)", "Suggested fix", "Comment"]
 
 # Items the author was unsure about. Everything else still needs a check.
 NOTES: dict[tuple[str, str], str] = {
-    ("payment_method", "statement"): "Natural? Alternative: 'पेमेंट करने का मेरा पसंदीदा तरीका'.",
+    ("payment_method", "statement"): "Two का in a row ('मेरी पत्नी का पेमेंट का पसंदीदा तरीका') is "
+     "grammatical, as in other relations (खेलने का पसंदीदा खेल), but is it natural? Alternatives: "
+     "'पेमेंट करने का मेरा पसंदीदा तरीका', 'पसंदीदा पेमेंट मोड'.",
     ("commute_mode", "statement"): "Hinglish 'commute ka mode' may sound stiff. Batch 2 values: "
      "Hinglish uses 'auto' and 'cycle' (shortened).",
     ("dream_country", "statement"): "Is 'मेरा सपनों का देश' natural for 'my dream country'? "
@@ -43,23 +45,56 @@ NOTES: dict[tuple[str, str], str] = {
     ("shift_start", "statement"): "Time format: 'सुबह 9 बजे' vs '9 बजे सुबह'.",
     ("alma_mater", "statement"): "Past tense (था/tha) used throughout this relation.",
     # Batch 2
-    ("favorite_cuisine", "statement"): "खाना means 'food': natural for 'cuisine'? Hinglish "
-     "'cuisine' taken as f.",
+    ("favorite_cuisine", "statement"): "Hindi uses भोजन शैली (f), not पसंदीदा खाना, because "
+     "खाना ('food') overlaps favorite_dish's पकवान and the user, mother and brother have both "
+     "facts: the probes must not be answerable by the other fact. Is भोजन शैली natural? "
+     "Any alternative must stay distinct from पकवान. Hinglish 'cuisine' taken as f.",
     ("department", "statement"): "Loanword डिपार्टमेंट used; would विभाग be more natural?",
     ("main_investment", "probe"): "Is 'किसमें है?' natural for 'what is ... invested in?'",
     ("favorite_instrument", "statement"): "वाद्ययंत्र vs साज़: which is more natural?",
     ("home_city", "statement"): "New values: is मैसूर (vs मैसूरु) the right Hindi form?",
 }
 
+PEOPLE_NOTES = {
+    "user_friend": "Hindi 'मेरे दोस्त' / Hinglish 'mere friend' present the friend as male; "
+    "English 'my friend's' is gender-neutral. Acceptable, or use a fixed-gender person?",
+    "user_father": "The health batch uses 'मेरे पिता' (f_101_dist); the templates use "
+    "'मेरे पिताजी'. Keep both, or align?",
+}
+
 EXISTING_DATA_ISSUES = [
+    # PROPOSAL, not an approved policy (open decision E, docs/review/FACT_BANK_DECISIONS.md):
+    # keep data/facts_v1.yaml frozen, because it is the pilot runs' input and its sha256 is
+    # in runs/pilot_v2/manifest/, and apply agreed fixes in the next fact-bank version.
+    # Until decided, the rows below only propose corrections; facts_v1.yaml is unchanged.
     ("facts_v1.yaml", "f_010", "Grammar: 'मेरी अगली महीने मनाली जाने की योजना है।' "
-     "Expected: 'अगले महीने मेरी मनाली जाने की योजना है।'. Not fixed: the Sep pilot used it."),
-    ("facts_v1.yaml", "f_002, f_003, f_004, f_008, f_009, f_012, f_017",
-     "Hindi uses masculine speaker verbs ('रहता हूँ', 'करता हूँ'). The new templates avoid "
-     "speaker gender. Rewrite these, or document the speaker as male?"),
-    ("health_batch_01.yaml", "f_104_dist",
-     "(user, dietary_restriction, vegetarian) is the same fact as facts_v1 f_012 "
-     "(user, dietary_preference, vegetarian). Drop one before merging."),
+     "Proposed: 'अगले महीने मेरी मनाली जाने की योजना है।' (महीना is m: अगले महीने)."),
+    ("facts_v1.yaml", "f_006", "Question drops 'morning', which the fact needs ('favorite "
+     "MORNING beverage'), and the Hindi has a gender error ('मेरी पसंदीदा पेय': पेय is m). "
+     "Proposed: en 'What is my favorite morning beverage?', hi 'सुबह की मेरी पसंदीदा ड्रिंक "
+     "क्या है?' (ड्रिंक as in the statement), hi-en 'Meri favorite morning beverage kya hai?' "
+     "(matches the statement's 'Meri')."),
+    ("facts_v1.yaml, health_batch_01.yaml",
+     "f_002, f_003, f_004, f_008, f_009, f_012, f_017; f_103, f_104, f_104_dist, f_106, "
+     "f_109, f_110",
+     "First-person verbs are masculine ('रहता हूँ', 'karta hoon'). Grammatical for a male "
+     "speaker (BENCHMARK_SPEC §7.2 uses 'मैं पुणे में रहता हूँ'), so this is a speaker-persona "
+     "question, not an error. The templates avoid first-person verbs entirely. Decide: "
+     "document a male speaker, or rewrite these without speaker gender."),
+    ("health_batch_01.yaml, facts_v1.yaml", "f_104, f_104_dist, f_012",
+     "Overlapping diet facts for the user. f_104_dist (vegetarian, 'I am also vegetarian') "
+     "restates f_012 (vegetarian, 'I follow a strictly vegetarian diet') under another "
+     "relation name. f_104's question 'What kind of diet do I follow?' is also answered by "
+     "f_012; both are base facts, so both are asked. (f_104_dist shares f_104's question, "
+     "as a value-shift distractor does, but distractors are never asked.) Needs a decision "
+     "(docs/review/FACT_BANK_DECISIONS.md, item A); not changed here."),
+    ("facts_v1.yaml", "f_004", "domain is 'languages', which is not one of the 8 approved "
+     "domains (BENCHMARK_SPEC §3). Which domain should it count under?"),
+    ("health_batch_01.yaml", "f_105, f_109, f_110",
+     "Value keys (flu_shot_pending, regular_donor, yoga_daily) are abstract labels that "
+     "occur in none of the sentences, and hand-written facts have no value_aliases. Today "
+     "strict matching can credit them only when a memory contains a whole authored sentence "
+     "verbatim; a paraphrase never matches. Which aliases are authorized is decision D1."),
 ]
 
 INSTRUCTIONS = [
@@ -282,12 +317,13 @@ def build_sheets(templates_dir: Path, entities_path: Path) -> list[Sheet]:
                                forms["hi"], forms["hi-en"], ", ".join(used) or "(spare)"])
 
     people = [["ID", "Person", "English", "Hindi (m / f / plural-oblique)",
-               "Hinglish (m / f / plural-oblique)", *VERDICT]]
+               "Hinglish (m / f / plural-oblique)", "Author's note", *VERDICT]]
     for name, e in entities.items():
         people.append([
             f"E{len(people):03d}", name, possessive(e, "en", ""),
             " / ".join(possessive(e, "hi", g) for g in ("m", "f", "p")),
             " / ".join(possessive(e, "hi-en", g) for g in ("m", "f", "p")),
+            PEOPLE_NOTES.get(name, ""),
         ])
 
     existing = [["ID", "File", "Facts", "Issue", *VERDICT]]
@@ -298,7 +334,7 @@ def build_sheets(templates_dir: Path, entities_path: Path) -> list[Sheet]:
         ("How to review", [[line] for line in INSTRUCTIONS], [120], None),
         ("Patterns", patterns, [7, 9, 20, 18, 9, 9, 34, 34, 34, 44, 30, 11, 30, 30], 12),
         ("Values", values, [7, 9, 20, 20, 22, 22, 22, 22, 11, 30, 30], 9),
-        ("People", people, [7, 14, 26, 40, 40, 11, 30, 30], 6),
+        ("People", people, [7, 14, 26, 40, 40, 34, 11, 30, 30], 7),
         ("Hand-written facts", _hand_written_rows(templates_dir.parent.parent),
          [7, 18, 11, 18, 40, 40, 40, 11, 30, 30], 8),
         ("Existing data", existing, [7, 20, 26, 70, 11, 30, 30], 5),

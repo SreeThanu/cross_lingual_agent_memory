@@ -177,24 +177,25 @@ relations:
       barbeque_nation: {en: "Barbeque Nation", hi: "बार्बेक्यू नेशन", hi-en: "Barbeque Nation"}
       mtr: {en: "MTR", hi: "एमटीआर", hi-en: "MTR"}
 
-  # Batch 2. NEEDS BILINGUAL REVIEW. # खाना is m; Hinglish "cuisine" taken as f (like "dish"). Check.
+  # Batch 2. NEEDS BILINGUAL REVIEW. # Hindi uses भोजन शैली (f), not पसंदीदा खाना: खाना ("food")
+  # is near-synonymous with favorite_dish's पकवान, and three people have both facts.
   favorite_cuisine:
-    gender: {hi: m, hi-en: f}
+    gender: {hi: f, hi-en: f}
     statement:
       en: "{Poss} favorite cuisine is {v}."
-      hi: "{poss} पसंदीदा खाना {v} है।"
+      hi: "{poss} पसंदीदा भोजन शैली {v} है।"
       hi-en: "{Poss} favorite cuisine {v} hai."
     probe:
       en: "What is {poss} favorite cuisine?"
-      hi: "{poss} पसंदीदा खाना कौन सा है?"
+      hi: "{poss} पसंदीदा भोजन शैली कौन सी है?"
       hi-en: "{Poss} favorite cuisine kaun si hai?"
     correction:
       en: "A correction: {poss} favorite cuisine is not {old}, it is {new}."
-      hi: "एक सुधार है: {poss} पसंदीदा खाना {old} नहीं, बल्कि {new} है।"
+      hi: "एक सुधार है: {poss} पसंदीदा भोजन शैली {old} नहीं, बल्कि {new} है।"
       hi-en: "Ek correction hai: {poss} favorite cuisine {old} nahi, {new} hai."
     reprobe:
       en: "What is {poss} favorite cuisine now?"
-      hi: "अब {poss} पसंदीदा खाना कौन सा है?"
+      hi: "अब {poss} पसंदीदा भोजन शैली कौन सी है?"
     values:
       south_indian: {en: "South Indian", hi: "दक्षिण भारतीय", hi-en: "South Indian"}
       punjabi: {en: "Punjabi", hi: "पंजाबी", hi-en: "Punjabi"}
