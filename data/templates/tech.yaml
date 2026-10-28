@@ -1,0 +1,216 @@
+# Domain template: Technology & Devices (BENCHMARK_SPEC.md Section 3, item 8).
+# Format and placeholders: see data/templates/dining.yaml.
+#
+# Consistency with data/facts_v1.yaml: the user's OS (Linux, f_008) and phone
+# (Google Pixel, f_017) exist, so the user has no phone fact here, and no value
+# contains "linux", "pixel" or "google" alone. Brands that are also common
+# English words (Noise, boAt) are avoided: as strict-match targets they would
+# fire on unrelated memories.
+#
+# NEEDS BILINGUAL REVIEW (BENCHMARK_SPEC.md Section 7.4).
+domain: tech
+
+relations:
+  laptop_brand:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} laptop brand is {v}."
+      hi: "{poss} लैपटॉप {v} का है।"
+      hi-en: "{Poss} laptop {v} ka hai."
+    probe:
+      en: "Which brand is {poss} laptop?"
+      hi: "{poss} लैपटॉप किस ब्रांड का है?"
+      hi-en: "{Poss} laptop kis brand ka hai?"
+    correction:
+      en: "A correction: {poss} laptop brand is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} लैपटॉप {old} का नहीं, बल्कि {new} का है।"
+      hi-en: "Ek correction hai: {poss} laptop {old} ka nahi, {new} ka hai."
+    reprobe:
+      en: "Which brand is {poss} laptop now?"
+      hi: "अब {poss} लैपटॉप किस ब्रांड का है?"
+    values:
+      dell: {en: "Dell", hi: "डेल", hi-en: "Dell"}
+      lenovo: {en: "Lenovo", hi: "लेनोवो", hi-en: "Lenovo"}
+      hp: {en: "HP", hi: "एचपी", hi-en: "HP"}
+      acer: {en: "Acer", hi: "एसर", hi-en: "Acer"}
+      asus: {en: "Asus", hi: "आसुस", hi-en: "Asus"}
+      msi: {en: "MSI", hi: "एमएसआई", hi-en: "MSI"}
+      toshiba: {en: "Toshiba", hi: "तोशिबा", hi-en: "Toshiba"}
+
+  phone_brand:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} phone brand is {v}."
+      hi: "{poss} फ़ोन {v} का है।"
+      hi-en: "{Poss} phone {v} ka hai."
+    probe:
+      en: "Which brand is {poss} phone?"
+      hi: "{poss} फ़ोन किस ब्रांड का है?"
+      hi-en: "{Poss} phone kis brand ka hai?"
+    correction:
+      en: "A correction: {poss} phone brand is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} फ़ोन {old} का नहीं, बल्कि {new} का है।"
+      hi-en: "Ek correction hai: {poss} phone {old} ka nahi, {new} ka hai."
+    reprobe:
+      en: "Which brand is {poss} phone now?"
+      hi: "अब {poss} फ़ोन किस ब्रांड का है?"
+    values:
+      samsung: {en: "Samsung", hi: "सैमसंग", hi-en: "Samsung"}
+      oneplus: {en: "OnePlus", hi: "वनप्लस", hi-en: "OnePlus"}
+      apple: {en: "Apple", hi: "एप्पल", hi-en: "Apple"}
+      nokia: {en: "Nokia", hi: "नोकिया", hi-en: "Nokia"}
+      xiaomi: {en: "Xiaomi", hi: "शाओमी", hi-en: "Xiaomi"}
+      realme: {en: "Realme", hi: "रियलमी", hi-en: "Realme"}
+      vivo: {en: "Vivo", hi: "वीवो", hi-en: "Vivo"}
+
+  cloud_storage:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} cloud storage service is {v}."
+      hi: "{poss} क्लाउड स्टोरेज {v} है।"
+      hi-en: "{Poss} cloud storage {v} hai."
+    probe:
+      en: "What is {poss} cloud storage service?"
+      hi: "{poss} क्लाउड स्टोरेज कौन सा है?"
+      hi-en: "{Poss} cloud storage kaun sa hai?"
+    correction:
+      en: "A correction: {poss} cloud storage service is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} क्लाउड स्टोरेज {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} cloud storage {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} cloud storage service now?"
+      hi: "अब {poss} क्लाउड स्टोरेज कौन सा है?"
+    values:
+      google_drive: {en: "Google Drive", hi: "गूगल ड्राइव", hi-en: "Google Drive"}
+      dropbox: {en: "Dropbox", hi: "ड्रॉपबॉक्स", hi-en: "Dropbox"}
+      onedrive: {en: "OneDrive", hi: "वनड्राइव", hi-en: "OneDrive"}
+      icloud: {en: "iCloud", hi: "आईक्लाउड", hi-en: "iCloud"}
+      mega: {en: "MEGA", hi: "मेगा", hi-en: "MEGA"}
+      pcloud: {en: "pCloud", hi: "पीक्लाउड", hi-en: "pCloud"}
+      terabox: {en: "TeraBox", hi: "टेराबॉक्स", hi-en: "TeraBox"}
+
+  home_internet:
+    gender: {hi: p, hi-en: p}   # oblique: मेरे घर का इंटरनेट
+    statement:
+      en: "{Poss} home internet provider is {v}."
+      hi: "{poss} घर का इंटरनेट {v} का है।"
+      hi-en: "{Poss} ghar ka internet {v} ka hai."
+    probe:
+      en: "Who is {poss} home internet provider?"
+      hi: "{poss} घर का इंटरनेट किस कंपनी का है?"
+      hi-en: "{Poss} ghar ka internet kis company ka hai?"
+    correction:
+      en: "A correction: {poss} home internet provider is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} घर का इंटरनेट {old} का नहीं, बल्कि {new} का है।"
+      hi-en: "Ek correction hai: {poss} ghar ka internet {old} ka nahi, {new} ka hai."
+    reprobe:
+      en: "Who is {poss} home internet provider now?"
+      hi: "अब {poss} घर का इंटरनेट किस कंपनी का है?"
+    values:
+      jio: {en: "Jio", hi: "जियो", hi-en: "Jio"}
+      airtel: {en: "Airtel", hi: "एयरटेल", hi-en: "Airtel"}
+      act_fibernet: {en: "ACT Fibernet", hi: "एक्ट फ़ाइबरनेट", hi-en: "ACT Fibernet"}
+      bsnl: {en: "BSNL", hi: "बीएसएनएल", hi-en: "BSNL"}
+      hathway: {en: "Hathway", hi: "हैथवे", hi-en: "Hathway"}
+      excitel: {en: "Excitel", hi: "एक्साइटेल", hi-en: "Excitel"}
+      tata_play_fiber: {en: "Tata Play Fiber", hi: "टाटा प्ले फ़ाइबर", hi-en: "Tata Play Fiber"}
+
+  smartwatch_brand:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} smartwatch brand is {v}."
+      hi: "{poss} स्मार्टवॉच {v} की है।"
+      hi-en: "{Poss} smartwatch {v} ki hai."
+    probe:
+      en: "Which brand is {poss} smartwatch?"
+      hi: "{poss} स्मार्टवॉच किस ब्रांड की है?"
+      hi-en: "{Poss} smartwatch kis brand ki hai?"
+    correction:
+      en: "A correction: {poss} smartwatch brand is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} स्मार्टवॉच {old} की नहीं, बल्कि {new} की है।"
+      hi-en: "Ek correction hai: {poss} smartwatch {old} ki nahi, {new} ki hai."
+    reprobe:
+      en: "Which brand is {poss} smartwatch now?"
+      hi: "अब {poss} स्मार्टवॉच किस ब्रांड की है?"
+    values:
+      fitbit: {en: "Fitbit", hi: "फ़िटबिट", hi-en: "Fitbit"}
+      garmin: {en: "Garmin", hi: "गार्मिन", hi-en: "Garmin"}
+      amazfit: {en: "Amazfit", hi: "अमेज़फ़िट", hi-en: "Amazfit"}
+      titan: {en: "Titan", hi: "टाइटन", hi-en: "Titan"}
+      noise: {en: "Noise", hi: "नॉइज़", hi-en: "Noise"}
+      boat: {en: "boAt", hi: "बोट", hi-en: "boAt"}
+      fastrack: {en: "Fastrack", hi: "फ़ास्टट्रैक", hi-en: "Fastrack"}
+
+  # Batch 2. NEEDS BILINGUAL REVIEW. # अकाउंट is m.
+  email_provider:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} email account is on {v}."
+      hi: "{poss} ईमेल अकाउंट {v} पर है।"
+      hi-en: "{Poss} email account {v} par hai."
+    probe:
+      en: "Which service is {poss} email account on?"
+      hi: "{poss} ईमेल अकाउंट किस पर है?"
+      hi-en: "{Poss} email account kis par hai?"
+    correction:
+      en: "A correction: {poss} email account is not on {old}, it is on {new}."
+      hi: "एक सुधार है: {poss} ईमेल अकाउंट {old} पर नहीं, बल्कि {new} पर है।"
+      hi-en: "Ek correction hai: {poss} email account {old} par nahi, {new} par hai."
+    reprobe:
+      en: "Which service is {poss} email account on now?"
+      hi: "अब {poss} ईमेल अकाउंट किस पर है?"
+    values:
+      gmail: {en: "Gmail", hi: "जीमेल", hi-en: "Gmail"}
+      outlook: {en: "Outlook", hi: "आउटलुक", hi-en: "Outlook"}
+      yahoo_mail: {en: "Yahoo Mail", hi: "याहू मेल", hi-en: "Yahoo Mail"}
+      rediffmail: {en: "Rediffmail", hi: "रेडिफ़मेल", hi-en: "Rediffmail"}
+      zoho_mail: {en: "Zoho Mail", hi: "ज़ोहो मेल", hi-en: "Zoho Mail"}
+      proton_mail: {en: "Proton Mail", hi: "प्रोटॉन मेल", hi-en: "Proton Mail"}
+
+facts:
+  - {id: f_801, relation: laptop_brand, entity: user, value: dell, update: lenovo}
+  - {id: f_801_dist, distractor_of: f_801, entity: user_brother}
+  - {id: f_802, relation: laptop_brand, entity: user_father, value: hp}
+  - {id: f_803, relation: laptop_brand, entity: user_bua, value: acer}
+
+  - {id: f_804, relation: phone_brand, entity: user_mother, value: samsung}
+  - {id: f_804_dist, distractor_of: f_804, entity: user_nani}
+  - {id: f_805, relation: phone_brand, entity: user_wife, value: oneplus, update: apple}
+  - {id: f_806, relation: phone_brand, entity: user_dada, value: nokia}
+
+  - {id: f_807, relation: cloud_storage, entity: user, value: google_drive, update: dropbox}
+  - {id: f_807_dist, distractor_of: f_807, entity: user_friend}
+  - {id: f_808, relation: cloud_storage, entity: user_sister, value: onedrive}
+  - {id: f_809, relation: cloud_storage, entity: user_wife, value: icloud}
+
+  - {id: f_810, relation: home_internet, entity: user, value: jio, update: airtel}
+  - {id: f_810_dist, distractor_of: f_810, entity: user_mama}
+  - {id: f_811, relation: home_internet, entity: user_brother, value: act_fibernet}
+  - {id: f_812, relation: home_internet, entity: user_mother, value: bsnl}
+
+  - {id: f_813, relation: smartwatch_brand, entity: user, value: fitbit, update: garmin}
+  - {id: f_813_dist, distractor_of: f_813, entity: user_wife}
+  - {id: f_814, relation: smartwatch_brand, entity: user_sister, value: amazfit}
+  - {id: f_815, relation: smartwatch_brand, entity: user_father, value: titan}
+
+  # Batch 2 (2026-10-18). NEEDS BILINGUAL REVIEW.
+  - {id: f_816, relation: laptop_brand, entity: user_sister, value: asus, update: msi, batch: 2}
+  - {id: f_816_dist, distractor_of: f_816, entity: user_mama, batch: 2}
+  - {id: f_817, relation: laptop_brand, entity: user_son, value: toshiba, batch: 2}
+  - {id: f_818, relation: phone_brand, entity: user_brother, value: xiaomi, update: realme, batch: 2}
+  - {id: f_818_dist, distractor_of: f_818, entity: user_friend, batch: 2}
+  - {id: f_819, relation: phone_brand, entity: user_sister, value: vivo, batch: 2}
+  - {id: f_820, relation: cloud_storage, entity: user_brother, value: mega, update: pcloud, batch: 2}
+  - {id: f_820_dist, distractor_of: f_820, entity: user_mama, batch: 2}
+  - {id: f_821, relation: cloud_storage, entity: user_father, value: terabox, batch: 2}
+  - {id: f_822, relation: home_internet, entity: user_sister, value: hathway, update: excitel, batch: 2}
+  - {id: f_822_dist, distractor_of: f_822, entity: user_friend, batch: 2}
+  - {id: f_823, relation: home_internet, entity: user_bua, value: tata_play_fiber, batch: 2}
+  - {id: f_824, relation: smartwatch_brand, entity: user_brother, value: noise, update: boat, batch: 2}
+  - {id: f_824_dist, distractor_of: f_824, entity: user_son, batch: 2}
+  - {id: f_825, relation: smartwatch_brand, entity: user_daughter, value: fastrack, batch: 2}
+  - {id: f_826, relation: email_provider, entity: user, value: gmail, update: proton_mail, batch: 2}
+  - {id: f_826_dist, distractor_of: f_826, entity: user_sister, batch: 2}
+  - {id: f_827, relation: email_provider, entity: user_father, value: rediffmail, batch: 2}
+  - {id: f_828, relation: email_provider, entity: user_brother, value: outlook, update: zoho_mail, batch: 2}
+  - {id: f_829, relation: email_provider, entity: user_dada, value: yahoo_mail, batch: 2}

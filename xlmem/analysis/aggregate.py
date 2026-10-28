@@ -9,10 +9,11 @@ import numpy as np
 import pandas as pd
 
 
-def aggregate_seed_metrics(seed_metrics: list[dict[str, float]]) -> dict[str, dict[str, float]]:
+def aggregate_seed_metrics(seed_metrics: list[dict[str, Any]]) -> dict[str, dict[str, float]]:
     """Compute mean and sample standard deviation across seeds for all metrics.
 
     CRITICAL INVARIANT: Never report a single seed. Minimum 3 seeds required.
+    Metrics scored as invalid (null) are excluded, so n_seeds counts valid seeds only.
     """
     if not seed_metrics:
         return {}
@@ -21,7 +22,11 @@ def aggregate_seed_metrics(seed_metrics: list[dict[str, float]]) -> dict[str, di
     aggregated: dict[str, dict[str, float]] = {}
 
     for k in keys:
-        values = [m[k] for m in seed_metrics if k in m]
+        values = [
+            m[k]
+            for m in seed_metrics
+            if isinstance(m.get(k), (int, float)) and not isinstance(m.get(k), bool)
+        ]
         if not values:
             continue
         arr = np.array(values, dtype=np.float64)

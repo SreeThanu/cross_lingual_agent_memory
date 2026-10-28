@@ -1,0 +1,214 @@
+# Domain template: Professional & Work (BENCHMARK_SPEC.md Section 3, item 3).
+# Format and placeholders: see data/templates/dining.yaml.
+#
+# Consistency with data/facts_v1.yaml: the user already works at Infosys (f_003)
+# and the spouse too (f_003_dist), so employer facts here are for other people
+# only, and the wife has no work facts. The son and daughter are children
+# (family domain) and have no work facts.
+#
+# NEEDS BILINGUAL REVIEW (BENCHMARK_SPEC.md Section 7.4).
+domain: work
+
+relations:
+  alma_mater:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} college was {v}."
+      hi: "{poss} कॉलेज {v} था।"
+      hi-en: "{Poss} college {v} tha."
+    probe:
+      en: "What was {poss} college?"
+      hi: "{poss} कॉलेज कौन सा था?"
+      hi-en: "{Poss} college kaun sa tha?"
+    correction:
+      en: "A correction: {poss} college was not {old}, it was {new}."
+      hi: "एक सुधार है: {poss} कॉलेज {old} नहीं, बल्कि {new} था।"
+      hi-en: "Ek correction hai: {poss} college {old} nahi, {new} tha."
+    reprobe:
+      en: "So what was {poss} college?"
+      hi: "तो {poss} कॉलेज कौन सा था?"
+    values:
+      iit_bombay: {en: "IIT Bombay", hi: "आईआईटी बॉम्बे", hi-en: "IIT Bombay"}
+      nit_trichy: {en: "NIT Trichy", hi: "एनआईटी त्रिची", hi-en: "NIT Trichy"}
+      bits_pilani: {en: "BITS Pilani", hi: "बिट्स पिलानी", hi-en: "BITS Pilani"}
+      delhi_university: {en: "Delhi University", hi: "दिल्ली विश्वविद्यालय", hi-en: "Delhi University"}
+      vit_vellore: {en: "VIT Vellore", hi: "वीआईटी वेल्लोर", hi-en: "VIT Vellore"}
+      jnu: {en: "JNU", hi: "जेएनयू", hi-en: "JNU"}
+      anna_university: {en: "Anna University", hi: "अन्ना यूनिवर्सिटी", hi-en: "Anna University"}
+
+  job_company:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} job is at {v}."
+      hi: "{poss} नौकरी {v} में है।"
+      hi-en: "{Poss} job {v} mein hai."
+    probe:
+      en: "Which company is {poss} job at?"
+      hi: "{poss} नौकरी किस कंपनी में है?"
+      hi-en: "{Poss} job kis company mein hai?"
+    correction:
+      en: "A correction: {poss} job is not at {old}, it is at {new}."
+      hi: "एक सुधार है: {poss} नौकरी {old} में नहीं, बल्कि {new} में है।"
+      hi-en: "Ek correction hai: {poss} job {old} mein nahi, {new} mein hai."
+    reprobe:
+      en: "Which company is {poss} job at now?"
+      hi: "अब {poss} नौकरी किस कंपनी में है?"
+    values:
+      wipro: {en: "Wipro", hi: "विप्रो", hi-en: "Wipro"}
+      hcl: {en: "HCL", hi: "एचसीएल", hi-en: "HCL"}
+      accenture: {en: "Accenture", hi: "एक्सेंचर", hi-en: "Accenture"}
+      reliance: {en: "Reliance", hi: "रिलायंस", hi-en: "Reliance"}
+      cognizant: {en: "Cognizant", hi: "कॉग्निज़ेंट", hi-en: "Cognizant"}
+      tech_mahindra: {en: "Tech Mahindra", hi: "टेक महिंद्रा", hi-en: "Tech Mahindra"}
+      ongc: {en: "ONGC", hi: "ओएनजीसी", hi-en: "ONGC"}
+
+  office_city:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} office is in {v}."
+      hi: "{poss} ऑफिस {v} में है।"
+      hi-en: "{Poss} office {v} mein hai."
+    probe:
+      en: "In which city is {poss} office?"
+      hi: "{poss} ऑफिस किस शहर में है?"
+      hi-en: "{Poss} office kis city mein hai?"
+    correction:
+      en: "A correction: {poss} office is not in {old}, it is in {new}."
+      hi: "एक सुधार है: {poss} ऑफिस {old} में नहीं, बल्कि {new} में है।"
+      hi-en: "Ek correction hai: {poss} office {old} mein nahi, {new} mein hai."
+    reprobe:
+      en: "In which city is {poss} office now?"
+      hi: "अब {poss} ऑफिस किस शहर में है?"
+    values:
+      noida: {en: "Noida", hi: "नोएडा", hi-en: "Noida"}
+      gurugram: {en: "Gurugram", hi: "गुरुग्राम", hi-en: "Gurugram"}
+      hyderabad: {en: "Hyderabad", hi: "हैदराबाद", hi-en: "Hyderabad"}
+      ahmedabad: {en: "Ahmedabad", hi: "अहमदाबाद", hi-en: "Ahmedabad"}
+      chandigarh: {en: "Chandigarh", hi: "चंडीगढ़", hi-en: "Chandigarh"}
+      bhopal: {en: "Bhopal", hi: "भोपाल", hi-en: "Bhopal"}
+      nagpur: {en: "Nagpur", hi: "नागपुर", hi-en: "Nagpur"}
+
+  shift_start:
+    gender: {hi: f, hi-en: f}
+    statement:
+      en: "{Poss} work shift starts at {v}."
+      hi: "{poss} काम की शिफ्ट {v} बजे शुरू होती है।"
+      hi-en: "{Poss} work shift {v} baje start hoti hai."
+    probe:
+      en: "What time does {poss} work shift start?"
+      hi: "{poss} काम की शिफ्ट कितने बजे शुरू होती है?"
+      hi-en: "{Poss} work shift kitne baje start hoti hai?"
+    correction:
+      en: "A correction: {poss} work shift does not start at {old}, it starts at {new}."
+      hi: "एक सुधार है: {poss} काम की शिफ्ट {old} बजे नहीं, बल्कि {new} बजे शुरू होती है।"
+      hi-en: "Ek correction hai: {poss} work shift {old} baje nahi, {new} baje start hoti hai."
+    reprobe:
+      en: "What time does {poss} work shift start now?"
+      hi: "अब {poss} काम की शिफ्ट कितने बजे शुरू होती है?"
+    values:
+      9_am: {en: "9 am", hi: "सुबह 9", hi-en: "subah 9"}
+      10_am: {en: "10 am", hi: "सुबह 10", hi-en: "subah 10"}
+      2_pm: {en: "2 pm", hi: "दोपहर 2", hi-en: "dopahar 2"}
+      6_am: {en: "6 am", hi: "सुबह 6", hi-en: "subah 6"}
+      8_am: {en: "8 am", hi: "सुबह 8", hi-en: "subah 8"}
+      11_am: {en: "11 am", hi: "सुबह 11", hi-en: "subah 11"}
+      7_am: {en: "7 am", hi: "सुबह 7", hi-en: "subah 7"}
+
+  manager_name:
+    gender: {hi: p, hi-en: p}   # honorific: मेरे मैनेजर ... हैं
+    statement:
+      en: "{Poss} manager is {v}."
+      hi: "{poss} मैनेजर {v} हैं।"
+      hi-en: "{Poss} manager {v} hain."
+    probe:
+      en: "Who is {poss} manager?"
+      hi: "{poss} मैनेजर कौन हैं?"
+      hi-en: "{Poss} manager kaun hain?"
+    correction:
+      en: "A correction: {poss} manager is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} मैनेजर {old} नहीं, बल्कि {new} हैं।"
+      hi-en: "Ek correction hai: {poss} manager {old} nahi, {new} hain."
+    reprobe:
+      en: "Who is {poss} manager now?"
+      hi: "अब {poss} मैनेजर कौन हैं?"
+    values:
+      neha_bansal: {en: "Neha Bansal", hi: "नेहा बंसल", hi-en: "Neha Bansal"}
+      vikram_joshi: {en: "Vikram Joshi", hi: "विक्रम जोशी", hi-en: "Vikram Joshi"}
+      suresh_iyer: {en: "Suresh Iyer", hi: "सुरेश अय्यर", hi-en: "Suresh Iyer"}
+      kavita_rao: {en: "Kavita Rao", hi: "कविता राव", hi-en: "Kavita Rao"}
+      anjali_mehta: {en: "Anjali Mehta", hi: "अंजलि मेहता", hi-en: "Anjali Mehta"}
+      rohit_kulkarni: {en: "Rohit Kulkarni", hi: "रोहित कुलकर्णी", hi-en: "Rohit Kulkarni"}
+      farhan_sheikh: {en: "Farhan Sheikh", hi: "फ़रहान शेख़", hi-en: "Farhan Sheikh"}
+
+  # Batch 2. NEEDS BILINGUAL REVIEW.
+  department:
+    gender: {hi: m, hi-en: m}
+    statement:
+      en: "{Poss} department at work is {v}."
+      hi: "{poss} डिपार्टमेंट {v} है।"
+      hi-en: "{Poss} department {v} hai."
+    probe:
+      en: "What is {poss} department at work?"
+      hi: "{poss} डिपार्टमेंट कौन सा है?"
+      hi-en: "{Poss} department kaun sa hai?"
+    correction:
+      en: "A correction: {poss} department is not {old}, it is {new}."
+      hi: "एक सुधार है: {poss} डिपार्टमेंट {old} नहीं, बल्कि {new} है।"
+      hi-en: "Ek correction hai: {poss} department {old} nahi, {new} hai."
+    reprobe:
+      en: "What is {poss} department at work now?"
+      hi: "अब {poss} डिपार्टमेंट कौन सा है?"
+    values:
+      marketing: {en: "marketing", hi: "मार्केटिंग", hi-en: "marketing"}
+      sales: {en: "sales", hi: "सेल्स", hi-en: "sales"}
+      finance: {en: "finance", hi: "फ़ाइनेंस", hi-en: "finance"}
+      hr: {en: "HR", hi: "एचआर", hi-en: "HR"}
+      legal: {en: "legal", hi: "लीगल", hi-en: "legal"}
+      research: {en: "research", hi: "रिसर्च", hi-en: "research"}
+
+facts:
+  - {id: f_301, relation: alma_mater, entity: user, value: iit_bombay, update: nit_trichy}
+  - {id: f_301_dist, distractor_of: f_301, entity: user_friend}
+  - {id: f_302, relation: alma_mater, entity: user_brother, value: bits_pilani}
+  - {id: f_303, relation: alma_mater, entity: user_sister, value: delhi_university}
+
+  - {id: f_304, relation: job_company, entity: user_brother, value: wipro, update: hcl}
+  - {id: f_304_dist, distractor_of: f_304, entity: user_friend}
+  - {id: f_305, relation: job_company, entity: user_sister, value: accenture}
+  - {id: f_306, relation: job_company, entity: user_bua, value: reliance}
+
+  - {id: f_307, relation: office_city, entity: user_brother, value: noida, update: gurugram}
+  - {id: f_308, relation: office_city, entity: user_sister, value: hyderabad}
+  - {id: f_308_dist, distractor_of: f_308, entity: user_mama}
+  - {id: f_309, relation: office_city, entity: user_friend, value: ahmedabad}
+
+  - {id: f_310, relation: shift_start, entity: user, value: 9_am, update: 10_am}
+  - {id: f_310_dist, distractor_of: f_310, entity: user_brother}
+  - {id: f_311, relation: shift_start, entity: user_sister, value: 2_pm}
+  - {id: f_312, relation: shift_start, entity: user_friend, value: 6_am}
+
+  - {id: f_313, relation: manager_name, entity: user, value: neha_bansal, update: vikram_joshi}
+  - {id: f_313_dist, distractor_of: f_313, entity: user_friend}
+  - {id: f_314, relation: manager_name, entity: user_brother, value: suresh_iyer}
+  - {id: f_315, relation: manager_name, entity: user_sister, value: kavita_rao}
+
+  # Batch 2 (2026-10-18). NEEDS BILINGUAL REVIEW.
+  - {id: f_316, relation: alma_mater, entity: user_wife, value: vit_vellore, update: anna_university, batch: 2}
+  - {id: f_316_dist, distractor_of: f_316, entity: user_bua, batch: 2}
+  - {id: f_317, relation: alma_mater, entity: user_mama, value: jnu, batch: 2}
+  - {id: f_318, relation: job_company, entity: user_mama, value: cognizant, update: tech_mahindra, batch: 2}
+  - {id: f_319, relation: job_company, entity: user_father, value: ongc, batch: 2}
+  - {id: f_320, relation: office_city, entity: user_bua, value: chandigarh, update: bhopal, batch: 2}
+  - {id: f_320_dist, distractor_of: f_320, entity: user_wife, batch: 2}
+  - {id: f_321, relation: office_city, entity: user_father, value: nagpur, batch: 2}
+  - {id: f_322, relation: shift_start, entity: user_wife, value: 8_am, update: 11_am, batch: 2}
+  - {id: f_322_dist, distractor_of: f_322, entity: user_bua, batch: 2}
+  - {id: f_323, relation: shift_start, entity: user_mama, value: 7_am, batch: 2}
+  - {id: f_324, relation: manager_name, entity: user_wife, value: anjali_mehta, update: rohit_kulkarni, batch: 2}
+  - {id: f_324_dist, distractor_of: f_324, entity: user_bua, batch: 2}
+  - {id: f_325, relation: manager_name, entity: user_mama, value: farhan_sheikh, batch: 2}
+  - {id: f_326, relation: department, entity: user_sister, value: marketing, update: research, batch: 2}
+  - {id: f_327, relation: department, entity: user_brother, value: sales, batch: 2}
+  - {id: f_327_dist, distractor_of: f_327, entity: user_mama, batch: 2}
+  - {id: f_328, relation: department, entity: user_friend, value: finance, update: legal, batch: 2}
+  - {id: f_329, relation: department, entity: user_bua, value: hr, batch: 2}

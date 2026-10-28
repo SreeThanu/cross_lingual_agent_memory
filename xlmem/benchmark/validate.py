@@ -15,6 +15,7 @@ or, worse, silently treated as a Write/Retrieval failure by the scorer.
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -227,6 +228,122 @@ def validate_fact_bank(path: str | Path) -> ValidationReport:
             )
 
     return report
+
+
+def check_cross_bank_collisions(paths: list[str | Path]) -> list[ValidationIssue]:
+    """Check fact banks that will be merged (e.g. facts_v1.yaml + candidate batches).
+
+    Per-file validation cannot see these. All facts in a run are planted for one
+    user, so two files that state the same fact would make the benchmark itself
+    produce "duplicates" (inflating DR):
+      - the same fact id in two files                  -> error
+      - the same (entity, relation, value) twice       -> error
+      - the same (entity, relation) with other values  -> warning (a contradiction
+        unless the relation is genuinely multi-valued, e.g. allergies)
+      - the same (entity, value) under another relation -> warning (often one fact
+        under two relation names, e.g. dietary_preference vs dietary_restriction)
+    """
+    issues: list[ValidationIssue] = []
+    seen_ids: dict[str, str] = {}
+    seen_triples: dict[tuple[str, str, str], str] = {}
+    seen_slots: dict[tuple[str, str], tuple[str, str]] = {}
+    seen_entity_values: dict[tuple[str, str], tuple[str, str]] = {}
+
+    for path in paths:
+        with open(path, "r", encoding="utf-8") as f:
+            payload = yaml.safe_load(f) or {}
+        for item in payload.get("facts", []):
+            fid = str(item.get("id", ""))
+            where = f"{fid} ({Path(path).name})"
+            if fid in seen_ids and seen_ids[fid] != str(path):
+                issues.append(ValidationIssue(fid, "error", f"id also used in {seen_ids[fid]}"))
+            seen_ids.setdefault(fid, str(path))
+
+            entity, relation = str(item.get("entity")), str(item.get("relation"))
+            value = str(item.get("value"))
+            triple, slot = (entity, relation, value), (entity, relation)
+            if triple in seen_triples:
+                issues.append(
+                    ValidationIssue(fid, "error", f"same fact {triple} as {seen_triples[triple]}")
+                )
+            elif slot in seen_slots:
+                other_value, other_where = seen_slots[slot]
+                issues.append(
+                    ValidationIssue(
+                        fid,
+                        "warning",
+                        f"{slot} = {value!r} but {other_where} has {other_value!r}",
+                    )
+                )
+            ev = (entity, value)
+            if triple not in seen_triples and ev in seen_entity_values:
+                other_relation, other_where = seen_entity_values[ev]
+                if other_relation != relation:
+                    issues.append(
+                        ValidationIssue(
+                            fid,
+                            "warning",
+                            f"{ev} under {relation!r}; {other_where} has it under "
+                            f"{other_relation!r} (same fact, two relation names?)",
+                        )
+                    )
+            seen_triples.setdefault(triple, where)
+            seen_slots.setdefault(slot, (value, where))
+            seen_entity_values.setdefault(ev, (relation, where))
+    return issues
+
+
+def _tokens(text: str) -> str:
+    """Lowercase, punctuation -> space, keeping Devanagari combining marks (unlike \\w)."""
+    kept = (
+        ch if ch.isspace() or unicodedata.category(ch)[0] in "LNM" else " "
+        for ch in unicodedata.normalize("NFC", text.lower()).replace("\u093c", "")
+    )
+    return " " + " ".join("".join(kept).split()) + " "
+
+
+def check_value_overlap(paths: list[str | Path]) -> list[ValidationIssue]:
+    """Warn when one fact's value (or Hindi/translit alias) occurs as whole tokens in a
+    different-valued fact's sentences.
+
+    Strict matching searches every stored memory for a fact's value, so such a fact
+    can be credited by a memory of the other fact ("chennai" inside "Chennai Super
+    Kings"). Entity-shift distractors share their base value by design and are skipped.
+    """
+    facts: list[dict[str, Any]] = []
+    for path in paths:
+        with open(path, "r", encoding="utf-8") as f:
+            facts.extend((yaml.safe_load(f) or {}).get("facts", []))
+
+    def sentences(item: dict[str, Any]) -> list[str]:
+        texts = list((item.get("surface") or {}).values())
+        update = item.get("update") or {}
+        texts += list((update.get("surface") or {}).values())
+        return texts
+
+    def targets(item: dict[str, Any]) -> set[str]:
+        out = {str(item.get("value", "")).replace("_", " ")}
+        for forms in (item.get("value_aliases") or {}).values():
+            out.update(forms)
+        return {t for t in (_tokens(x).strip() for x in out) if t}
+
+    issues: list[ValidationIssue] = []
+    for a in facts:
+        for target in targets(a):
+            needle = f" {target} "
+            for b in facts:
+                if b is a or b.get("value") == a.get("value"):
+                    continue
+                if any(needle in _tokens(t) for t in sentences(b)):
+                    issues.append(
+                        ValidationIssue(
+                            str(a.get("id")),
+                            "warning",
+                            f"value form {target!r} occurs in {b.get('id')}'s sentences",
+                        )
+                    )
+                    break
+    return issues
 
 
 def format_report(report: ValidationReport) -> str:

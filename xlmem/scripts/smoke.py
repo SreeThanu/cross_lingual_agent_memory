@@ -6,6 +6,7 @@ import argparse
 import logging
 from pathlib import Path
 import sys
+import time
 from xlmem.benchmark.facts import Fact
 from xlmem.config import BenchmarkConfig, ExperimentConfig, LanguageConfig, ModelConfig
 from xlmem.runner.experiment import ExperimentRunner
@@ -66,7 +67,9 @@ def run_smoke(framework: str = "mem0", store_lang: str = "hi", probe_lang: str =
     logger.info("=== Starting XLMem Smoke Run (5 facts) ===")
     logger.info("Framework: %s | Store: %s -> Probe: %s", framework, store_lang, probe_lang)
 
-    output_dir = Path("runs") / f"smoke_{framework}_{store_lang}2{probe_lang}"
+    # Timestamped: the runner refuses to overwrite an existing run dir.
+    stamp = time.strftime("%Y%m%d-%H%M%S")
+    output_dir = Path("runs") / f"smoke_{framework}_{store_lang}2{probe_lang}_{stamp}"
     cfg = ExperimentConfig(
         experiment=f"smoke_{framework}",
         framework=framework,  # type: ignore[arg-type]
